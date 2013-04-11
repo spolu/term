@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>char_map.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="factory.html">
+                factory.js
+              </a>
+            
+              
+              <a class="source" href="utf8.html">
+                utf8.js
+              </a>
+            
+              
+              <a class="source" href="char_map.html">
+                char_map.js
+              </a>
+            
+              
+              <a class="source" href="colors.html">
+                colors.js
+              </a>
+            
+              
+              <a class="source" href="vt.html">
+                vt.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>char_map.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/**
+ * char_map.js
+ */</span>
+<span class="keyword">var</span> fwk = require(<span class="string">'fwk'</span>);
+<span class="keyword">var</span> util = require(<span class="string">'util'</span>);
+
+<span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2>CHAR_MAP</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>@class Character map object.</p>
+<p>@param spec { name, glmap }</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="keyword">var</span> char_map = <span class="keyword">function</span>(spec, my) {
+  <span class="keyword">var</span> _super = {};
+  my = my || {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h4>Private members</h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  my.name = spec.name;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h4>Public methods</h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> reset;   <span class="comment">/* reset(glmap); */</span>
+  <span class="keyword">var</span> GL;      <span class="comment">/* GL(str); */</span>
+  <span class="keyword">var</span> GR;      <span class="comment">/* GR(str); */</span>
+
+  <span class="keyword">var</span> that = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h4>reset</h4>
+<p>Resets a character map with the provided GL mapping. (The GR
+mapping will be automatically created </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  reset = <span class="keyword">function</span>(glmap) {
+    my.glmap = glmap;
+
+    <span class="keyword">var</span> glkeys = Object.keys(my.glmap).map(<span class="keyword">function</span>(key) {
+      <span class="keyword">return</span> <span class="string">'\\x'</span> + fwk.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>));
+    });
+    <span class="keyword">var</span> glre = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + glkeys.join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Compute the GR mapping.
+This is the same as GL except all keys have their MSB set.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    ny.grmap = {};
+
+    glkeys.forEach(<span class="keyword">function</span>(glkey) {
+      <span class="keyword">var</span> grkey = String.fromCharCode(glkey.charCodeAt(<span class="number">0</span>) &amp; <span class="number">0x80</span>);
+      my.grmap[grkey] = my.glmap[glkey];
+    });
+
+    <span class="keyword">var</span> grkeys = Object.keys(my.grmap).map(<span class="keyword">function</span>(key) {
+      <span class="keyword">return</span> <span class="string">'\\x'</span> + fwk.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>), <span class="number">2</span>);
+    });
+
+    <span class="keyword">var</span> grre = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + grkeys.join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>);
+
+    <span class="keyword">var</span> GL = <span class="keyword">function</span>(str) {
+      <span class="keyword">return</span> str.replace(glre,
+                         <span class="keyword">function</span>(ch) { <span class="keyword">return</span> my.glmap[ch] });
+    };
+    fwk.method(that, <span class="string">'GL'</span>, GL, _super);
+
+    <span class="keyword">var</span> GR = <span class="keyword">function</span>(str) {
+      <span class="keyword">return</span> str.replace(grre,
+                         <span class="keyword">function</span>(ch) { <span class="keyword">return</span> my.grmap[ch] });
+    };
+    fwk.method(that, <span class="string">'GR'</span>, GR, _super);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h3>Initialization</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">if</span>(spec.glmap)
+    reset(glmap);
+
+  fwk.method(that, <span class="string">'reset'</span>, reset, _super);
+
+  <span class="keyword">return</span> that;
+};
+
+exports.char_map = char_map;
+
+
+<span class="comment">/**
+ * Mapping from received to display character, used depending on the active
+ * VT character set.
+ */</span>
+exports.maps = {};
+
+<span class="comment">/**
+ * VT100 Graphic character map.
+ * http://vt100.net/docs/vt220-rm/table2-4.html
+ */</span>
+exports.maps[<span class="string">'0'</span>] = char_map({
+  name: <span class="string">'graphic'</span>, 
+  glmap: {
+    <span class="string">'\x60'</span>:<span class="string">'\u25c6'</span>,  <span class="comment">// ` -&gt; diamond</span>
+    <span class="string">'\x61'</span>:<span class="string">'\u2592'</span>,  <span class="comment">// a -&gt; grey-box</span>
+    <span class="string">'\x62'</span>:<span class="string">'\u2409'</span>,  <span class="comment">// b -&gt; h/t</span>
+    <span class="string">'\x63'</span>:<span class="string">'\u240c'</span>,  <span class="comment">// c -&gt; f/f</span>
+    <span class="string">'\x64'</span>:<span class="string">'\u240d'</span>,  <span class="comment">// d -&gt; c/r</span>
+    <span class="string">'\x65'</span>:<span class="string">'\u240a'</span>,  <span class="comment">// e -&gt; l/f</span>
+    <span class="string">'\x66'</span>:<span class="string">'\u00b0'</span>,  <span class="comment">// f -&gt; degree</span>
+    <span class="string">'\x67'</span>:<span class="string">'\u00b1'</span>,  <span class="comment">// g -&gt; +/-</span>
+    <span class="string">'\x68'</span>:<span class="string">'\u2424'</span>,  <span class="comment">// h -&gt; n/l</span>
+    <span class="string">'\x69'</span>:<span class="string">'\u240b'</span>,  <span class="comment">// i -&gt; v/t</span>
+    <span class="string">'\x6a'</span>:<span class="string">'\u2518'</span>,  <span class="comment">// j -&gt; bottom-right</span>
+    <span class="string">'\x6b'</span>:<span class="string">'\u2510'</span>,  <span class="comment">// k -&gt; top-right</span>
+    <span class="string">'\x6c'</span>:<span class="string">'\u250c'</span>,  <span class="comment">// l -&gt; top-left</span>
+    <span class="string">'\x6d'</span>:<span class="string">'\u2514'</span>,  <span class="comment">// m -&gt; bottom-left</span>
+    <span class="string">'\x6e'</span>:<span class="string">'\u253c'</span>,  <span class="comment">// n -&gt; line-cross</span>
+    <span class="string">'\x6f'</span>:<span class="string">'\u23ba'</span>,  <span class="comment">// o -&gt; scan1</span>
+    <span class="string">'\x70'</span>:<span class="string">'\u23bb'</span>,  <span class="comment">// p -&gt; scan3</span>
+    <span class="string">'\x71'</span>:<span class="string">'\u2500'</span>,  <span class="comment">// q -&gt; scan5</span>
+    <span class="string">'\x72'</span>:<span class="string">'\u23bc'</span>,  <span class="comment">// r -&gt; scan7</span>
+    <span class="string">'\x73'</span>:<span class="string">'\u23bd'</span>,  <span class="comment">// s -&gt; scan9</span>
+    <span class="string">'\x74'</span>:<span class="string">'\u251c'</span>,  <span class="comment">// t -&gt; left-tee</span>
+    <span class="string">'\x75'</span>:<span class="string">'\u2524'</span>,  <span class="comment">// u -&gt; right-tee</span>
+    <span class="string">'\x76'</span>:<span class="string">'\u2534'</span>,  <span class="comment">// v -&gt; bottom-tee</span>
+    <span class="string">'\x77'</span>:<span class="string">'\u252c'</span>,  <span class="comment">// w -&gt; top-tee</span>
+    <span class="string">'\x78'</span>:<span class="string">'\u2502'</span>,  <span class="comment">// x -&gt; vertical-line</span>
+    <span class="string">'\x79'</span>:<span class="string">'\u2264'</span>,  <span class="comment">// y -&gt; less-equal</span>
+    <span class="string">'\x7a'</span>:<span class="string">'\u2265'</span>,  <span class="comment">// z -&gt; greater-equal</span>
+    <span class="string">'\x7b'</span>:<span class="string">'\u03c0'</span>,  <span class="comment">// { -&gt; pi</span>
+    <span class="string">'\x7c'</span>:<span class="string">'\u2260'</span>,  <span class="comment">// | -&gt; not-equal</span>
+    <span class="string">'\x7d'</span>:<span class="string">'\u00a3'</span>,  <span class="comment">// } -&gt; british-pound</span>
+    <span class="string">'\x7e'</span>:<span class="string">'\u00b7'</span>,  <span class="comment">// ~ -&gt; dot</span>
+  }
+});
+
+<span class="comment">/**
+ * British character map.
+ * http://vt100.net/docs/vt220-rm/table2-5.html
+ */</span>
+exports.maps[<span class="string">'A'</span>] = char_map({
+  name: <span class="string">'british'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
+  }
+});
+
+<span class="comment">/**
+ * US ASCII map, no changes.
+ */</span>
+exports.maps[<span class="string">'B'</span>] = char_map({
+  name: <span class="string">'us'</span>, 
+  glmap: <span class="literal">null</span>
+});
+
+<span class="comment">/**
+ * Dutch character map.
+ * http://vt100.net/docs/vt220-rm/table2-6.html
+ */</span>
+exports.maps[<span class="string">'4'</span>] = char_map({
+  name: <span class="string">'dutch'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
+
+    <span class="string">'\x40'</span>: <span class="string">'\u00be'</span>,  <span class="comment">// @ -&gt; 3/4</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u0132'</span>,  <span class="comment">// [ -&gt; 'ij' ligature (xterm goes with \u00ff?)</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00bd'</span>,  <span class="comment">// \ -&gt; 1/2</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u007c'</span>,  <span class="comment">// ] -&gt; vertical bar</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00a8'</span>,  <span class="comment">// { -&gt; two dots</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u0066'</span>,  <span class="comment">// | -&gt; f</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00bc'</span>,  <span class="comment">// } -&gt; 1/4</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00b4'</span>,  <span class="comment">// ~ -&gt; acute</span>
+  }
+});
+
+<span class="comment">/**
+ * Finnish character map.
+ * http://vt100.net/docs/vt220-rm/table2-7.html
+ */</span>
+exports.maps[<span class="string">'C'</span>] =
+  exports.maps[<span class="string">'5'</span>] = char_map({
+  name: <span class="string">'finnish'</span>, 
+  glmap: {
+    <span class="string">'\x5b'</span>: <span class="string">'\u00c4'</span>,  <span class="comment">// [ -&gt; 'A' umlaut</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00d6'</span>,  <span class="comment">// \ -&gt; 'O' umlaut</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00c5'</span>,  <span class="comment">// ] -&gt; 'A' ring</span>
+    <span class="string">'\x5e'</span>: <span class="string">'\u00dc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// ` -&gt; 'e' acute</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e4'</span>,  <span class="comment">// { -&gt; 'a' umlaut</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f6'</span>,  <span class="comment">// | -&gt; 'o' umlaut</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
+  }
+});
+
+<span class="comment">/**
+ * French character map.
+ * http://vt100.net/docs/vt220-rm/table2-8.html
+ */</span>
+exports.maps[<span class="string">'R'</span>] = char_map({
+  name: <span class="string">'french'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
+
+    <span class="string">'\x40'</span>: <span class="string">'\u00e0'</span>,  <span class="comment">// @ -&gt; 'a' grave</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00b0'</span>,  <span class="comment">// [ -&gt; ring</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// \ -&gt; 'c' cedilla</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00a7'</span>,  <span class="comment">// ] -&gt; section symbol (double s)</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// { -&gt; 'e' acute</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f9'</span>,  <span class="comment">// | -&gt; 'u' grave</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00a8'</span>,  <span class="comment">// ~ -&gt; umlaut</span>
+  }
+});
+
+<span class="comment">/**
+ * French Canadian character map.
+ * http://vt100.net/docs/vt220-rm/table2-9.html
+ */</span>
+exports.maps[<span class="string">'Q'</span>] = char_map({
+  name: <span class="string">'french canadian'</span>, 
+  glnap: {
+    <span class="string">'\x40'</span>: <span class="string">'\u00e0'</span>,  <span class="comment">// @ -&gt; 'a' grave</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00e2'</span>,  <span class="comment">// [ -&gt; 'a' circumflex</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// \ -&gt; 'c' cedilla</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00ea'</span>,  <span class="comment">// ] -&gt; 'e' circumflex</span>
+    <span class="string">'\x5e'</span>: <span class="string">'\u00ee'</span>,  <span class="comment">// ^ -&gt; 'i' circumflex</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00f4'</span>,  <span class="comment">// ` -&gt; 'o' circumflex</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// { -&gt; 'e' acute</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f9'</span>,  <span class="comment">// | -&gt; 'u' grave</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00fb'</span>,  <span class="comment">// ~ -&gt; 'u' circumflex</span>
+  }
+});
+
+<span class="comment">/**
+ * German character map.
+ * http://vt100.net/docs/vt220-rm/table2-10.html
+ */</span>
+exports.maps[<span class="string">'K'</span>] = char_map({
+  name: <span class="string">'german'</span>, 
+  glmap: {
+    <span class="string">'\x40'</span>: <span class="string">'\u00a7'</span>,  <span class="comment">// @ -&gt; section symbol (double s)</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00c4'</span>,  <span class="comment">// [ -&gt; 'A' umlaut</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00d6'</span>,  <span class="comment">// \ -&gt; 'O' umlaut</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00dc'</span>,  <span class="comment">// ] -&gt; 'U' umlaut</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e4'</span>,  <span class="comment">// { -&gt; 'a' umlaut</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f6'</span>,  <span class="comment">// | -&gt; 'o' umlaut</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// } -&gt; 'u' umlaut</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00df'</span>,  <span class="comment">// ~ -&gt; eszett</span>
+  }
+});
+
+<span class="comment">/**
+ * Italian character map.
+ * http://vt100.net/docs/vt220-rm/table2-11.html
+ */</span>
+exports.maps[<span class="string">'Y'</span>] = char_map({
+  name: <span class="string">'italian'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
+
+    <span class="string">'\x40'</span>: <span class="string">'\u00a7'</span>,  <span class="comment">// @ -&gt; section symbol (double s)</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00b0'</span>,  <span class="comment">// [ -&gt; ring</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// \ -&gt; 'c' cedilla</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// ] -&gt; 'e' acute</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00f9'</span>,  <span class="comment">// ` -&gt; 'u' grave</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e0'</span>,  <span class="comment">// { -&gt; 'a' grave</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f2'</span>,  <span class="comment">// | -&gt; 'o' grave</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00ec'</span>,  <span class="comment">// ~ -&gt; 'i' grave</span>
+  }
+});
+
+<span class="comment">/**
+ * Norwegian/Danish character map.
+ * http://vt100.net/docs/vt220-rm/table2-12.html
+ */</span>
+exports.maps[<span class="string">'E'</span>] =
+exports.maps[<span class="string">'6'</span>] = char_map({
+  name: <span class="string">'norwegian/danish'</span>, 
+  glmap: {
+    <span class="string">'\x40'</span>: <span class="string">'\u00c4'</span>,  <span class="comment">// @ -&gt; 'A' umlaut</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00c6'</span>,  <span class="comment">// [ -&gt; 'AE' ligature</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00d8'</span>,  <span class="comment">// \ -&gt; 'O' stroke</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00c5'</span>,  <span class="comment">// ] -&gt; 'A' ring</span>
+    <span class="string">'\x5e'</span>: <span class="string">'\u00dc'</span>,  <span class="comment">// ^ -&gt; 'U' umlaut</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00e4'</span>,  <span class="comment">// ` -&gt; 'a' umlaut</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e6'</span>,  <span class="comment">// { -&gt; 'ae' ligature</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f8'</span>,  <span class="comment">// | -&gt; 'o' stroke</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
+  }
+});
+
+<span class="comment">/**
+ * Spanish character map.
+ * http://vt100.net/docs/vt220-rm/table2-13.html
+ */</span>
+exports.maps[<span class="string">'Z'</span>] = char_map({
+  name: <span class="string">'spanish'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
+
+    <span class="string">'\x40'</span>: <span class="string">'\u00a7'</span>,  <span class="comment">// @ -&gt; section symbol (double s)</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00a1'</span>,  <span class="comment">// [ -&gt; '!' inverted</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00d1'</span>,  <span class="comment">// \ -&gt; 'N' tilde</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00bf'</span>,  <span class="comment">// ] -&gt; '?' inverted</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00b0'</span>,  <span class="comment">// { -&gt; ring</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f1'</span>,  <span class="comment">// | -&gt; 'n' tilde</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// } -&gt; 'c' cedilla</span>
+  }
+});
+
+<span class="comment">/**
+ * Swedish character map.
+ * http://vt100.net/docs/vt220-rm/table2-14.html
+ */</span>
+exports.maps[<span class="string">'7'</span>] =
+exports.maps[<span class="string">'H'</span>] = char_map({
+  name: <span class="string">'swedish'</span>, 
+  glmap: {
+    <span class="string">'\x40'</span>: <span class="string">'\u00c9'</span>,  <span class="comment">// @ -&gt; 'E' acute</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00c4'</span>,  <span class="comment">// [ -&gt; 'A' umlaut</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00d6'</span>,  <span class="comment">// \ -&gt; 'O' umlaut</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00c5'</span>,  <span class="comment">// ] -&gt; 'A' ring</span>
+    <span class="string">'\x5e'</span>: <span class="string">'\u00dc'</span>,  <span class="comment">// ^ -&gt; 'U' umlaut</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// ` -&gt; 'e' acute</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e4'</span>,  <span class="comment">// { -&gt; 'a' umlaut</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f6'</span>,  <span class="comment">// | -&gt; 'o' umlaut</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
+  }
+});
+
+<span class="comment">/**
+ * Swiss character map.
+ * http://vt100.net/docs/vt220-rm/table2-15.html
+ */</span>
+exports.maps[<span class="string">'='</span>] = char_map({
+  name: <span class="string">'swiss'</span>, 
+  glmap: {
+    <span class="string">'\x23'</span>: <span class="string">'\u00f9'</span>,  <span class="comment">// # -&gt; 'u' grave</span>
+
+    <span class="string">'\x40'</span>: <span class="string">'\u00e0'</span>,  <span class="comment">// @ -&gt; 'a' grave</span>
+
+    <span class="string">'\x5b'</span>: <span class="string">'\u00e9'</span>,  <span class="comment">// [ -&gt; 'e' acute</span>
+    <span class="string">'\x5c'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// \ -&gt; 'c' cedilla</span>
+    <span class="string">'\x5d'</span>: <span class="string">'\u00ea'</span>,  <span class="comment">// ] -&gt; 'e' circumflex</span>
+    <span class="string">'\x5e'</span>: <span class="string">'\u00ee'</span>,  <span class="comment">// ^ -&gt; 'i' circumflex</span>
+    <span class="string">'\x5f'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// _ -&gt; 'e' grave</span>
+
+    <span class="string">'\x60'</span>: <span class="string">'\u00f4'</span>,  <span class="comment">// ` -&gt; 'o' circumflex</span>
+
+    <span class="string">'\x7b'</span>: <span class="string">'\u00e4'</span>,  <span class="comment">// { -&gt; 'a' umlaut</span>
+    <span class="string">'\x7c'</span>: <span class="string">'\u00f6'</span>,  <span class="comment">// | -&gt; 'o' umlaut</span>
+    <span class="string">'\x7d'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// } -&gt; 'u' umlaut</span>
+    <span class="string">'\x7e'</span>: <span class="string">'\u00fb'</span>,  <span class="comment">// ~ -&gt; 'u' circumflex</span>
+  }
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

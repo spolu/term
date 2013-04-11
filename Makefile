@@ -1,9 +1,9 @@
 clean:
 	rm -rf node_modules docs
 docs:
-	docco *.js lib/*.js vt/*.js && sweeten-docco
+	docco lib/*.js lib/vt/*.js
 
 install: clean docs
 	npm install
 
-.PHONY: clean install
+.PHONY: clean install docs
