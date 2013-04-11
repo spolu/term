@@ -1,0 +1,21 @@
+{
+  "name": "mt",
+  "version": "0.1.0",
+  "description": "Cross-Platform Modern Terminal Emulator",
+  "author": "Stanislas Polu <polu.stanislas@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spolu/mt"
+  },
+  "dependencies": {
+    "fwk": "1.1.x",
+    "pty.js": "0.2.x"
+  },
+  "window": {
+    "width": 600,
+    "height": 400,
+    "title": "ntty",
+    "toolbar": false
+  },
+  "main": "app/index.html"
+}
