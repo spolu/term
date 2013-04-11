@@ -19,18 +19,13 @@
           <div id="jump_page">
             
               
-              <a class="source" href="common.html">
-                common.js
+              <a class="source" href="session.html">
+                session.js
               </a>
             
               
-              <a class="source" href="factory.html">
-                factory.js
-              </a>
-            
-              
-              <a class="source" href="utf8.html">
-                utf8.js
+              <a class="source" href="term.html">
+                term.js
               </a>
             
               
@@ -72,9 +67,15 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="comment">/**
- * char_map.js
+ * mt: char_map.js
+ *
+ * Copyright (c) 2013, Stanislas Polu. All rights reserved.
+ * (see LICENSE file)
+ *
+ * @log
+ * - 20130410 spolu    fork from hterm
  */</span>
-<span class="keyword">var</span> fwk = require(<span class="string">'fwk'</span>);
+<span class="keyword">var</span> common = require(<span class="string">'common'</span>);
 <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
 
 <span class="string">'use strict'</span>;</pre></div></div>
@@ -88,21 +89,9 @@
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2>CHAR_MAP</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>@class Character map object.</p>
-<p>@param spec { name, glmap }</p>
+              <h2>char_map</h2>
+<p>Character map object.</p>
+<pre><code>@spec {object} { name, glmap }</code></pre>
 
             </div>
             
@@ -113,13 +102,13 @@
         </li>
         
         
-        <li id="section-4">
+        <li id="section-3">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <h4>Private members</h4>
+              <h4><em>private members</em></h4>
 
             </div>
             
@@ -128,13 +117,13 @@
         </li>
         
         
-        <li id="section-5">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <h4>Public methods</h4>
+              <h4><em>public methods</em></h4>
 
             </div>
             
@@ -147,11 +136,11 @@
         </li>
         
         
-        <li id="section-6">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <h4>reset</h4>
 <p>Resets a character map with the provided GL mapping. (The GR
@@ -163,25 +152,13 @@ mapping will be automatically created </p>
     my.glmap = glmap;
 
     <span class="keyword">var</span> glkeys = Object.keys(my.glmap).map(<span class="keyword">function</span>(key) {
-      <span class="keyword">return</span> <span class="string">'\\x'</span> + fwk.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>));
+      <span class="keyword">return</span> <span class="string">'\\x'</span> + common.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>));
     });
-    <span class="keyword">var</span> glre = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + glkeys.join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>Compute the GR mapping.
-This is the same as GL except all keys have their MSB set.</p>
+    <span class="keyword">var</span> glre = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + glkeys.join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>);
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    ny.grmap = {};
+    <span class="comment">/* Compute the GR mapping.                                    */</span>
+    <span class="comment">/* This is the same as GL except all keys have their MSB set. */</span>
+    ny.grmap = {};
 
     glkeys.forEach(<span class="keyword">function</span>(glkey) {
       <span class="keyword">var</span> grkey = String.fromCharCode(glkey.charCodeAt(<span class="number">0</span>) &amp; <span class="number">0x80</span>);
@@ -189,7 +166,7 @@ This is the same as GL except all keys have their MSB set.</p>
     });
 
     <span class="keyword">var</span> grkeys = Object.keys(my.grmap).map(<span class="keyword">function</span>(key) {
-      <span class="keyword">return</span> <span class="string">'\\x'</span> + fwk.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>), <span class="number">2</span>);
+      <span class="keyword">return</span> <span class="string">'\\x'</span> + common.zpad(key.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>), <span class="number">2</span>);
     });
 
     <span class="keyword">var</span> grre = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + grkeys.join(<span class="string">''</span>) + <span class="string">']'</span>, <span class="string">'g'</span>);
@@ -198,14 +175,54 @@ This is the same as GL except all keys have their MSB set.</p>
       <span class="keyword">return</span> str.replace(glre,
                          <span class="keyword">function</span>(ch) { <span class="keyword">return</span> my.glmap[ch] });
     };
-    fwk.method(that, <span class="string">'GL'</span>, GL, _super);
+    common.method(that, <span class="string">'GL'</span>, GL, _super);
 
     <span class="keyword">var</span> GR = <span class="keyword">function</span>(str) {
       <span class="keyword">return</span> str.replace(grre,
                          <span class="keyword">function</span>(ch) { <span class="keyword">return</span> my.grmap[ch] });
     };
-    fwk.method(that, <span class="string">'GR'</span>, GR, _super);
+    common.method(that, <span class="string">'GR'</span>, GR, _super);
   };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h4><em>initialization</em></h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">if</span>(spec.glmap)
+    reset(glmap);
+
+  common.method(that, <span class="string">'reset'</span>, reset, _super);
+
+  <span class="keyword">return</span> that;
+};
+
+exports.char_map = char_map;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h2>maps</h2>
+<p>Mapping from received to display character, used depending on the active
+VT character set.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps = {};</pre></div></div>
             
         </li>
         
@@ -216,32 +233,12 @@ This is the same as GL except all keys have their MSB set.</p>
               <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <h3>Initialization</h3>
+              <h3>VT100 Graphic character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-4.html">http://vt100.net/docs/vt220-rm/table2-4.html</a></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">if</span>(spec.glmap)
-    reset(glmap);
-
-  fwk.method(that, <span class="string">'reset'</span>, reset, _super);
-
-  <span class="keyword">return</span> that;
-};
-
-exports.char_map = char_map;
-
-
-<span class="comment">/**
- * Mapping from received to display character, used depending on the active
- * VT character set.
- */</span>
-exports.maps = {};
-
-<span class="comment">/**
- * VT100 Graphic character map.
- * http://vt100.net/docs/vt220-rm/table2-4.html
- */</span>
-exports.maps[<span class="string">'0'</span>] = char_map({
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'0'</span>] = char_map({
   name: <span class="string">'graphic'</span>, 
   glmap: {
     <span class="string">'\x60'</span>:<span class="string">'\u25c6'</span>,  <span class="comment">// ` -&gt; diamond</span>
@@ -276,32 +273,62 @@ exports.maps[<span class="string">'0'</span>] = char_map({
     <span class="string">'\x7d'</span>:<span class="string">'\u00a3'</span>,  <span class="comment">// } -&gt; british-pound</span>
     <span class="string">'\x7e'</span>:<span class="string">'\u00b7'</span>,  <span class="comment">// ~ -&gt; dot</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h3>British character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-5.html">http://vt100.net/docs/vt220-rm/table2-5.html</a></p>
 
-<span class="comment">/**
- * British character map.
- * http://vt100.net/docs/vt220-rm/table2-5.html
- */</span>
-exports.maps[<span class="string">'A'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'A'</span>] = char_map({
   name: <span class="string">'british'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h3>US ASCII map, no changes.</h3>
 
-<span class="comment">/**
- * US ASCII map, no changes.
- */</span>
-exports.maps[<span class="string">'B'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'B'</span>] = char_map({
   name: <span class="string">'us'</span>, 
   glmap: <span class="literal">null</span>
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h3>Dutch character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-6.html">http://vt100.net/docs/vt220-rm/table2-6.html</a></p>
 
-<span class="comment">/**
- * Dutch character map.
- * http://vt100.net/docs/vt220-rm/table2-6.html
- */</span>
-exports.maps[<span class="string">'4'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'4'</span>] = char_map({
   name: <span class="string">'dutch'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
@@ -317,13 +344,23 @@ exports.maps[<span class="string">'4'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00bc'</span>,  <span class="comment">// } -&gt; 1/4</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00b4'</span>,  <span class="comment">// ~ -&gt; acute</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h3>Finnish character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-7.html">http://vt100.net/docs/vt220-rm/table2-7.html</a></p>
 
-<span class="comment">/**
- * Finnish character map.
- * http://vt100.net/docs/vt220-rm/table2-7.html
- */</span>
-exports.maps[<span class="string">'C'</span>] =
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'C'</span>] =
   exports.maps[<span class="string">'5'</span>] = char_map({
   name: <span class="string">'finnish'</span>, 
   glmap: {
@@ -339,13 +376,23 @@ exports.maps[<span class="string">'C'</span>] =
     <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h3>French character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-8.html">http://vt100.net/docs/vt220-rm/table2-8.html</a></p>
 
-<span class="comment">/**
- * French character map.
- * http://vt100.net/docs/vt220-rm/table2-8.html
- */</span>
-exports.maps[<span class="string">'R'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'R'</span>] = char_map({
   name: <span class="string">'french'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
@@ -361,13 +408,23 @@ exports.maps[<span class="string">'R'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00a8'</span>,  <span class="comment">// ~ -&gt; umlaut</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h3>French Canadian character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-9.html">http://vt100.net/docs/vt220-rm/table2-9.html</a></p>
 
-<span class="comment">/**
- * French Canadian character map.
- * http://vt100.net/docs/vt220-rm/table2-9.html
- */</span>
-exports.maps[<span class="string">'Q'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'Q'</span>] = char_map({
   name: <span class="string">'french canadian'</span>, 
   glnap: {
     <span class="string">'\x40'</span>: <span class="string">'\u00e0'</span>,  <span class="comment">// @ -&gt; 'a' grave</span>
@@ -384,13 +441,23 @@ exports.maps[<span class="string">'Q'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00fb'</span>,  <span class="comment">// ~ -&gt; 'u' circumflex</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h3>German character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-10.html">http://vt100.net/docs/vt220-rm/table2-10.html</a></p>
 
-<span class="comment">/**
- * German character map.
- * http://vt100.net/docs/vt220-rm/table2-10.html
- */</span>
-exports.maps[<span class="string">'K'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'K'</span>] = char_map({
   name: <span class="string">'german'</span>, 
   glmap: {
     <span class="string">'\x40'</span>: <span class="string">'\u00a7'</span>,  <span class="comment">// @ -&gt; section symbol (double s)</span>
@@ -404,13 +471,23 @@ exports.maps[<span class="string">'K'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// } -&gt; 'u' umlaut</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00df'</span>,  <span class="comment">// ~ -&gt; eszett</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h3>Italian character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-11.html">http://vt100.net/docs/vt220-rm/table2-11.html</a></p>
 
-<span class="comment">/**
- * Italian character map.
- * http://vt100.net/docs/vt220-rm/table2-11.html
- */</span>
-exports.maps[<span class="string">'Y'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'Y'</span>] = char_map({
   name: <span class="string">'italian'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
@@ -428,13 +505,23 @@ exports.maps[<span class="string">'Y'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00e8'</span>,  <span class="comment">// } -&gt; 'e' grave</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00ec'</span>,  <span class="comment">// ~ -&gt; 'i' grave</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <h3>Norwegian/Danish character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-12.html">http://vt100.net/docs/vt220-rm/table2-12.html</a></p>
 
-<span class="comment">/**
- * Norwegian/Danish character map.
- * http://vt100.net/docs/vt220-rm/table2-12.html
- */</span>
-exports.maps[<span class="string">'E'</span>] =
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'E'</span>] =
 exports.maps[<span class="string">'6'</span>] = char_map({
   name: <span class="string">'norwegian/danish'</span>, 
   glmap: {
@@ -452,13 +539,23 @@ exports.maps[<span class="string">'6'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h3>Spanish character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-13.html">http://vt100.net/docs/vt220-rm/table2-13.html</a></p>
 
-<span class="comment">/**
- * Spanish character map.
- * http://vt100.net/docs/vt220-rm/table2-13.html
- */</span>
-exports.maps[<span class="string">'Z'</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'Z'</span>] = char_map({
   name: <span class="string">'spanish'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00a3'</span>,  <span class="comment">// # -&gt; british-pound</span>
@@ -473,13 +570,23 @@ exports.maps[<span class="string">'Z'</span>] = char_map({
     <span class="string">'\x7c'</span>: <span class="string">'\u00f1'</span>,  <span class="comment">// | -&gt; 'n' tilde</span>
     <span class="string">'\x7d'</span>: <span class="string">'\u00e7'</span>,  <span class="comment">// } -&gt; 'c' cedilla</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h3>Swedish character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-14.html">http://vt100.net/docs/vt220-rm/table2-14.html</a></p>
 
-<span class="comment">/**
- * Swedish character map.
- * http://vt100.net/docs/vt220-rm/table2-14.html
- */</span>
-exports.maps[<span class="string">'7'</span>] =
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'7'</span>] =
 exports.maps[<span class="string">'H'</span>] = char_map({
   name: <span class="string">'swedish'</span>, 
   glmap: {
@@ -497,13 +604,23 @@ exports.maps[<span class="string">'H'</span>] = char_map({
     <span class="string">'\x7d'</span>: <span class="string">'\u00e5'</span>,  <span class="comment">// } -&gt; 'a' ring</span>
     <span class="string">'\x7e'</span>: <span class="string">'\u00fc'</span>,  <span class="comment">// ~ -&gt; 'u' umlaut</span>
   }
-});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h3>Swiss character map.</h3>
+<p><a href="http://vt100.net/docs/vt220-rm/table2-15.html">http://vt100.net/docs/vt220-rm/table2-15.html</a></p>
 
-<span class="comment">/**
- * Swiss character map.
- * http://vt100.net/docs/vt220-rm/table2-15.html
- */</span>
-exports.maps[<span class="string">'='</span>] = char_map({
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>exports.maps[<span class="string">'='</span>] = char_map({
   name: <span class="string">'swiss'</span>, 
   glmap: {
     <span class="string">'\x23'</span>: <span class="string">'\u00f9'</span>,  <span class="comment">// # -&gt; 'u' grave</span>

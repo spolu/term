@@ -19,18 +19,13 @@
           <div id="jump_page">
             
               
-              <a class="source" href="common.html">
-                common.js
+              <a class="source" href="session.html">
+                session.js
               </a>
             
               
-              <a class="source" href="factory.html">
-                factory.js
-              </a>
-            
-              
-              <a class="source" href="utf8.html">
-                utf8.js
+              <a class="source" href="term.html">
+                term.js
               </a>
             
               
@@ -71,17 +66,18 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/**
+            <div class="content"><div class='highlight'><pre><span class="comment">/*
  * mt: vt.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
  *
+ * @log
+ * - 20130410 spolu    fork from hterm
  */</span>
-<span class="keyword">var</span> fwk = require(<span class="string">'fwk'</span>);
+<span class="keyword">var</span> common = require(<span class="string">'../common.js'</span>);
 <span class="keyword">var</span> events = require(<span class="string">'events'</span>);
 <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
-<span class="keyword">var</span> factory = require(<span class="string">'../factory.js'</span>).factory;
 
 <span class="string">'use strict'</span>;</pre></div></div>
             
@@ -94,20 +90,8 @@
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2>PARSE_STATE</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>Helper class to represent the parser state</p>
+              <h2>parse_state</h2>
+<p>Helper class to represent the parser state</p>
 <pre><code>@spec {object} { def_fun }</code></pre>
 
             </div>
@@ -119,13 +103,13 @@
         </li>
         
         
-        <li id="section-4">
+        <li id="section-3">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <h4>Private members</h4>
+              <h4><em>private members</em></h4>
 
             </div>
             
@@ -138,13 +122,13 @@
         </li>
         
         
-        <li id="section-5">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <h4>Public methods</h4>
+              <h4><em>public methods</em></h4>
 
             </div>
             
@@ -157,9 +141,22 @@
   <span class="keyword">var</span> peek_buf;    <span class="comment">/* peek_buf(); */</span>
   <span class="keyword">var</span> peek;        <span class="comment">/* peek(); */</span>
   <span class="keyword">var</span> consume;     <span class="comment">/* consume(); */</span>
-  <span class="keyword">var</span> is_complete; <span class="comment">/* is_complete(); */</span>
-  
-  <span class="keyword">var</span> that = {};</pre></div></div>
+  <span class="keyword">var</span> is_complete; <span class="comment">/* is_complete(); */</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h4><em>that</em></h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> that = {};</pre></div></div>
             
         </li>
         
@@ -365,21 +362,21 @@ the end.</p>
   };
 
 
-  fwk.method(that, <span class="string">'reset_fun'</span>, reset_fun, _super);
-  fwk.method(that, <span class="string">'reset_buf'</span>, reset_buf, _super);
-  fwk.method(that, <span class="string">'reset_args'</span>, reset_args, _super);
-  fwk.method(that, <span class="string">'reset'</span>, reset, _super);
-  fwk.method(that, <span class="string">'int_arg'</span>,int_arg , _super);
-  fwk.method(that, <span class="string">'advance'</span>, advance, _super);
-  fwk.method(that, <span class="string">'peek_buf'</span>, peek_buf, _super);
-  fwk.method(that, <span class="string">'peek'</span>, peek, _super);
-  fwk.method(that, <span class="string">'consume'</span>, consume, _super);
-  fwk.method(that, <span class="string">'is_complete'</span>, is_complete, _super);
+  common.method(that, <span class="string">'reset_fun'</span>, reset_fun, _super);
+  common.method(that, <span class="string">'reset_buf'</span>, reset_buf, _super);
+  common.method(that, <span class="string">'reset_args'</span>, reset_args, _super);
+  common.method(that, <span class="string">'reset'</span>, reset, _super);
+  common.method(that, <span class="string">'int_arg'</span>,int_arg , _super);
+  common.method(that, <span class="string">'advance'</span>, advance, _super);
+  common.method(that, <span class="string">'peek_buf'</span>, peek_buf, _super);
+  common.method(that, <span class="string">'peek'</span>, peek, _super);
+  common.method(that, <span class="string">'consume'</span>, consume, _super);
+  common.method(that, <span class="string">'is_complete'</span>, is_complete, _super);
 
-  fwk.getter(that, <span class="string">'buf'</span>, my, <span class="string">'buf'</span>);
-  fwk.getter(that, <span class="string">'pos'</span>, my, <span class="string">'pos'</span>);
-  fwk.getter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
-  fwk.setter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
+  common.getter(that, <span class="string">'buf'</span>, my, <span class="string">'buf'</span>);
+  common.getter(that, <span class="string">'pos'</span>, my, <span class="string">'pos'</span>);
+  common.getter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
+  common.setter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
 
   <span class="keyword">return</span> that;
 };</pre></div></div>
@@ -393,20 +390,8 @@ the end.</p>
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <h2>CURSOR_STATE</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <p>Helper class to store and revert a cursor state used in DECSC</p>
+              <h2>cursor_state</h2>
+<p>Helper class to store and revert a cursor state used in DECSC</p>
 <pre><code>@spec {object} { vt }</code></pre>
 
             </div>
@@ -418,17 +403,33 @@ the end.</p>
         </li>
         
         
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <h4><em>private members</em></h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  my.vt = spec.vt</pre></div></div>
+            
+        </li>
+        
+        
         <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
                 <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              <h4>Private members</h4>
+              <h4><em>public methods</em></h4>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  my.vt = spec.vt</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> save;    <span class="comment">/* save(); */</span>
+  <span class="keyword">var</span> restore; <span class="comment">/* save(); */</span></pre></div></div>
             
         </li>
         
@@ -439,14 +440,11 @@ the end.</p>
               <div class="pilwrap for-h4">
                 <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
-              <h4>Public methods</h4>
+              <h4><em>that</em></h4>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> save;    <span class="comment">/* save(); */</span>
-  <span class="keyword">var</span> restore; <span class="comment">/* save(); */</span>
-  
-  <span class="keyword">var</span> that = {};</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> that = {};</pre></div></div>
             
         </li>
         
@@ -537,8 +535,8 @@ this.vt</em>.terminal.setTextAttributes(this.textAttributes.clone());</p>
             
             <div class="content"><div class='highlight'><pre>  save();
 
-  fwk.method(that, <span class="string">'save'</span>, save, _super);
-  fwk.method(that, <span class="string">'restore'</span>, restore, _super);
+  common.method(that, <span class="string">'save'</span>, save, _super);
+  common.method(that, <span class="string">'restore'</span>, restore, _super);
 
   <span class="keyword">return</span> that;
 };</pre></div></div>
@@ -552,20 +550,8 @@ this.vt</em>.terminal.setTextAttributes(this.textAttributes.clone());</p>
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <h2>VT</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-26">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
-              </div>
-              <p>Escape sequence interpreter </p>
+              <h2>vt</h2>
+<p>Escape sequence interpreter </p>
 <p>The <code>vt</code> object is in charge of parsing and interpreting the
 sequence sent to the terminal and pass them to the terminal
 to execute cursor operations.</p>
@@ -598,13 +584,13 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
-              <h4>Protected methods</h4>
+              <h4><em>protected methods</em></h4>
 
             </div>
             
@@ -613,13 +599,13 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
-              <h4>Private methods</h4>
+              <h4><em>private methods</em></h4>
 
             </div>
             
@@ -632,13 +618,13 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
-              <h4>Private members</h4>
+              <h4><em>private members</em></h4>
 
             </div>
             
@@ -653,13 +639,13 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
-              <h4>Public methods</h4>
+              <h4><em>public methods</em></h4>
 
             </div>
             
@@ -671,11 +657,11 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <h3>reset</h3>
 <p>Resets the VT to its initial default state</p>
@@ -697,11 +683,11 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <h3>read</h3>
 <pre><code>@buf The string bufffer to read</code></pre>
@@ -725,16 +711,20 @@ underlying terminal</p>
         <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Parser `fun` failed to alter state'</span>);
       }
     }
-  };</pre></div></div>
+  };
+
+  <span class="comment">/****************************************************************************/</span>
+  <span class="comment">/*                               PARSERS                                    */</span>
+  <span class="comment">/****************************************************************************/</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-33">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <h3>parse_unknown</h3>
 <p>Default parse function. Scans the string for 1-byte control character
@@ -776,11 +766,11 @@ normally to the terminal, the the control character will be dispatched.</p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <h3>parse_csi</h3>
 <p>Parse a Control Sequence Introducer code and dispatch it</p>
@@ -841,11 +831,11 @@ normally to the terminal, the the control character will be dispatched.</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <h3>parse_until_string_terminator</h3>
 <pre><code>@return {boolean} if true, parsing is complete else it exceeded</code></pre>
@@ -877,7 +867,8 @@ Bell (BEL, &#39;\x07&#39;)</p>
         abort = <span class="string">'Timeout expired: '</span> + (<span class="keyword">new</span> Date() - args[<span class="number">1</span>]);
 
       <span class="keyword">if</span>(abort) {
-        console.log(<span class="string">'`parse_until_string_terminator` aborting: '</span> + abort + <span class="string">' ['</span> + args[<span class="number">0</span>] + <span class="string">']'</span>);
+        console.log(<span class="string">'`parse_until_string_terminator` aborting: '</span> + 
+                    abort + <span class="string">' ['</span> + args[<span class="number">0</span>] + <span class="string">']'</span>);
         my.parse_state.reset(args[<span class="number">0</span>]);
         <span class="keyword">return</span> <span class="literal">false</span>;
       }
@@ -895,19 +886,24 @@ Bell (BEL, &#39;\x07&#39;)</p>
       args[<span class="number">0</span>] += buf.substr(<span class="number">0</span>, next_terminator);
       my.parse_state.reset_fun();
       my.parse_state.advance(next_terminator +
-                             (buf.substr(next_terminator, <span class="number">1</span>) === <span class="string">'\x1b'</span> ? <span class="number">2</span> : <span class="number">1</span>));
+                             (buf.substr(next_terminator, <span class="number">1</span>) === <span class="string">'\x1b'</span> ? 
+                              <span class="number">2</span> : <span class="number">1</span>));
       <span class="keyword">return</span> <span class="literal">true</span>;
     }
-  };</pre></div></div>
+  };
+
+  <span class="comment">/****************************************************************************/</span>
+  <span class="comment">/*                               DISPATCH                                   */</span>
+  <span class="comment">/****************************************************************************/</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-36">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <h3>dispatch</h3>
 <pre><code>@type {string} the escape sequence type
@@ -920,7 +916,7 @@ Bell (BEL, &#39;\x07&#39;)</p>
     <span class="keyword">var</span> handler = my[type][code];
     <span class="keyword">if</span>(!handler || handler === ignore) {
       <span class="keyword">if</span>(my.warn) {
-        console.log(<span class="string">'Unknown/Ignore '</span> + type + <span class="string">' code: '</span> + JSON.stringify(code));
+        console.log(<span class="string">'Unknown/Ignore '</span> + type + <span class="string">' code: '</span> + code);
       }
       <span class="keyword">return</span>;
     }
@@ -938,11 +934,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <h3>ignore</h3>
 <p>Ignore handler use to ignore an action and test equality</p>
@@ -951,18 +947,18 @@ Bell (BEL, &#39;\x07&#39;)</p>
             
             <div class="content"><div class='highlight'><pre>  ignore = <span class="keyword">function</span>() {};
 
-  <span class="comment">/********************************************************************************/</span>
-  <span class="comment">/*                              CONSTROL SEQUENCES                              */</span>
-  <span class="comment">/********************************************************************************/</span></pre></div></div>
+  <span class="comment">/****************************************************************************/</span>
+  <span class="comment">/*                            CONSTROL SEQUENCES                            */</span>
+  <span class="comment">/****************************************************************************/</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-38">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <h3>CC1</h3>
 <p>Collection of control chracters expressed in a single byte.</p>
@@ -974,11 +970,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>Null (NUL)</p>
 
@@ -989,11 +985,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Enquiry (ENQ)</p>
 
@@ -1004,11 +1000,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>Ring Bell (BEL)</p>
 
@@ -1021,11 +1017,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>Backspace (BS)</p>
 
@@ -1038,11 +1034,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>Horizontal Tab (HT)</p>
 
@@ -1055,11 +1051,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>Line Feed (LF)</p>
 
@@ -1072,11 +1068,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>Vertical Tab (VT)</p>
 
@@ -1087,11 +1083,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-46">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Form Feed (FF)</p>
 
@@ -1104,11 +1100,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-47">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>Carriage Return (CR)</p>
 
@@ -1121,11 +1117,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>Shift Out (SO), aka Lock Shift 1 (LS1)</p>
 
@@ -1138,11 +1134,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>Shift In (SI), aka Lock Shift 0 (LS0)</p>
 
@@ -1155,11 +1151,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>Transmit On (XON)</p>
 
@@ -1170,11 +1166,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>Transmit Off (XOFF)</p>
 
@@ -1185,11 +1181,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-52">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>Cancel (CAN)</p>
 
@@ -1203,11 +1199,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-53">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <p>Substitute (SUB)</p>
 
@@ -1218,11 +1214,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-54">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <p>Escape (ESC)</p>
 
@@ -1243,11 +1239,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <p>Delete (DEL)</p>
 
@@ -1259,11 +1255,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-56">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-55">&#182;</a>
               </div>
               <h3>CC1 Regexp</h3>
 <p>Constructed to quickly scan the known 1-byte control chars</p>
@@ -1271,18 +1267,18 @@ Bell (BEL, &#39;\x07&#39;)</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> acc = Object.keys(my.CC1).map(<span class="keyword">function</span>(e) {
-    <span class="keyword">return</span> <span class="string">'\\x'</span> + fwk.zpad(e.charCodeAt().toString(<span class="number">16</span>), <span class="number">2</span>)
+    <span class="keyword">return</span> <span class="string">'\\x'</span> + common.zpad(e.charCodeAt().toString(<span class="number">16</span>), <span class="number">2</span>)
   }).join(<span class="string">''</span>);
   my.cc1_r = <span class="keyword">new</span> RegExp(<span class="string">'['</span> + acc + <span class="string">']'</span>);</pre></div></div>
             
         </li>
         
         
-        <li id="section-57">
+        <li id="section-56">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-56">&#182;</a>
               </div>
               <h3>ESC</h3>
 <p>Collection of control two-byte and three-byte sequences 
@@ -1295,11 +1291,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-58">
+        <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-58">&#182;</a>
+                <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
               <p>Index (IND)</p>
 
@@ -1312,29 +1308,29 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-59">
+        <li id="section-58">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-59">&#182;</a>
+                <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
               <p>Next Line (NEL)</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_column'</span>, <span class="number">0</span>)
+      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
       that.emit(<span class="string">'term_cursor_down'</span>, <span class="number">1</span>);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-60">
+        <li id="section-59">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-60">&#182;</a>
+                <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
               <p>Horizontal Tabulation Set (HTS)</p>
 
@@ -1347,11 +1343,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-61">
+        <li id="section-60">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-61">&#182;</a>
+                <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
               <p>Reverse Index (RI)</p>
 
@@ -1364,11 +1360,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-62">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <p>Single Shift 2 (SS2)</p>
 
@@ -1379,11 +1375,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-63">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <p>Single Shift 3 (SS3)</p>
 
@@ -1394,11 +1390,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-64">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <p>Device Control String (DCS)</p>
 
@@ -1412,11 +1408,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-65">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <p>Start of Pretected Area (SPA)</p>
 
@@ -1427,11 +1423,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-66">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <p>End of Protected Area (EPA)</p>
 
@@ -1442,11 +1438,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-67">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <p>Start of String (SOS)</p>
 
@@ -1457,11 +1453,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-68">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <p>Single Character Introducer (SCI, also DECID)</p>
 
@@ -1472,11 +1468,11 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-69">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <p>TODO: implement this one
 this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
@@ -1488,11 +1484,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-70">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <p>Control Sequence Introducer (CSI)</p>
 
@@ -1508,11 +1504,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-71">&#182;</a>
+                <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
               <p>String Terminator (ST)</p>
 
@@ -1523,11 +1519,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-72">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
               <p>Operating System Command (OSC)</p>
 
@@ -1563,11 +1559,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-73">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-72">&#182;</a>
               </div>
               <p>Privacy Message (PM)</p>
 
@@ -1581,11 +1577,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-74">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
               <p>Application Program Control (APC)</p>
 
@@ -1599,11 +1595,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-75">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <p>xterm &#39;ESC 0x20&#39; Sequence</p>
 
@@ -1623,11 +1619,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-76">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-76">&#182;</a>
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <p>DEC &#39;ESC #&#39; Sequences</p>
 
@@ -1651,11 +1647,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-77">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-77">&#182;</a>
+                <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
               <p>&#39;ESC %&#39; Sequences</p>
 
@@ -1675,11 +1671,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-78">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-78">&#182;</a>
+                <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
               <p>Back Index (DECBI)</p>
 
@@ -1690,11 +1686,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-79">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-79">&#182;</a>
+                <a class="pilcrow" href="#section-78">&#182;</a>
               </div>
               <p>Sace Cursor (DECSC)</p>
 
@@ -1707,11 +1703,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-80">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-80">&#182;</a>
+                <a class="pilcrow" href="#section-79">&#182;</a>
               </div>
               <p>Restore Cursor (DECRC)</p>
 
@@ -1724,11 +1720,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-81">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
+                <a class="pilcrow" href="#section-80">&#182;</a>
               </div>
               <p>Application Keypad (DECPAM)</p>
 
@@ -1741,11 +1737,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-82">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-82">&#182;</a>
+                <a class="pilcrow" href="#section-81">&#182;</a>
               </div>
               <p>Normal Keypad (DECPNM)</p>
 
@@ -1758,11 +1754,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-83">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-83">&#182;</a>
+                <a class="pilcrow" href="#section-82">&#182;</a>
               </div>
               <p>Cursor to Lower Left (xterm only)</p>
 
@@ -1773,11 +1769,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-84">
+        <li id="section-83">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-84">&#182;</a>
+                <a class="pilcrow" href="#section-83">&#182;</a>
               </div>
               <p>Full Reset (RIS)</p>
 
@@ -1791,11 +1787,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-85">
+        <li id="section-84">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-84">&#182;</a>
               </div>
               <p>Memory Lock / Unlock</p>
 
@@ -1807,11 +1803,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-86">
+        <li id="section-85">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-85">&#182;</a>
               </div>
               <p>Lock Shift 2 (LS2)</p>
 
@@ -1824,11 +1820,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-87">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-86">&#182;</a>
               </div>
               <p>Lock Shift 3 (LS3)</p>
 
@@ -1841,11 +1837,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-88">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-87">&#182;</a>
               </div>
               <p>Lock Shift 3, Right (LS3R)</p>
 
@@ -1858,11 +1854,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-89">
+        <li id="section-88">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-88">&#182;</a>
               </div>
               <p>Lock Shift 2, Right (LS2R)</p>
 
@@ -1875,11 +1871,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-90">
+        <li id="section-89">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-90">&#182;</a>
+                <a class="pilcrow" href="#section-89">&#182;</a>
               </div>
               <p>Lock Shift 1, Right (LS1R)</p>
 
@@ -1893,11 +1889,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-91">
+        <li id="section-90">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-91">&#182;</a>
+                <a class="pilcrow" href="#section-90">&#182;</a>
               </div>
               <p>Character Set Selection (SCS) </p>
 
@@ -1942,11 +1938,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-92">
+        <li id="section-91">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-92">&#182;</a>
+                <a class="pilcrow" href="#section-91">&#182;</a>
               </div>
               <h3>OSC</h3>
 <p>Colleciton of OSC (Operating System Control) sequences.</p>
@@ -1958,11 +1954,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-93">
+        <li id="section-92">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-93">&#182;</a>
+                <a class="pilcrow" href="#section-92">&#182;</a>
               </div>
               <p>Change Icon Name and Window Title</p>
 
@@ -1975,11 +1971,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-94">
+        <li id="section-93">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-94">&#182;</a>
+                <a class="pilcrow" href="#section-93">&#182;</a>
               </div>
               <p>Change Window Title</p>
 
@@ -1992,11 +1988,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-95">
+        <li id="section-94">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-95">&#182;</a>
+                <a class="pilcrow" href="#section-94">&#182;</a>
               </div>
               <p>Set/Read Color Palette</p>
 
@@ -2026,11 +2022,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-96">
+        <li id="section-95">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-96">&#182;</a>
+                <a class="pilcrow" href="#section-95">&#182;</a>
               </div>
               <p>Set/Read System Clipboard</p>
 
@@ -2050,11 +2046,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-97">
+        <li id="section-96">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-97">&#182;</a>
+                <a class="pilcrow" href="#section-96">&#182;</a>
               </div>
               <h3>CSI</h3>
 <p>Collection of CSI (Control Sequence Introducer) sequences.</p>
@@ -2066,11 +2062,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-98">
+        <li id="section-97">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-98">&#182;</a>
+                <a class="pilcrow" href="#section-97">&#182;</a>
               </div>
               <p>Insert (blank) characters (ICH)</p>
 
@@ -2083,11 +2079,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-99">
+        <li id="section-98">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-99">&#182;</a>
+                <a class="pilcrow" href="#section-98">&#182;</a>
               </div>
               <p>Cursor Up (CUU)</p>
 
@@ -2095,7 +2091,24 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'A'</span>: <span class="keyword">function</span>() {
       that.emit(<span class="string">'term_cursor_up'</span>, my.parse_state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
-    }</pre></div></div>
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <p>Cursor Down (CUD)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'B'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_cursor_down'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
             
         </li>
         
@@ -2106,6 +2119,135 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-100">&#182;</a>
               </div>
+              <p>Cursor Forward (CUF)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'C'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_cursor_right'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <p>Cursor Backward (CUB)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'C'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_cursor_left'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <p>Cursor Next Line (CNL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_cursor_down'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-103">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-103">&#182;</a>
+              </div>
+              <p>Cursor Preceding Line (CPL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'F'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_cursor_up'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-104">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-104">&#182;</a>
+              </div>
+              <p>Cursor Character Absolute (CHA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'G'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_set_cursor_column'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-105">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-105">&#182;</a>
+              </div>
+              <p>Cursor Position (CUP)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'H'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'term_set_cursor_position'</span>, 
+                my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>),
+                my.parse_state.int_args(<span class="number">1</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-106">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-106">&#182;</a>
+              </div>
+              <p>Cursor Forward Tabulation (CHT)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'I'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> count = my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>);
+      <span class="comment">/*
+      count = lib.f.clamp(count, 1, this.terminal.screenSize.width);
+      for (var i = 0; i &lt; count; i++) {
+        this.terminal.forwardTabStop();
+      }
+     */</span>
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-107">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-107">&#182;</a>
+              </div>
               <p>...</p>
 
             </div>
@@ -2115,11 +2257,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-101">
+        <li id="section-108">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-101">&#182;</a>
+                <a class="pilcrow" href="#section-108">&#182;</a>
               </div>
               <h3>VT52 sequences</h3>
 <p>Collection of VT52 sequences.</p>
@@ -2131,11 +2273,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-102">
+        <li id="section-109">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-102">&#182;</a>
+                <a class="pilcrow" href="#section-109">&#182;</a>
               </div>
               <p>...</p>
 
@@ -2146,34 +2288,36 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-103">
+        <li id="section-110">
             <div class="annotation">
               
-              <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-103">&#182;</a>
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-110">&#182;</a>
               </div>
-              <h3>Initialization</h3>
+              <h4><em>initialization</em></h4>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  reset();
 
-  fwk.getter(that, <span class="string">'G0'</span>, my, <span class="string">'G0'</span>);
-  fwk.setter(that, <span class="string">'G0'</span>, my, <span class="string">'G0'</span>);
-  fwk.getter(that, <span class="string">'G1'</span>, my, <span class="string">'G1'</span>);
-  fwk.setter(that, <span class="string">'G1'</span>, my, <span class="string">'G1'</span>);
-  fwk.getter(that, <span class="string">'G2'</span>, my, <span class="string">'G2'</span>);
-  fwk.setter(that, <span class="string">'G2'</span>, my, <span class="string">'G2'</span>);
-  fwk.getter(that, <span class="string">'G3'</span>, my, <span class="string">'G3'</span>);
-  fwk.setter(that, <span class="string">'G3'</span>, my, <span class="string">'G3'</span>);
+  common.getter(that, <span class="string">'G0'</span>, my, <span class="string">'G0'</span>);
+  common.setter(that, <span class="string">'G0'</span>, my, <span class="string">'G0'</span>);
+  common.getter(that, <span class="string">'G1'</span>, my, <span class="string">'G1'</span>);
+  common.setter(that, <span class="string">'G1'</span>, my, <span class="string">'G1'</span>);
+  common.getter(that, <span class="string">'G2'</span>, my, <span class="string">'G2'</span>);
+  common.setter(that, <span class="string">'G2'</span>, my, <span class="string">'G2'</span>);
+  common.getter(that, <span class="string">'G3'</span>, my, <span class="string">'G3'</span>);
+  common.setter(that, <span class="string">'G3'</span>, my, <span class="string">'G3'</span>);
 
-  fwk.getter(that, <span class="string">'GR'</span>, my, <span class="string">'GR'</span>);
-  fwk.setter(that, <span class="string">'GR'</span>, my, <span class="string">'GR'</span>);
-  fwk.getter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
-  fwk.setter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
+  common.getter(that, <span class="string">'GR'</span>, my, <span class="string">'GR'</span>);
+  common.setter(that, <span class="string">'GR'</span>, my, <span class="string">'GR'</span>);
+  common.getter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
+  common.setter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
 
   <span class="keyword">return</span> that;
-};</pre></div></div>
+};
+
+exports.vt = vt;</pre></div></div>
             
         </li>
         

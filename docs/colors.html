@@ -19,18 +19,13 @@
           <div id="jump_page">
             
               
-              <a class="source" href="common.html">
-                common.js
+              <a class="source" href="session.html">
+                session.js
               </a>
             
               
-              <a class="source" href="factory.html">
-                factory.js
-              </a>
-            
-              
-              <a class="source" href="utf8.html">
-                utf8.js
+              <a class="source" href="term.html">
+                term.js
               </a>
             
               
@@ -72,11 +67,15 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="comment">/**
- * vt_colors.js
+ * mt: colors.js
+ *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
- * See LICENSE file for licensing information
+ * (see LICENSE file)
+ *
+ * @log
+ * - 20130410 spolu    fork from hterm
  */</span>
-<span class="keyword">var</span> fwk = require(<span class="string">'fwk'</span>);
+<span class="keyword">var</span> common = require(<span class="string">'common'</span>);
 <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
 
 <span class="string">'use strict'</span></pre></div></div>
@@ -87,10 +86,10 @@
         <li id="section-2">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h4>Colors Regular Expressions</h4>
+              <h3>Colors Regular Expressions</h3>
 <p>Used for parsing and transofrmation of color codes</p>
 
             </div>
@@ -220,13 +219,13 @@
         <li id="section-10">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <h4>rgb_to_x11</h4>
-<p>Convert a CSS rgb(ddd,ddd,ddd) color value into an X11 color value.
-@param {string} value The CSS color value to convert.
-@return {string} The X11 color value or null</p>
+              <h3>rgb_to_x11</h3>
+<pre><code>@value {string} The CSS color value to convert.
+@return {string} The X11 color value or null</code></pre>
+<p>Convert a CSS rgb(ddd,ddd,ddd) color value into an X11 color value.</p>
 
             </div>
             
@@ -249,16 +248,16 @@
         <li id="section-11">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <h4>x11_to_css</h4>
+              <h3>x11_to_css</h3>
+<pre><code>@value {string} The X11 color value to convert.
+@return {string} The CSS color value or null</code></pre>
 <p>Convert an X11 color value into an CSS rgb(...) color value.</p>
 <p>The X11 value may be an X11 color name, or an RGB value of the form
 rgb:hhhh/hhhh/hhhh.  If a component value is less than 4 digits it is
 padded out to 4, then scaled down to fit in a single byte.</p>
-<p>@param {string} value The X11 color value to convert.
-@return {string} The CSS color value or null</p>
 
             </div>
             
@@ -289,15 +288,13 @@ padded out to 4, then scaled down to fit in a single byte.</p>
         <li id="section-12">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <h4>hex_to_rgb</h4>
-<p>Converts one or more CSS &#39;#RRGGBB&#39; color values into their rgb(...)
-form.
-@param {string|Array.<string>} A single RGB value or array of RGB values to
-       convert.
-@return {string|Array.<string>} The converted value or values.</p>
+              <h3>hex_to_rgb</h3>
+<pre><code>@arg {string|array} Single RGB value or array of RGB values to convert.
+@return {string|array} The converted value or values.</code></pre>
+<p>Converts one or more CSS &#39;#RRGGBB&#39; color values into their rgb(...) form.</p>
 
             </div>
             
@@ -331,10 +328,12 @@ form.
         <li id="section-13">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <h4>array_to_rgba</h4>
+              <h3>array_to_rgba</h3>
+<pre><code>@ary {array} the array of component values
+@return {string} the rgba string value</code></pre>
 <p>Convert a 3 or 4 element array into an rgba(...) string.</p>
 
             </div>
@@ -350,13 +349,13 @@ form.
         <li id="section-14">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <h4>name_to_rgb</h4>
-<p>Convert an X11 color name into a CSS rgb(...) value.
-@param {string} name The color name to convert.
-@return {string} The corresponding CSS rgb(...) value.</p>
+              <h3>name_to_rgb</h3>
+<pre><code>@name {string} The color name to convert.
+@return {string} The corresponding CSS rgb(...) value.</code></pre>
+<p>Convert an X11 color name into a CSS rgb(...) value.</p>
 
             </div>
             
@@ -378,10 +377,10 @@ form.
         <li id="section-15">
             <div class="annotation">
               
-              <div class="pilwrap for-h4">
+              <div class="pilwrap for-h3">
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
-              <h4>stock_color_palette</h4>
+              <h3>stock_color_palette</h3>
 
             </div>
             
@@ -390,22 +389,10 @@ form.
  <span class="string">'#000000'</span>, <span class="string">'#CC0000'</span>, <span class="string">'#4E9A06'</span>, <span class="string">'#C4A000'</span>,
  <span class="string">'#3465A4'</span>, <span class="string">'#75507B'</span>, <span class="string">'#06989A'</span>, <span class="string">'#D3D7CF'</span>,
  <span class="string">'#555753'</span>, <span class="string">'#EF2929'</span>, <span class="string">'#00BA13'</span>, <span class="string">'#FCE94F'</span>,
- <span class="string">'#729FCF'</span>, <span class="string">'#F200CB'</span>, <span class="string">'#00B5BD'</span>, <span class="string">'#EEEEEC'</span>,</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-16">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
-              </div>
-              <p>The 6x6 color cubes...</p>
+ <span class="string">'#729FCF'</span>, <span class="string">'#F200CB'</span>, <span class="string">'#00B5BD'</span>, <span class="string">'#EEEEEC'</span>,
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre> <span class="string">'#000000'</span>, <span class="string">'#00005F'</span>, <span class="string">'#000087'</span>, <span class="string">'#0000AF'</span>, <span class="string">'#0000D7'</span>, <span class="string">'#0000FF'</span>,
+ <span class="comment">/* The 6x6 color cubes... */</span>
+ <span class="string">'#000000'</span>, <span class="string">'#00005F'</span>, <span class="string">'#000087'</span>, <span class="string">'#0000AF'</span>, <span class="string">'#0000D7'</span>, <span class="string">'#0000FF'</span>,
  <span class="string">'#005F00'</span>, <span class="string">'#005F5F'</span>, <span class="string">'#005F87'</span>, <span class="string">'#005FAF'</span>, <span class="string">'#005FD7'</span>, <span class="string">'#005FFF'</span>,
  <span class="string">'#008700'</span>, <span class="string">'#00875F'</span>, <span class="string">'#008787'</span>, <span class="string">'#0087AF'</span>, <span class="string">'#0087D7'</span>, <span class="string">'#0087FF'</span>,
  <span class="string">'#00AF00'</span>, <span class="string">'#00AF5F'</span>, <span class="string">'#00AF87'</span>, <span class="string">'#00AFAF'</span>, <span class="string">'#00AFD7'</span>, <span class="string">'#00AFFF'</span>,
@@ -445,22 +432,10 @@ form.
  <span class="string">'#FF8700'</span>, <span class="string">'#FF875F'</span>, <span class="string">'#FF8787'</span>, <span class="string">'#FF87AF'</span>, <span class="string">'#FF87D7'</span>, <span class="string">'#FF87FF'</span>,
  <span class="string">'#FFAF00'</span>, <span class="string">'#FFAF5F'</span>, <span class="string">'#FFAF87'</span>, <span class="string">'#FFAFAF'</span>, <span class="string">'#FFAFD7'</span>, <span class="string">'#FFAFFF'</span>,
  <span class="string">'#FFD700'</span>, <span class="string">'#FFD75F'</span>, <span class="string">'#FFD787'</span>, <span class="string">'#FFD7AF'</span>, <span class="string">'#FFD7D7'</span>, <span class="string">'#FFD7FF'</span>,
- <span class="string">'#FFFF00'</span>, <span class="string">'#FFFF5F'</span>, <span class="string">'#FFFF87'</span>, <span class="string">'#FFFFAF'</span>, <span class="string">'#FFFFD7'</span>, <span class="string">'#FFFFFF'</span>,</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <p>The greyscale ramp...</p>
+ <span class="string">'#FFFF00'</span>, <span class="string">'#FFFF5F'</span>, <span class="string">'#FFFF87'</span>, <span class="string">'#FFFFAF'</span>, <span class="string">'#FFFFD7'</span>, <span class="string">'#FFFFFF'</span>,
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre> <span class="string">'#080808'</span>, <span class="string">'#121212'</span>, <span class="string">'#1C1C1C'</span>, <span class="string">'#262626'</span>, <span class="string">'#303030'</span>, <span class="string">'#3A3A3A'</span>,
+ <span class="comment">/* The greyscale ramp... */</span>
+ <span class="string">'#080808'</span>, <span class="string">'#121212'</span>, <span class="string">'#1C1C1C'</span>, <span class="string">'#262626'</span>, <span class="string">'#303030'</span>, <span class="string">'#3A3A3A'</span>,
  <span class="string">'#444444'</span>, <span class="string">'#4E4E4E'</span>, <span class="string">'#585858'</span>, <span class="string">'#626262'</span>, <span class="string">'#6C6C6C'</span>, <span class="string">'#767676'</span>,
  <span class="string">'#808080'</span>, <span class="string">'#8A8A8A'</span>, <span class="string">'#949494'</span>, <span class="string">'#9E9E9E'</span>, <span class="string">'#A8A8A8'</span>, <span class="string">'#B2B2B2'</span>,
  <span class="string">'#BCBCBC'</span>, <span class="string">'#C6C6C6'</span>, <span class="string">'#D0D0D0'</span>, <span class="string">'#DADADA'</span>, <span class="string">'#E4E4E4'</span>, <span class="string">'#EEEEEE'</span>
@@ -469,14 +444,14 @@ form.
         </li>
         
         
-        <li id="section-18">
+        <li id="section-16">
             <div class="annotation">
               
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <p>color_palette
-The current color palette, possibly with user changes.</p>
+              <h3>color_palette</h3>
+<p>The current color palette, possibly with user changes.</p>
 
             </div>
             
@@ -485,11 +460,11 @@ The current color palette, possibly with user changes.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <h3>color_names</h3>
 <p>Named colors according to the stock X11 rgb.txt file.</p>

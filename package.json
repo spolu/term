@@ -1,7 +1,7 @@
 {
   "name": "mt",
-  "version": "0.1.0",
-  "description": "Cross-Platform Modern Terminal Emulator",
+  "version": "0.1.1",
+  "description": "Cross-Platform Modern/Modal Navigation Terminal Emulator",
   "author": "Stanislas Polu <polu.stanislas@gmail.com>",
   "repository": {
     "type": "git",
