@@ -20,9 +20,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
-=============================
-
-The `vt` subdirectory of this project is a fork of parts of Google Chrome's `hterm` Project.
-For the unmodified parts, the folowing copyright and license are applicable:
-Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
-<http://src.chromium.org/viewvc/chrome/trunk/src/LICENSE?view=markup>
