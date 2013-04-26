@@ -1,11 +1,11 @@
 {
-  "name": "mt",
+  "name": "nvt",
   "version": "0.1.1",
-  "description": "Cross-Platform Modern/Modal Navigation Terminal Emulator",
+  "description": "Cross-Platform Modern Terminal Emulator w/ Modal Navigation",
   "author": "Stanislas Polu <polu.stanislas@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spolu/mt"
+    "url": "https://github.com/spolu/nvt"
   },
   "dependencies": {
     "pty.js": "0.2.x"
@@ -13,7 +13,7 @@
   "window": {
     "width": 600,
     "height": 400,
-    "title": "ntty",
+    "title": "nvt",
     "toolbar": false
   },
   "main": "app/index.html"
