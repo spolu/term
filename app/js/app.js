@@ -15,6 +15,5 @@ angular.module('nvt.filters', []);
 angular.module('nvt.services', []);
 
 function TopCtrl($scope, _session) {
-  console.log(JSON.stringify(_session.json()));
 };
 

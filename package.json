@@ -8,11 +8,12 @@
     "url": "https://github.com/spolu/nvt"
   },
   "dependencies": {
-    "pty.js": "0.2.x"
+    "pty.js": "0.2.x",
+    "node-uuid": "1.4.x"
   },
   "window": {
-    "width": 600,
-    "height": 400,
+    "width": 800,
+    "height": 600,
     "title": "nvt",
     "toolbar": false
   },
