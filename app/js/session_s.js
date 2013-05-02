@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130502 @spolu    Refresh and resize handling
  * - 20130501 @spolu    Changed API (id based, dict)
  * - 20130430 @spolu    Creation
  */
@@ -47,33 +48,61 @@ angular.module('nvt.services').
     return Math.floor(h / row_height);
   };
 
+  var session = require('../lib/session/session.js').session({});
   var terms = {};
 
-  var session = require('../lib/session/session.js').session({});
+  //
+  // ### handle of resize
+  // Resize is handled only on row/col boundary triggering a call to the
+  // underlying session resize method
+  //
+  var cols = compute_cols($($window).width());
+  var rows = compute_rows($($window).height());
 
   $($window).resize(function() {
-    /*
-    session.resize(compute_cols($($window).width()),
-                   compute_rows($($window).height()));
-    */
+    if(cols !== compute_cols($($window).width()) ||
+       rows !== compute_rows($($window).height())) {
+      cols = compute_cols($($window).width());
+      rows = compute_rows($($window).height());
+      session.resize(null, cols, rows);
+    }
   });
 
+  //
+  // ### spawn
+  // Event triggered when a new terminal is spawned within the current session
+  //
   session.on('spawn', function(id, term) {
-    console.log('SPAWN: [' + id + ']');
     terms[id] = term;
+    console.log('SPAWN: [' + id + ']');
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     $rootScope.$broadcast('spawn', id, term);
   });
 
+  //
+  // ### refresh
+  // Event triggered when a terminal need to refresh part of his buffer
+  //
   session.on('refresh', function(id, dirty, slice) {
-    console.log('REFRESH [' + id + ']: ' + dirty);
-    $rootScope.$digest(function() {
-      terms[id].buffer.splice(dirty[0], dirty[1] - dirty[0], slice);
+    var args = [dirty[0], dirty[1] - dirty[0] + 1].concat(slice);
+    $rootScope.$apply(function() {
+      Array.prototype.splice.apply(terms[id].buffer, args);
     });
+    console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + ']');
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     $rootScope.$broadcast('refresh', id, dirty, slice);
   });
 
+  //
+  // ### title
+  // Event triggered when the title of a terminal is set
+  //
   session.on('title', function(id, title) {
-    console.log('TITLE [' + id + ']: ' + title);
+    console.log('TITLE [' + id + '] ' + title);
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer.length + ' ' + terms[id].buffer[0].length);
     terms[id].title = title;
     $rootScope.$broadcast('title', id, title);
   });
@@ -88,10 +117,9 @@ angular.module('nvt.services').
       return terms;
     },
     spawn: function() {
-      return session.spawn(compute_cols($($window).width() - 2),
-                           compute_rows($($window).height()) - 2);
+      return session.spawn(cols, rows);
     },
-    write: function(keyCode) {
+    write: function(id, keyCode) {
     },
     cols: function() {
       return compute_cols($($window).width());

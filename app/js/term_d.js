@@ -14,11 +14,19 @@
 // `term` directive controller.
 //
 angular.module('nvt.directives').
-  controller('TermCtrl', function($scope, $element, _session) {
+  controller('TermCtrl', function($scope, $element, _session, _colors) {
 
   $scope.buffer = function() {
     var buf = _session.terms($scope.id).buffer;
     return buf;
+  };
+  $scope.style = function(glyph) {
+    var style = '';
+    var bg = glyph[0] & 0x11f;
+    style += 'background-color: ' + _colors.palette[bg] + ';';
+    var fg = (glyph[0] >> 9) & 0x11f;
+    style += 'color: ' + _colors.palette[fg] + ';';
+    return style;
   };
 
 });
