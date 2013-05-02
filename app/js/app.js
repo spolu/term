@@ -5,7 +5,8 @@
  * (see LICENSE file)
  *
  * @log
- * - 20130430 spolu    Creation
+ * - 20130402 @spolu    Added `terms` in scope and initial `spawn`
+ * - 20130430 @spolu    Creation
  */
 'use strict';
 
@@ -14,6 +15,16 @@ angular.module('nvt.directives', []);
 angular.module('nvt.filters', []);
 angular.module('nvt.services', []);
 
-function TopCtrl($scope, _session) {
+function TopCtrl($scope, $window, _session) {
+  $scope.terms = function() {
+    return _session.terms();
+  };
+
+  require('nw.gui').Window.get().showDevTools();
+
+  //
+  // #### _test_
+  //
+  _session.spawn();
 };
 
