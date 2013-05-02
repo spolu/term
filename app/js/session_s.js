@@ -119,7 +119,7 @@ angular.module('nvt.services').
     spawn: function() {
       return session.spawn(cols, rows);
     },
-    write: function(id, keyCode) {
+    write: function(id, key) {
     },
     cols: function() {
       return compute_cols($($window).width());
