@@ -16,9 +16,6 @@ angular.module('nvt.filters', []);
 angular.module('nvt.services', []);
 
 function TopCtrl($scope, $window, _session) {
-  $scope.terms = function() {
-    return _session.terms();
-  };
 
   require('nw.gui').Window.get().showDevTools();
 

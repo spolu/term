@@ -10,7 +10,7 @@
 'use strict';
 
 //
-// ## TermController
+// ## TermCtrl
 // `term` directive controller.
 //
 angular.module('nvt.directives').

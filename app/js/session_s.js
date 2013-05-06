@@ -92,7 +92,9 @@ angular.module('nvt.services').
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + ']');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
-    $rootScope.$broadcast('refresh', id, dirty, slice);
+    $rootScope.$apply(function() {
+      $rootScope.$broadcast('refresh', id, dirty, slice);
+    });
   });
 
   //
@@ -104,7 +106,9 @@ angular.module('nvt.services').
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer.length + ' ' + terms[id].buffer[0].length);
     terms[id].title = title;
-    $rootScope.$broadcast('title', id, title);
+    $rootScope.$apply(function() {
+      $rootScope.$broadcast('title', id, title);
+    });
   });
 
 
@@ -119,7 +123,9 @@ angular.module('nvt.services').
     spawn: function() {
       return session.spawn(cols, rows);
     },
-    write: function(id, key) {
+    keydown: function(id, evt) {
+    },
+    keypress: function(id, evt) {
     },
     cols: function() {
       return compute_cols($($window).width());
