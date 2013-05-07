@@ -16,11 +16,14 @@
 angular.module('nvt.directives').
   controller('TermCtrl', function($scope, $element, _session, _colors) {
 
-  $scope.buffer = function() {
-    var buf = _session.terms($scope.id).buffer;
-    return buf;
-  };
-  $scope.style = function(glyph) {
+  //
+  // ### glyph_style
+  // ```
+  // glyph {array} a glyph
+  // ```
+  // Computes the CSS style of a given glyph
+  //
+  $scope.glyph_style = function(glyph) {
     var style = '';
     var bg = glyph[0] & 0x11f;
     style += 'background-color: ' + _colors.palette[bg] + ';';
@@ -28,6 +31,44 @@ angular.module('nvt.directives').
     style += 'color: ' + _colors.palette[fg] + ';';
     return style;
   };
+
+  //
+  // ### render_line
+  // ```
+  // @line {array} line of glyphs
+  // ```
+  // Renders a line of glyphs into an html string
+  //
+  $scope.render_line = function(line, number) {
+    var html = '';
+    html += '<div class="line" id="' + $scope.id + '-' + number + '">';
+    line.forEach(function(glyph) {
+      html += '<div class="glyph" style="' + $scope.glyph_style(glyph) + '">';
+      html +=   glyph[1];
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  };
+
+  //
+  // ### $on#refresh
+  //
+  $scope.$on('refresh', function(id, dirty, slice) {
+    /* TODO: refresh of lines */
+  });
+
+
+  //
+  // #### _initialization_
+  //
+  $scope.buf = _session.terms($scope.id).buffer;
+  var html = '';
+  $scope.buf.forEach(function(line) {
+    html += $scope.render_line(line);
+  });
+  $($element).html(html);
+
 
 });
 
@@ -47,7 +88,7 @@ angular.module('nvt.directives').
     scope: {
       id: '=id'
     },
-    templateUrl: 'partials/term_d.html',
+    template: '<div class="term"></div>',
     controller: 'TermCtrl'
   };
 });
