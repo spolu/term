@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130510 @spolu    Key handling support
  * - 20130502 @spolu    Refresh and resize handling
  * - 20130501 @spolu    Changed API (id based, dict)
  * - 20130430 @spolu    Creation
@@ -85,6 +86,8 @@ angular.module('nvt.services').
   // Event triggered when a terminal need to refresh part of his buffer
   //
   session.on('refresh', function(id, dirty, slice) {
+    if((dirty[1] - dirty[0] + 1) < slice.length)
+      throw new Error('dirty < slice');
     var args = [dirty[0], dirty[1] - dirty[0] + 1].concat(slice);
     $rootScope.$apply(function() {
       Array.prototype.splice.apply(terms[id].buffer, args);
@@ -120,12 +123,38 @@ angular.module('nvt.services').
       }
       return terms;
     },
+
+    //
+    // ### spawn
+    // Spawns a new term in the current session
+    //
     spawn: function() {
       return session.spawn(cols, rows);
     },
+
+    //
+    // ### keydown
+    // ```
+    // @id  {string} the id of the targeted terminal
+    // @evt {event} the keypress event
+    // ```
+    // `keydown` events are used for escape sequences
+    //
     keydown: function(id, evt) {
     },
+
+    //
+    // ### keypress
+    // ```
+    // @id  {string} the id of the targeted terminal
+    // @evt {event} the keypress event
+    // ```
+    // `keypress` events are used for normal unescaped characters
+    //
     keypress: function(id, evt) {
+      session.write(id, String.fromCharCode(evt.charCode));
+      evt.preventDefault();
+      evt.stopPropagation();
     },
     cols: function() {
       return compute_cols($($window).width());
