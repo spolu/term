@@ -17,7 +17,7 @@
 // Service in charge of exposing the underlying session object
 //
 angular.module('nvt.services').
-  factory('_session', function($rootScope, $window) {
+  factory('_session', function($rootScope, $window, $filter) {
   //
   // ### col_width
   //
@@ -75,9 +75,11 @@ angular.module('nvt.services').
   //
   session.on('spawn', function(id, term) {
     terms[id] = term;
+    /*
     console.log('SPAWN: [' + id + ']');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
+    */
     $rootScope.$broadcast('spawn', id, term);
   });
 
@@ -92,9 +94,11 @@ angular.module('nvt.services').
     $rootScope.$apply(function() {
       Array.prototype.splice.apply(terms[id].buffer, args);
     });
+    /*
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + ']');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
+    */
     $rootScope.$apply(function() {
       $rootScope.$broadcast('refresh', id, dirty, slice);
     });
@@ -105,9 +109,11 @@ angular.module('nvt.services').
   // Event triggered when the title of a terminal is set
   //
   session.on('title', function(id, title) {
+    /*
     console.log('TITLE [' + id + '] ' + title);
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer.length + ' ' + terms[id].buffer[0].length);
+    */
     terms[id].title = title;
     $rootScope.$apply(function() {
       $rootScope.$broadcast('title', id, title);
@@ -141,6 +147,9 @@ angular.module('nvt.services').
     // `keydown` events are used for escape sequences
     //
     keydown: function(id, evt) {
+      var str = $filter('keymap')(evt, session.term_mode(id));
+      if(typeof str === 'string' && str.length > 0)
+        session.write(id, str);
     },
 
     //
