@@ -1,5 +1,5 @@
 /**
- * nvt: app.js
+ * breach: app.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -10,10 +10,10 @@
  */
 'use strict';
 
-angular.module('nvt', ['nvt.directives', 'nvt.filters', 'nvt.services']);
-angular.module('nvt.directives', []);
-angular.module('nvt.filters', []);
-angular.module('nvt.services', []);
+angular.module('breach', ['breach.directives', 'breach.filters', 'breach.services']);
+angular.module('breach.directives', []);
+angular.module('breach.filters', []);
+angular.module('breach.services', []);
 
 function TopCtrl($scope, $window, _session) {
 

@@ -1,11 +1,11 @@
 {
-  "name": "nvt",
+  "name": "breach",
   "version": "0.1.1",
-  "description": "Cross-Platform Modern Terminal Emulator w/ Modal Navigation",
+  "description": "Cross-Platform Modal Navigation Terminal Emulator",
   "author": "Stanislas Polu <polu.stanislas@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spolu/nvt"
+    "url": "https://github.com/spolu/breach"
   },
   "dependencies": {
     "pty.js": "0.2.x",
@@ -14,7 +14,7 @@
   "window": {
     "width": 800,
     "height": 700,
-    "title": "nvt",
+    "title": "breach",
     "toolbar": false
   },
   "main": "app/index.html"

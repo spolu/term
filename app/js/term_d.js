@@ -1,5 +1,5 @@
 /**
- * nvt: term_d.js
+ * breach: term_d.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -14,7 +14,7 @@
 // ## TermCtrl
 // `term` directive controller.
 //
-angular.module('nvt.directives').
+angular.module('breach.directives').
   controller('TermCtrl', function($scope, $element, _session, _colors) {
 
   //
@@ -107,7 +107,7 @@ angular.module('nvt.directives').
 // The `term` directive renders a terminal buffer using `_session` data and row
 // & cols sizes specification.
 //
-angular.module('nvt.directives').
+angular.module('breach.directives').
   directive('term', function() {
   return {
     restrict: 'E',

@@ -1,5 +1,5 @@
 /**
- * nvt: stack_d.js
+ * breach: stack_d.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -13,7 +13,7 @@
 // ## StackCtrl
 // `stack` directive controller.
 //
-angular.module('nvt.directives').
+angular.module('breach.directives').
   controller('StackCtrl', function($scope, $element, _session, _colors) {
 
   $scope.stack = [];
@@ -57,7 +57,7 @@ angular.module('nvt.directives').
 // The `stack` directive renders a visible terminal buffer using `_session` or
 // a navigation menu. It also captures user input.
 //
-angular.module('nvt.directives').
+angular.module('breach.directives').
   directive('stack', function() {
   return {
     restrict: 'E',

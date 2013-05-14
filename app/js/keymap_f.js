@@ -1,5 +1,5 @@
 /**
- * nvt: keymap_f.js
+ * breach: keymap_f.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -17,7 +17,7 @@
 // @mode {number} the terminal mode
 // ```
 //
-angular.module('nvt.filters').
+angular.module('breach.filters').
   filter('keymap', function($window) {
     return function(e, mode) {
 

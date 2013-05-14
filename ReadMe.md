@@ -1,6 +1,6 @@
-## nvt
+## breach
 
-Cross-platform Mordern Terminal Emulator
+Cross-platform Modal Navigation Terminal Emulator
 
 ### Build
 

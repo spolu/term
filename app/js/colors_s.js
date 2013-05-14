@@ -1,5 +1,5 @@
 /**
- * nvt: colors.js
+ * breach: colors.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -14,7 +14,7 @@
 // ## _colors
 // Service in charge of exposing the underlying session object
 //
-angular.module('nvt.services').
+angular.module('breach.services').
   factory('_colors', function($rootScope, $window) {
 
   //

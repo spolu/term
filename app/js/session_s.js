@@ -1,5 +1,5 @@
 /**
- * nvt: session_s.js
+ * breach: session_s.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
@@ -16,7 +16,7 @@
 // ## _session
 // Service in charge of exposing the underlying session object
 //
-angular.module('nvt.services').
+angular.module('breach.services').
   factory('_session', function($rootScope, $window, $filter) {
   //
   // ### col_width
