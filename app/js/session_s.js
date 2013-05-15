@@ -46,7 +46,7 @@ angular.module('breach.services').
   // Computes the number of rows to fit in a given window height in pixel
   //
   var compute_rows = function(h) {
-    return Math.floor(h / row_height);
+    return Math.floor(h / row_height) - 5;
   };
 
   var session = require('../lib/session/session.js').session({});
@@ -95,7 +95,8 @@ angular.module('breach.services').
       Array.prototype.splice.apply(terms[id].buffer, args);
     });
     /*
-    console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + ']');
+    console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
+                                     '(' + slice.length + ')');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */

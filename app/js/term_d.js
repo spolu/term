@@ -15,21 +15,22 @@
 // `term` directive controller.
 //
 angular.module('breach.directives').
-  controller('TermCtrl', function($scope, $element, _session, _colors) {
+  controller('TermCtrl', function($scope, $element, $window, 
+                                  _session, _colors) {
 
   //
   // ### glyph_style
   // ```
   // glyph {array} a glyph
   // ```
-  // Computes the CSS style of a given glyph
+  // Computes the CSS style of a given glyph as an object
   //
   $scope.glyph_style = function(glyph) {
-    var style = '';
+    var style = {};
     var bg = glyph[0] & 0x11f;
-    style += 'background-color: ' + _colors.palette[bg] + ';';
+    style['background-color'] = _colors.palette[bg];
     var fg = (glyph[0] >> 9) & 0x11f;
-    style += 'color: ' + _colors.palette[fg] + ';';
+    style['color'] = _colors.palette[fg];
     return style;
   };
 
@@ -39,18 +40,19 @@ angular.module('breach.directives').
   // @line {array} line of glyphs
   // @lnum {number} line number
   // ```
-  // Renders a line of glyphs into an html string
+  // Renders a line of glyphs as div element
   //
   $scope.render_line = function(line, lnum) {
-    var html = '';
-    html += '<div class="line" id="' + $scope.id + '-' + lnum + '">';
+    var el = $(document.createElement('div'))
+                .addClass('line')
+                .attr('id', $scope.id + '-' + lnum);
     line.forEach(function(glyph) {
-      html += '<div class="glyph" style="' + $scope.glyph_style(glyph) + '">';
-      html +=   glyph[1];
-      html += '</div>';
+      el.append($(document.createElement('div'))
+                  .addClass('glyph')
+                  .css($scope.glyph_style(glyph))
+                  .html(glyph[1]));
     });
-    html += '</div>';
-    return html;
+    return el.get();
   };
 
   //
@@ -66,36 +68,53 @@ angular.module('breach.directives').
   $scope.$on('refresh', function(evt, id, dirty, slice) {
     if($scope.id === id) {
       for(var i = dirty[0]; i < dirty[1] + 1; i++) {
-        if($($element).find('#' + $scope.id + '-' + i).length === 0) {
+        var el = $($element).find('#' + $scope.id + '-' + i);
+        if(el.length === 0) {
           if(slice[i - dirty[0]]) {
-            var html = $scope.render_line(slice[i - dirty[0]], i);
-            $($element).append(html);
+            /* df.appendChild($scope.render_line(slice[i - dirty[0]], i)[0]); */
+            $($element).append($scope.render_line(slice[i - dirty[0]], i));
           }
         }
         else {
           if(slice[i - dirty[0]]) {
-            var html = $scope.render_line(slice[i - dirty[0]], i);
-            $($element).find('#' + $scope.id + '-' + i).html(html);
+            var n = $scope.render_line(slice[i - dirty[0]], i);
+            el.replaceWith(n);
+            $(n).css({ 'font-style': 'bold' });
           }
           else {
-            $($element).find('#' + $scope.id + '-' + i).remove();
+            el.remove();
           }
         }
       }
     }
   });
 
+  //
+  // ### refresh_height
+  // Sets the height of the term div according to the window height
+  //
+  $scope.refresh_height = function() {
+    $($element).height($($window).height());
+  };
+
+  //
+  // ### $window#resize
+  //
+  $($window).resize(function() {
+    $scope.refresh_height();
+  });
+
 
   //
   // #### _initialization_
   //
+  $scope.refresh_height();
   $scope.buf = _session.terms($scope.id).buffer;
-  var html = '';
+  var df = document.createDocumentFragment();
   for(var i = 0; i < $scope.buf.length; i ++) {
-    html += $scope.render_line($scope.buf[i], i);
+    df.appendChild($scope.render_line($scope.buf[i], i)[0]);
   }
-  $($element).html(html);
-
+  $($element).append(df);
 
 });
 
