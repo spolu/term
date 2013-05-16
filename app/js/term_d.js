@@ -68,11 +68,11 @@ angular.module('breach.directives').
   $scope.$on('refresh', function(evt, id, dirty, slice) {
     if($scope.id === id) {
       for(var i = dirty[0]; i < dirty[1] + 1; i++) {
-        var el = $($element).find('#' + $scope.id + '-' + i);
+        var el = $scope.container.find('#' + $scope.id + '-' + i);
         if(el.length === 0) {
           if(slice[i - dirty[0]]) {
             /* df.appendChild($scope.render_line(slice[i - dirty[0]], i)[0]); */
-            $($element).append($scope.render_line(slice[i - dirty[0]], i));
+            $scope.container.append($scope.render_line(slice[i - dirty[0]], i));
           }
         }
         else {
@@ -108,13 +108,18 @@ angular.module('breach.directives').
   //
   // #### _initialization_
   //
+  $scope.container = $(document.createElement('div'))
+                        .addClass('container');
+  $($element).append($scope.container);
+
   $scope.refresh_height();
+
   $scope.buf = _session.terms($scope.id).buffer;
   var df = document.createDocumentFragment();
   for(var i = 0; i < $scope.buf.length; i ++) {
     df.appendChild($scope.render_line($scope.buf[i], i)[0]);
   }
-  $($element).append(df);
+  $scope.container.append(df);
 
 });
 

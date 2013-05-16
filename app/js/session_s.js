@@ -46,7 +46,7 @@ angular.module('breach.services').
   // Computes the number of rows to fit in a given window height in pixel
   //
   var compute_rows = function(h) {
-    return Math.floor(h / row_height) - 5;
+    return Math.floor(h / row_height) - 2;
   };
 
   var session = require('../lib/session/session.js').session({});
