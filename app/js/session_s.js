@@ -21,7 +21,7 @@ angular.module('breach.services').
   //
   // ### col_width
   //
-  var col_width = 6;
+  var col_width = 7;
   //
   // ### row_height
   //

@@ -11,6 +11,7 @@
   display: block;
   position: relative;
   background-color: hsl(0,0%,0%);
+  color: white;
 }
 
 .term > .container .line {

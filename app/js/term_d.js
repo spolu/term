@@ -62,13 +62,28 @@ angular.module('breach.directives').
     var el = document.createElement('div');
     el.className = 'line';
     el.id = $scope.id + '-' + lnum;
+
+    var html = '';
     line.forEach(function(glyph) {
-      var g = document.createElement('div');
-      g.className = 'glyph';
-      g.style.cssText = $scope.glyph_style(glyph);
-      g.innerHTML = glyph[1];
-      el.appendChild(g);
+      switch(glyph[1]) {
+        case '&': {
+          html += '&amp;';
+          break;
+        }
+        case '<': {
+          html += '&lt;';
+          break;
+        }
+        case '>': {
+          html += '&gt;';
+          break;
+        }
+        default: {
+          html += glyph[1] <= ' ' ? '&nbsp;' : glyph[1];
+        }
+      }
     });
+    el.innerHTML = html;
     return el;
   };
 
