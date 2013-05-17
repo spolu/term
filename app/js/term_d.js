@@ -42,11 +42,14 @@ angular.module('breach.directives').
   // Computes the CSS style of a given glyph as an object
   //
   $scope.glyph_style = function(glyph) {
-    var style = '';
+    var style = null;
     var bg = glyph[0] & 0x11f;
-    style += 'background-color: ' + _colors.palette[bg] + ';';
     var fg = (glyph[0] >> 9) & 0x11f;
-    style += 'color: ' + _colors.palette[fg] + ';';
+    if(fg !== 257 || bg !== 256) {
+      style = '';
+      style += 'background-color: ' + _colors.palette[bg] + ';';
+      style += 'color: ' + _colors.palette[fg] + ';';
+    }
     return style;
   };
 
@@ -65,6 +68,10 @@ angular.module('breach.directives').
 
     var html = '';
     line.forEach(function(glyph) {
+      var style = $scope.glyph_style(glyph);
+      if(style) {
+        html += '<span style="' + style + '">';
+      }
       switch(glyph[1]) {
         case '&': {
           html += '&amp;';
@@ -81,6 +88,9 @@ angular.module('breach.directives').
         default: {
           html += glyph[1] <= ' ' ? '&nbsp;' : glyph[1];
         }
+      }
+      if(style) {
+        html += '</span>';
       }
     });
     el.innerHTML = html;
