@@ -94,9 +94,9 @@ angular.module('breach.services').
     $rootScope.$apply(function() {
       Array.prototype.splice.apply(terms[id].buffer, args);
     });
-    /*
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
                                      '(' + slice.length + ')');
+    /*
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */
