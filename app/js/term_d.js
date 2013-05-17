@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130517 @spolu    Added basic scrolling and snapping
  * - 20130508 @spolu    Faster rendering using pure HTML
  * - 20130502 @spolu    Creation
  */
@@ -17,6 +18,18 @@
 angular.module('breach.directives').
   controller('TermCtrl', function($scope, $element, $window, 
                                   _session, _colors) {
+
+  //
+  // ### snap
+  // Snaps the term to the bottom of the container. (used when a new line is
+  // added a the bottom of the buffer.
+  //
+  $scope.snap = function() {
+    $scope.container.css({
+      top: -($scope.container.height() - $($element).height()) + 'px'
+    });
+  };
+
 
   //
   // ### glyph_style
@@ -67,12 +80,14 @@ angular.module('breach.directives').
   //
   $scope.$on('refresh', function(evt, id, dirty, slice) {
     if($scope.id === id) {
+      var snap = false;
       for(var i = dirty[0]; i < dirty[1] + 1; i++) {
         var el = $scope.container.find('#' + $scope.id + '-' + i);
         if(el.length === 0) {
           if(slice[i - dirty[0]]) {
             /* df.appendChild($scope.render_line(slice[i - dirty[0]], i)[0]); */
             $scope.container.append($scope.render_line(slice[i - dirty[0]], i));
+            snap = true;
           }
         }
         else {
@@ -85,6 +100,9 @@ angular.module('breach.directives').
             el.remove();
           }
         }
+      }
+      if(snap) {
+        $scope.snap();
       }
     }
   });

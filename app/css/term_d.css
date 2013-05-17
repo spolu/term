@@ -5,10 +5,12 @@
   margin-left: auto;
   margin-right: auto;
   overflow: none;
+  background-color: hsl(0,0%,0%);
 }
 
 .term > .container {
   display: block;
+  position: relative;
 }
 
 .term > .container .line {

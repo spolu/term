@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130515 @spolu    Fixed `mode` not accessible from utility functions
  * - 20130515 @spolu    Refactor to construct keympa once + bugfixes BKSP #2
  * - 20130512 @spolu    Map utility functions & implementation
  * - 20130510 @spolu    Creation
@@ -55,9 +56,9 @@ angular.module('breach.filters').
     // then it is called with the proper arguments. Otherwise it's a string
     // and we have finished the resolution
     //
-    var resolve = function(action, e) {
+    var resolve = function(action, e, mode) {
       if(typeof action === 'function')
-        return action(e);
+        return action(e, mode);
       return action;
     };
 
@@ -70,10 +71,10 @@ angular.module('breach.filters').
     // If no modifier resolve `a`, otherwise resolve `b`
     //
     var mod = function(a, b) {
-      return function(e) {
+      return function(e, mode) {
         var action = !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) ?
           a : b;
-        return resolve(action, e);
+        return resolve(action, e, mode);
       };
     };
 
@@ -87,9 +88,9 @@ angular.module('breach.filters').
     // If not e.shiftKey a, else b.
     //
     var sh = function(a, b) {
-      return function(e) {
+      return function(e, mode) {
         var action = !e.shiftKey ? a : b
-        return resolve(action, e);
+        return resolve(action, e, mode);
       };
     };
 
@@ -103,10 +104,10 @@ angular.module('breach.filters').
     // modified then the application keypad mode is ignored
     //
     var ak = function(a, b) {
-      return function(e) {
+      return function(e, mode) {
         var action = (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
                       !(mode & TERM_MODE.APPKEYPAD)) ? a : b;
-        return resolve(action, e);
+        return resolve(action, e, mode);
       };
     };
 
@@ -120,10 +121,10 @@ angular.module('breach.filters').
     // modified then the application cursor mode is ignored
     //
     var ac = function(a, b) {
-      return function(e) {
+      return function(e, mode) {
         var action = (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
                       !(mode & TERM_MODE.APPCURSOR)) ? a : b;
-        return resolve(action, e);
+        return resolve(action, e, mode);
       };
     };
 
@@ -136,9 +137,9 @@ angular.module('breach.filters').
     // If there is no selection (browser) then `a` otherwise `b`
     //
     var sel = function(a, b) {
-      return function(e) {
+      return function(e, mode) {
         var action = $window.document.getSelection().isCollapsed ? a : b;
-        return resolve(action, e);
+        return resolve(action, e, mode);
       };
     };
 
@@ -311,8 +312,7 @@ angular.module('breach.filters').
 
       var get = function(idx) {
         var action = def[idx];
-        if(typeof action === 'function')
-          action = action(e);
+        action = resolve(action, e, mode);
         if(action === DEFAULT && idx !== 1)
           action = get(1);
         return action;
