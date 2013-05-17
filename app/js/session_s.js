@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130517 @spolu    Cursor handling and event forwarding
  * - 20130510 @spolu    Key handling support
  * - 20130502 @spolu    Refresh and resize handling
  * - 20130501 @spolu    Changed API (id based, dict)
@@ -87,21 +88,21 @@ angular.module('breach.services').
   // ### refresh
   // Event triggered when a terminal need to refresh part of his buffer
   //
-  session.on('refresh', function(id, dirty, slice) {
+  session.on('refresh', function(id, dirty, slice, cursor) {
     if((dirty[1] - dirty[0] + 1) < slice.length)
       throw new Error('dirty < slice');
+    terms[id].cursor = cursor;
     var args = [dirty[0], dirty[1] - dirty[0] + 1].concat(slice);
-    $rootScope.$apply(function() {
-      Array.prototype.splice.apply(terms[id].buffer, args);
-    });
+    Array.prototype.splice.apply(terms[id].buffer, args);
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
-                                     '(' + slice.length + ')');
+                                     '(' + slice.length + ') ' + 
+                                     '{' + cursor.x + ', ' + cursor.y + '}');
     /*
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */
     $rootScope.$apply(function() {
-      $rootScope.$broadcast('refresh', id, dirty, slice);
+      $rootScope.$broadcast('refresh', id, dirty, slice, cursor);
     });
   });
 

@@ -5,7 +5,8 @@
  * (see LICENSE file)
  *
  * @log
- * - 20130517 @spolu    Added basic scrolling and snapping
+ * - 20130517 @spolu    Cursor display
+ *                      Added basic scrolling and snapping
  * - 20130508 @spolu    Faster rendering using pure HTML
  * - 20130502 @spolu    Creation
  */
@@ -37,7 +38,9 @@ angular.module('breach.directives').
   //
   // ### glyph_style
   // ```
-  // glyph {array} a glyph
+  // @glyph {array} a glyph
+  // @x     {number} column number
+  // @y     {numver} row number
   // ```
   // Computes the CSS style of a given glyph as an object
   //
@@ -51,15 +54,8 @@ angular.module('breach.directives').
     BLINK: 32
   };
 
-  $scope.glyph_style = function(glyph) {
+  $scope.glyph_style = function(glyph, x, y) {
     var style = null;
-    var bg = glyph[0] & 0x11f;
-    var fg = (glyph[0] >> 9) & 0x11f;
-    if(fg !== 257 || bg !== 256) {
-      style = style || '';
-      style += 'background-color: ' + _colors.palette[bg] + ';';
-      style += 'color: ' + _colors.palette[fg] + ';';
-    }
     if((glyph[0] >> 18) & CHAR_ATTRS.BOLD) {
       style = style || '';
       style += 'font-weight: bold;';
@@ -72,6 +68,19 @@ angular.module('breach.directives').
       style = style || '';
       style += 'font-style: italic;';
     }
+    if(x === $scope.cursor.x && y === $scope.cursor.y) {
+      style = style || '';
+      style += 'background-color: ' + _colors.palette[257] + ';';
+      style += 'color: ' + _colors.palette[256] + ';';
+      return style;
+    }
+    var bg = glyph[0] & 0x11f;
+    var fg = (glyph[0] >> 9) & 0x11f;
+    if(fg !== 257 || bg !== 256) {
+      style = style || '';
+      style += 'background-color: ' + _colors.palette[bg] + ';';
+      style += 'color: ' + _colors.palette[fg] + ';';
+    }
     return style;
   };
 
@@ -79,18 +88,18 @@ angular.module('breach.directives').
   // ### render_line
   // ```
   // @line {array} line of glyphs
-  // @lnum {number} line number
+  // @y    {number} line number
   // ```
   // Renders a line of glyphs as div element
   //
-  $scope.render_line = function(line, lnum) {
+  $scope.render_line = function(line, y) {
     var el = document.createElement('div');
     el.className = 'line';
-    el.id = $scope.id + '-' + lnum;
 
     var html = '';
+    var x = 0;
     line.forEach(function(glyph) {
-      var style = $scope.glyph_style(glyph);
+      var style = $scope.glyph_style(glyph, x, y);
       if(style) {
         html += '<span style="' + style + '">';
       }
@@ -114,6 +123,7 @@ angular.module('breach.directives').
       if(style) {
         html += '</span>';
       }
+      x++;
     });
     el.innerHTML = html;
     return el;
@@ -122,15 +132,17 @@ angular.module('breach.directives').
   //
   // ### $on#refresh
   // ```
-  // @evt {event} the event triggering this handler
-  // @id  {string} the term id associated with this event
-  // @dirty {array} the dirty region [first_line, last_line]
-  // @slice {array} the slice of buffer to replace
+  // @evt    {event} the event triggering this handler
+  // @id     {string} the term id associated with this event
+  // @dirty  {array} the dirty region [first_line, last_line]
+  // @slice  {array} the slice of buffer to replace
+  // @cursor {object} the cursor object
   // ```
   // Handles a refresh event and refreshes the terminal if needed
   //
-  $scope.$on('refresh', function(evt, id, dirty, slice) {
+  $scope.$on('refresh', function(evt, id, dirty, slice, cursor) {
     if($scope.id === id) {
+      $scope.cursor = cursor;
       var i = dirty[0];
       for(;i < (dirty[1] + 1) && i < $scope.container.childNodes.length; i++) {
         var el = $scope.container.childNodes[i];
@@ -200,6 +212,7 @@ angular.module('breach.directives').
   $scope.refresh_height();
 
   $scope.buf = _session.terms($scope.id).buffer;
+  $scope.cursor = _session.terms($scope.id).cursor;
   var df = document.createDocumentFragment();
   for(var i = 0; i < $scope.buf.length; i ++) {
     df.appendChild($scope.render_line($scope.buf[i], i));
