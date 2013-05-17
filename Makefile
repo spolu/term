@@ -6,4 +6,7 @@ docs:
 install: clean docs
 	npm install
 
-.PHONY: clean install docs
+test:
+	jasmine-node ./test/ --forceexit
+
+.PHONY: clean install docs test

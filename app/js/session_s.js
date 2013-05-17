@@ -49,7 +49,7 @@ angular.module('breach.services').
     return Math.floor(h / row_height);
   };
 
-  var session = require('../lib/session/session.js').session({});
+  var session = require('../lib/session.js').session({});
   var terms = {};
 
   //
