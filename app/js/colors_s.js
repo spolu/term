@@ -902,7 +902,7 @@ angular.module('breach.services').
    '#BCBCBC', '#C6C6C6', '#D0D0D0', '#DADADA', '#E4E4E4', '#EEEEEE',
 
    /* Default Colors */
-   'rgba(0,0,0,0.85)', '#ffffff'
+   '#000', '#fff'
   ];
 
 

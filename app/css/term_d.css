@@ -4,19 +4,25 @@
   font-size: 1em;
   margin-left: auto;
   margin-right: auto;
+  overflow: none;
 }
 
-.term .line {
+.term > .container {
+  display: block;
+  position: relative;
+  background-color: hsl(0,0%,0%);
+}
+
+.term > .container .line {
   display: block;
   height: 14px;
+  line-height: 14px;
 }
 
-.term .line > .glyph {
+.term > .container .line > div.glyph {
   display: inline-block;
   vertical-align: top;
-  width: 8px;
+  width: 6px;
   height: 14px;
-  line-height: 14px;
-  overflow: hidden;
   margin: 0;
 }

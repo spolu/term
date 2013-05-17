@@ -4,7 +4,8 @@
 
 'use strict';
 
-lib.rtdep('lib.colors', 'lib.PreferenceManager', 'lib.resource',
+lib.rtdep('lib.colors', 'lib.PreferenceManager',
+          'hterm.msg',
           'hterm.Keyboard', 'hterm.Options', 'hterm.PreferenceManager',
           'hterm.Screen', 'hterm.ScrollPort', 'hterm.Size', 'hterm.VT');
 
@@ -167,13 +168,7 @@ hterm.Terminal.prototype.setProfile = function(profileId, opt_callback) {
     },
 
     'audible-bell-sound': function(v) {
-      var ary = v.match(/^lib-resource:(\S+)/);
-      if (ary) {
-        terminal.bellAudio_.setAttribute('src',
-                                         lib.resource.getDataUrl(ary[1]));
-      } else {
-        terminal.bellAudio_.setAttribute('src', v);
-      }
+      terminal.bellAudio_.setAttribute('src', v);
     },
 
     'background-color': function(v) {
@@ -446,6 +441,8 @@ hterm.Terminal.prototype.runCommandClass = function(commandClass, argString) {
         environment: environment,
         onExit: function(code) {
           self.io.pop();
+          self.io.println(hterm.msg('COMMAND_COMPLETE',
+                                    [self.command.commandName, code]));
           self.uninstallKeyboard();
           if (self.prefs_.get('close-on-exit'))
               window.close();
@@ -825,8 +822,6 @@ hterm.Terminal.prototype.reset = function() {
   this.alternateScreen_.textAttributes.reset();
 
   this.setCursorBlink(!!this.prefs_.get('cursor-blink'));
-
-  this.vt.reset();
 
   this.softReset();
 };
@@ -1874,10 +1869,11 @@ hterm.Terminal.prototype.setReverseVideo = function(state) {
 
 /**
  * Ring the terminal bell.
- *
- * This will not play the bell audio more than once per second.
  */
 hterm.Terminal.prototype.ringBell = function() {
+  if (this.bellAudio_.getAttribute('src'))
+    this.bellAudio_.play();
+
   this.cursorNode_.style.backgroundColor =
       this.scrollPort_.getForegroundColor();
 
@@ -1885,19 +1881,6 @@ hterm.Terminal.prototype.ringBell = function() {
   setTimeout(function() {
       self.cursorNode_.style.backgroundColor = self.prefs_.get('cursor-color');
     }, 200);
-
-  if (this.bellAudio_.getAttribute('src')) {
-    if (this.bellSquelchTimeout_)
-      return;
-
-    this.bellAudio_.play();
-
-    this.bellSequelchTimeout_ = setTimeout(function() {
-        delete this.bellSquelchTimeout_;
-      }.bind(this), 500);
-  } else {
-    delete this.bellSquelchTimeout_;
-  }
 };
 
 /**
@@ -2151,10 +2134,9 @@ hterm.Terminal.prototype.showZoomWarning_ = function(state) {
         '-webkit-user-select: none;');
   }
 
-  this.zoomWarningNode_.textContent = lib.MessageManager.replaceReferences(
-      hterm.zoomWarningMessage,
-      [parseInt(this.scrollPort_.characterSize.zoomFactor * 100)]);
-
+  this.zoomWarningNode_.textContent = hterm.msg('ZOOM_WARNING') ||
+      ('!! ' + parseInt(this.scrollPort_.characterSize.zoomFactor * 100) +
+       '% !!');
   this.zoomWarningNode_.style.fontFamily = this.prefs_.get('font-family');
 
   if (state) {
@@ -2244,7 +2226,7 @@ hterm.Terminal.prototype.paste = function() {
  */
 hterm.Terminal.prototype.copyStringToClipboard = function(str) {
   if (this.prefs_.get('enable-clipboard-notice'))
-    setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
+    setTimeout(this.showOverlay.bind(this, hterm.msg('NOTIFY_COPY'), 500), 200);
 
   var copySource = this.document_.createElement('pre');
   copySource.textContent = str;

@@ -2,8 +2,7 @@ body {
   margin: 0px;
   padding: 0px;
   height: 100%;
-  font-family: Inconsolata, Consolas, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-  font-weight: 300;
+  font-family: monospace;
   font-size: 11px;
   overflow: hidden;
 }
