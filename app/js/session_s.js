@@ -21,7 +21,7 @@ angular.module('breach.services').
   //
   // ### col_width
   //
-  var col_width = 8;
+  var col_width = 6;
   //
   // ### row_height
   //
@@ -95,7 +95,8 @@ angular.module('breach.services').
       Array.prototype.splice.apply(terms[id].buffer, args);
     });
     /*
-    console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + ']');
+    console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
+                                     '(' + slice.length + ')');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */
