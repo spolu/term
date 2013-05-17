@@ -217,7 +217,7 @@ angular.module('breach.filters').
       83:  ['sS',      DEFAULT, ctl('S'), DEFAULT, DEFAULT],
       68:  ['dD',      DEFAULT, ctl('D'), DEFAULT, DEFAULT],
       70:  ['fF',      DEFAULT, ctl('F'), DEFAULT, DEFAULT],
-      71:  ['gG',      DEFAULT, ctl('G'), DEFAULT, DEFAULT],
+      71:  ['gG',      DEFAULT, PASS,     DEFAULT, DEFAULT], /* Modal Nav. */
       72:  ['hH',      DEFAULT, ctl('H'), DEFAULT, DEFAULT],
       74:  ['jJ',      DEFAULT, ctl('J'), DEFAULT, DEFAULT],
       75:  ['kK',      DEFAULT, ctl('K'), DEFAULT, DEFAULT],
