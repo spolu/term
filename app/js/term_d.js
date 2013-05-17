@@ -41,14 +41,36 @@ angular.module('breach.directives').
   // ```
   // Computes the CSS style of a given glyph as an object
   //
+  var CHAR_ATTRS = {
+    NULL: 0,
+    REVERSE: 1,
+    UNDERLINE: 2,
+    BOLD: 4,
+    GFX: 8,
+    ITALIC: 16,
+    BLINK: 32
+  };
+
   $scope.glyph_style = function(glyph) {
     var style = null;
     var bg = glyph[0] & 0x11f;
     var fg = (glyph[0] >> 9) & 0x11f;
     if(fg !== 257 || bg !== 256) {
-      style = '';
+      style = style || '';
       style += 'background-color: ' + _colors.palette[bg] + ';';
       style += 'color: ' + _colors.palette[fg] + ';';
+    }
+    if((glyph[0] >> 18) & CHAR_ATTRS.BOLD) {
+      style = style || '';
+      style += 'font-weight: bold;';
+    }
+    if((glyph[0] >> 18) & CHAR_ATTRS.UNDERLINE) {
+      style = style || '';
+      style += 'text-decoration: underline;';
+    }
+    if((glyph[0] >> 18) & CHAR_ATTRS.ITALIC) {
+      style = style || '';
+      style += 'font-style: italic;';
     }
     return style;
   };
