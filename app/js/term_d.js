@@ -81,6 +81,11 @@ angular.module('breach.directives').
       style += 'background-color: ' + _colors.palette[bg] + ';';
       style += 'color: ' + _colors.palette[fg] + ';';
     }
+    if((glyph[0] >> 18) & CHAR_ATTRS.REVERSE) {
+      style = style || '';
+      style += 'background-color: ' + _colors.palette[fg] + ';';
+      style += 'color: ' + _colors.palette[bg] + ';';
+    }
     return style;
   };
 
