@@ -25,7 +25,7 @@ angular.module('breach.services').
   //
   // ### row_height
   //
-  var row_height = 14;
+  var row_height = 12;
 
   //
   // ### compute_cols

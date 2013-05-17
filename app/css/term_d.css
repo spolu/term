@@ -16,14 +16,7 @@
 
 .term > .container .line {
   display: block;
-  height: 14px;
-  line-height: 14px;
+  height: 12px;
+  line-height: 12px;
 }
 
-.term > .container .line > div.glyph {
-  display: inline-block;
-  vertical-align: top;
-  width: 6px;
-  height: 14px;
-  margin: 0;
-}
