@@ -25,8 +25,9 @@ angular.module('breach.directives').
   // added a the bottom of the buffer.
   //
   $scope.snap = function() {
-    $scope.container.css({
-      top: -($scope.container.height() - $($element).height()) + 'px'
+    var c = $($scope.container);
+    c.css({
+      top: -(c.height() - $($element).height()) + 'px'
     });
   };
 
@@ -39,11 +40,11 @@ angular.module('breach.directives').
   // Computes the CSS style of a given glyph as an object
   //
   $scope.glyph_style = function(glyph) {
-    var style = {};
+    var style = '';
     var bg = glyph[0] & 0x11f;
-    style['background-color'] = _colors.palette[bg];
+    style += 'background-color: ' + _colors.palette[bg] + ';';
     var fg = (glyph[0] >> 9) & 0x11f;
-    style['color'] = _colors.palette[fg];
+    style += 'color: ' + _colors.palette[fg] + ';';
     return style;
   };
 
@@ -56,16 +57,17 @@ angular.module('breach.directives').
   // Renders a line of glyphs as div element
   //
   $scope.render_line = function(line, lnum) {
-    var el = $(document.createElement('div'))
-                .addClass('line')
-                .attr('id', $scope.id + '-' + lnum);
+    var el = document.createElement('div');
+    el.className = 'line';
+    el.id = $scope.id + '-' + lnum;
     line.forEach(function(glyph) {
-      el.append($(document.createElement('div'))
-                  .addClass('glyph')
-                  .css($scope.glyph_style(glyph))
-                  .html(glyph[1]));
+      var g = document.createElement('div');
+      g.className = 'glyph';
+      g.style.cssText = $scope.glyph_style(glyph);
+      g.innerHTML = glyph[1];
+      el.appendChild(g);
     });
-    return el.get();
+    return el;
   };
 
   //
@@ -80,30 +82,28 @@ angular.module('breach.directives').
   //
   $scope.$on('refresh', function(evt, id, dirty, slice) {
     if($scope.id === id) {
-      var snap = false;
-      for(var i = dirty[0]; i < dirty[1] + 1; i++) {
-        var el = $scope.container.find('#' + $scope.id + '-' + i);
-        if(el.length === 0) {
-          if(slice[i - dirty[0]]) {
-            /* df.appendChild($scope.render_line(slice[i - dirty[0]], i)[0]); */
-            $scope.container.append($scope.render_line(slice[i - dirty[0]], i));
-            snap = true;
-          }
+      var i = dirty[0];
+      for(;i < (dirty[1] + 1) && i < $scope.container.childNodes.length; i++) {
+        var el = $scope.container.childNodes[i];
+        if(slice[i - dirty[0]]) {
+          var n = $scope.render_line(slice[i - dirty[0]], i);
+          $scope.container.replaceChild(n, el);
         }
         else {
-          if(slice[i - dirty[0]]) {
-            var n = $scope.render_line(slice[i - dirty[0]], i);
-            el.replaceWith(n);
-            $(n).css({ 'font-style': 'bold' });
-          }
-          else {
-            el.remove();
-          }
+          $scope.container.removeChild(el);
         }
       }
-      if(snap) {
-        $scope.snap();
+      var df = null;
+      for(;i < (dirty[1] + 1); i++) {
+        if(slice[i - dirty[0]]) {
+          df = df || document.createDocumentFragment();
+          df.appendChild($scope.render_line(slice[i - dirty[0]], i));
+        }
       }
+      if(df) {
+        $scope.container.appendChild(df);
+      }
+      $scope.snap();
     }
   });
 
@@ -126,8 +126,8 @@ angular.module('breach.directives').
   //
   // #### _initialization_
   //
-  $scope.container = $(document.createElement('div'))
-                        .addClass('container');
+  $scope.container = document.createElement('div');
+  $scope.container.className = 'container';
   $($element).append($scope.container);
 
   $scope.refresh_height();
@@ -135,9 +135,9 @@ angular.module('breach.directives').
   $scope.buf = _session.terms($scope.id).buffer;
   var df = document.createDocumentFragment();
   for(var i = 0; i < $scope.buf.length; i ++) {
-    df.appendChild($scope.render_line($scope.buf[i], i)[0]);
+    df.appendChild($scope.render_line($scope.buf[i], i));
   }
-  $scope.container.append(df);
+  $scope.container.appendChild(df);
 
 });
 
