@@ -26,8 +26,10 @@ angular.module('breach.directives').
   //
   $scope.snap = function() {
     var c = $($scope.container);
+    var d = c.height() - $($element).height();
+    d = d > 0 ? d : 0;
     c.css({
-      top: -(c.height() - $($element).height()) + 'px'
+      top: -d + 'px'
     });
   };
 
@@ -120,6 +122,24 @@ angular.module('breach.directives').
   //
   $($window).resize(function() {
     $scope.refresh_height();
+    $scope.snap();
+  });
+
+  //
+  // ### $element#mousewheel
+  //
+  $(document).ready(function(){
+    $($element).bind('mousewheel', function(e){
+      var c = $($scope.container);
+      var h = c.height() - $($element).height();
+      var top = c.position().top;
+      top += e.originalEvent.wheelDeltaY / 2;
+      top = top > 0 ? 0 : top;
+      top = top < -h ? -h : top;
+      c.css({
+        top: top + 'px'
+      });
+    });
   });
 
 
