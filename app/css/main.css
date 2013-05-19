@@ -1,8 +1,13 @@
+@font-face {
+  font-family: Courier;
+  src: url(Courier.ttf);
+}
+
 body {
   margin: 0px;
   padding: 0px;
   height: 100%;
-  font-family: monospace;
+  font-family: Courier;
   font-size: 11px;
   overflow: hidden;
 }
