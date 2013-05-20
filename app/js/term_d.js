@@ -5,6 +5,7 @@
  * (see LICENSE file)
  *
  * @log
+ * - 20130520 @spolu    Fix height resize causes the cursor to disappear #14
  * - 20130517 @spolu    Cursor display
  *                      Added basic scrolling and snapping
  * - 20130508 @spolu    Faster rendering using pure HTML
@@ -148,19 +149,18 @@ angular.module('breach.directives').
   $scope.$on('refresh', function(evt, id, dirty, slice, cursor) {
     if($scope.id === id) {
       $scope.cursor = cursor;
-      var i = dirty[0];
-      for(;i < (dirty[1] + 1) && i < $scope.container.childNodes.length; i++) {
+      var sentinel = Math.min(dirty[1] + 1, $scope.container.childNodes.length);
+      for(var i = dirty[0]; i < sentinel && i < dirty[0] + slice.length; i++) {
         var el = $scope.container.childNodes[i];
-        if(slice[i - dirty[0]]) {
-          var n = $scope.render_line(slice[i - dirty[0]], i);
-          $scope.container.replaceChild(n, el);
-        }
-        else {
-          $scope.container.removeChild(el);
-        }
+        var n = $scope.render_line(slice[i - dirty[0]], i);
+        $scope.container.replaceChild(n, el);
+      }
+      for(var i = sentinel - 1; i >= dirty[0] + slice.length; i--) {
+        var el = $scope.container.childNodes[i];
+        $scope.container.removeChild(el);
       }
       var df = null;
-      for(;i < (dirty[1] + 1); i++) {
+      for(var i = sentinel;i < (dirty[1] + 1); i++) {
         if(slice[i - dirty[0]]) {
           df = df || document.createDocumentFragment();
           df.appendChild($scope.render_line(slice[i - dirty[0]], i));

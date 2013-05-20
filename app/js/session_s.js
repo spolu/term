@@ -94,10 +94,10 @@ angular.module('breach.services').
     terms[id].cursor = cursor;
     var args = [dirty[0], dirty[1] - dirty[0] + 1].concat(slice);
     Array.prototype.splice.apply(terms[id].buffer, args);
+    /*
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
                                      '(' + slice.length + ') ' + 
                                      '{' + cursor.x + ', ' + cursor.y + '}');
-    /*
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */
