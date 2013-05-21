@@ -22,21 +22,6 @@ angular.module('breach.directives').
                                   _session, _colors) {
 
   //
-  // ### snap
-  // Snaps the term to the bottom of the current container. (used when a new 
-  // line is added a the bottom of the buffer.
-  //
-  $scope.snap = function() {
-    var c = $($scope.container);
-    var d = c.height() - _session.row_height() * _session.rows();
-    d = d > 0 ? d : 0;
-    c.css({
-      top: -d + 'px'
-    });
-  };
-
-
-  //
   // ### glyph_style
   // ```
   // @glyph  {array} a glyph
@@ -138,6 +123,14 @@ angular.module('breach.directives').
   };
 
   //
+  // ### refresh_height
+  // Sets the height of the term div according to the window height
+  //
+  $scope.refresh_height = function() {
+    $($element).height($($window).height());
+  };
+
+  //
   // ### $on#refresh
   // ```
   // @evt    {event} the event triggering this handler
@@ -150,27 +143,23 @@ angular.module('breach.directives').
   //
   $scope.$on('refresh', function(evt, id, dirty, slice, cursor) {
     if($scope.id === id) {
-      var sentinel = Math.min(dirty[1] + 1, $scope.container.childNodes.length);
+      var sentinel = Math.min(dirty[1] + 1, $scope.screen.nodes.length);
       for(var i = dirty[0]; i < sentinel && i < dirty[0] + slice.length; i++) {
-        var el = $scope.container.childNodes[i];
-        var n = $scope.render_line(slice[i - dirty[0]], i, cursor);
-        $scope.container.replaceChild(n, el);
+        $scope.screen.nodes[i] = 
+          $scope.render_line(slice[i - dirty[0]], i, cursor);
       }
       for(var i = sentinel - 1; i >= dirty[0] + slice.length; i--) {
-        var el = $scope.container.childNodes[i];
-        $scope.container.removeChild(el);
+        delete $scope.screen.nodes[i];
       }
       var df = null;
       for(var i = sentinel;i < (dirty[1] + 1); i++) {
         if(slice[i - dirty[0]]) {
-          df = df || document.createDocumentFragment();
-          df.appendChild($scope.render_line(slice[i - dirty[0]], i, cursor));
+          $scope.screen.nodes[i] = 
+            $scope.render_line(slice[i - dirty[0]], i, cursor);
         }
       }
-      if(df) {
-        $scope.container.appendChild(df);
-      }
-      $scope.snap();
+      $scope.screen.base = $scope.screen.nodes.length - _session.rows();
+      $scope.redraw();
     }
   });
 
@@ -191,24 +180,16 @@ angular.module('breach.directives').
   });
 
   //
-  // ### refresh_height
-  // Sets the height of the term div according to the window height
-  //
-  $scope.refresh_height = function() {
-    $($element).height($($window).height());
-  };
-
-  //
   // ### $window#resize
   //
   $($window).resize(function() {
     $scope.refresh_height();
-    $scope.snap();
   });
 
   //
   // ### $element#mousewheel
   //
+  /*
   $(document).ready(function(){
     $($element).bind('mousewheel', function(e){
       var c = $($scope.container);
@@ -222,6 +203,26 @@ angular.module('breach.directives').
       });
     });
   });
+  */
+
+  //
+  // ### redraw
+  // Redraws the current container with the appropriate nodes given current
+  // base and nodes list
+  //
+  $scope.redraw = function() {
+    while($scope.screen.container.hasChildNodes()) {
+      $scope.screen.container.removeChild($scope.screen.container.lastChild);
+    }
+    var df = document.createDocumentFragment();
+    for(var i = $scope.screen.base; 
+        i < $scope.screen.nodes.length && 
+        i < $scope.screen.base + _session.rows();
+        i++) {
+      df.appendChild($scope.screen.nodes[i]);
+    }
+    $scope.screen.container.appendChild(df);
+  };
 
   //
   // ### init
@@ -230,32 +231,37 @@ angular.module('breach.directives').
   $scope.init = function(alternate) {
     var buffer = _session.terms($scope.id).buffer;
     var cursor = _session.terms($scope.id).cursor;
-    var df = document.createDocumentFragment();
     for(var i = 0; i < buffer.length; i ++) {
-      df.appendChild($scope.render_line(buffer[i], i, cursor));
+      $scope.screen.nodes[i] = $scope.render_line(buffer[i], i, cursor);
     }
-
-    while($scope.container.hasChildNodes()) {
-      $scope.container.removeChild($scope.container.lastChild);
-    }
-    $scope.container.appendChild(df);
+    $scope.redraw();
   };
 
 
   //
   // #### _initialization_
   //
-  $scope.main = document.createElement('div');
-  $scope.main.className = 'container';
-  $($element).append($scope.main);
+  /* main */
+  $scope.main = {
+    container: document.createElement('div'),
+    nodes: [],
+    base: 0
+  };
+  $scope.main.container.className = 'container';
+  $($element).append($scope.main.container);
 
-  $scope.alternate = document.createElement('div');
-  $scope.alternate.className = 'container hidden';
+  /* alternate */
+  $scope.alternate = {
+    container: document.createElement('div'),
+    nodes: [],
+    base: 0
+  };
+  $scope.alternate.container.className = 'container hidden';
   $($element).append($scope.alternate);
 
   $scope.refresh_height();
 
-  $scope.container = $scope.main;
+  $scope.screen = $scope.main;
   $scope.init();
 });
 
