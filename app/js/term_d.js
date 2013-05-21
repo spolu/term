@@ -28,7 +28,7 @@ angular.module('breach.directives').
   //
   $scope.snap = function() {
     var c = $($scope.container);
-    var d = c.height() - $($element).height();
+    var d = c.height() - _session.row_height() * _session.rows();
     d = d > 0 ? d : 0;
     c.css({
       top: -d + 'px'
