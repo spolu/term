@@ -94,15 +94,29 @@ angular.module('breach.services').
     terms[id].cursor = cursor;
     var args = [dirty[0], dirty[1] - dirty[0] + 1].concat(slice);
     Array.prototype.splice.apply(terms[id].buffer, args);
+    /*
     console.log('REFRESH [' + id + '] [' + dirty[0] + ', ' + dirty[1] + '] ' + 
                                      '(' + slice.length + ') ' + 
                                      '{' + cursor.x + ', ' + cursor.y + '}');
-    /*
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */
     $rootScope.$apply(function() {
       $rootScope.$broadcast('refresh', id, dirty, slice, cursor);
+    });
+  });
+
+  //
+  // ### alternate
+  // Event triggered when a terminal sets itself in alternate screen mode
+  //
+  session.on('alternate', function(id, is_alt, buffer) {
+    terms[id].buffer = buffer;
+    /*
+    console.log('ALTERNATE [' + id + '] ' + is_alt);
+    */
+    $rootScope.$apply(function() {
+      $rootScope.$broadcast('alternate', id, is_alt);
     });
   });
 
