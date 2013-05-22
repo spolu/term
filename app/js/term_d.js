@@ -24,10 +24,7 @@ angular.module('breach.directives').
   //
   // ### glyph_style
   // ```
-  // @glyph  {array} a glyph
-  // @x      {number} column number
-  // @y      {numver} row number
-  // @cursor {object} current cursor object
+  // @attr {number} a glyph character attribute
   // ```
   // Computes the CSS style of a given glyph as an object
   //
@@ -41,34 +38,28 @@ angular.module('breach.directives').
     BLINK: 32
   };
 
-  $scope.glyph_style = function(glyph, x, y, cursor) {
+  $scope.glyph_style = function(attr) {
     var style = null;
-    if((glyph[0] >> 18) & CHAR_ATTRS.BOLD) {
+    if((attr >> 18) & CHAR_ATTRS.BOLD) {
       style = style || '';
       style += 'font-weight: bold;';
     }
-    if((glyph[0] >> 18) & CHAR_ATTRS.UNDERLINE) {
+    if((attr >> 18) & CHAR_ATTRS.UNDERLINE) {
       style = style || '';
       style += 'text-decoration: underline;';
     }
-    if((glyph[0] >> 18) & CHAR_ATTRS.ITALIC) {
+    if((attr >> 18) & CHAR_ATTRS.ITALIC) {
       style = style || '';
       style += 'font-style: italic;';
     }
-    if(x === cursor.x && y === cursor.y) {
-      style = style || '';
-      style += 'background-color: ' + _colors.palette[257] + ';';
-      style += 'color: ' + _colors.palette[256] + ';';
-      return style;
-    }
-    var bg = glyph[0] & 0x11f;
-    var fg = (glyph[0] >> 9) & 0x11f;
+    var bg = attr & 0x11f;
+    var fg = (attr >> 9) & 0x11f;
     if(fg !== 257 || bg !== 256) {
       style = style || '';
       style += 'background-color: ' + _colors.palette[bg] + ';';
       style += 'color: ' + _colors.palette[fg] + ';';
     }
-    if((glyph[0] >> 18) & CHAR_ATTRS.REVERSE) {
+    if((attr >> 18) & CHAR_ATTRS.REVERSE) {
       style = style || '';
       style += 'background-color: ' + _colors.palette[fg] + ';';
       style += 'color: ' + _colors.palette[bg] + ';';
@@ -76,50 +67,89 @@ angular.module('breach.directives').
     return style;
   };
 
+  // 
+  // ### ctohtml
+  // ```
+  // @char {string} a character
+  // ```
+  // Transforms a character into a html string
+  //
+  $scope.ctohtml = function(char) {
+    switch(char[1]) {
+      case '&': {
+        return '&amp;';
+      }
+      case '<': {
+        return '&lt;;';
+      }
+      case '>': {
+        return '&gt;';
+      }
+      default: {
+        return char <= ' ' ? '&nbsp;' : char;
+      }
+    }
+  };
+
+  //
+  // ### compress_line
+  // ```
+  // @line {array} line of glyphs
+  // ```
+  // Compress the line of glyph into an array of [string, style] words
+  //
+  $scope.compress_line = function(line) {
+    /* prune the postfixing spaces */
+    var line = line.slice(0);
+    while(line.length > 0 && line[line.length - 1][1] <= ' ') 
+      line.pop();
+    if(line.length === 0)
+      return [];
+
+    var words = [];
+
+    var cur_style = line[0][0];
+    var cur_string = $scope.ctohtml(line[0][1]);
+    for(var i = 1; i < line.length; i ++) {
+      if(cur_style === line[i][0] || line[i][1] <= ' ') {
+        cur_string += $scope.ctohtml(line[i][1]);
+      }
+      else {
+        words.push([cur_string, $scope.glyph_style(cur_style)]);
+        cur_style = line[i][0];
+        cur_string = $scope.ctohtml(line[i][1]);
+      }
+    }
+    words.push([cur_string, $scope.glyph_style(cur_style)]);
+
+    return words;
+  };
+
   //
   // ### render_line
   // ```
   // @line   {array} line of glyphs
-  // @y      {number} line number
-  // @cursor {object} current cursor object
   // ```
   // Renders a line of glyphs as div element
   //
-  $scope.render_line = function(line, y, cursor) {
+  $scope.render_line = function(line) {
+    var words = $scope.compress_line(line);
     var el = document.createElement('div');
     el.className = 'line';
 
     var html = '';
-    var x = 0;
-    line.forEach(function(glyph) {
-      var style = $scope.glyph_style(glyph, x, y, cursor);
-      if(style) {
-        html += '<span style="' + style + '">';
+    words.forEach(function(word) {
+      if(word[1]) {
+        html += '<span style="' + word[1] + '">';
       }
-      switch(glyph[1]) {
-        case '&': {
-          html += '&amp;';
-          break;
-        }
-        case '<': {
-          html += '&lt;';
-          break;
-        }
-        case '>': {
-          html += '&gt;';
-          break;
-        }
-        default: {
-          html += glyph[1] <= ' ' ? '&nbsp;' : glyph[1];
-        }
-      }
-      if(style) {
+      html += word[0];
+      if(word[1]) {
         html += '</span>';
       }
-      x++;
     });
     el.innerHTML = html;
     return el;
+
   };
 
   //
@@ -147,34 +177,49 @@ angular.module('breach.directives').
       for(var i = dirty[0]; i < sentinel && i < dirty[0] + slice.length; i++) {
         $scope.screen.nodes[i] = 
           $scope.render_line(slice[i - dirty[0]], i, cursor);
+        /* direct update */
+        if(i >= $scope.screen.base) {
+          var n = $scope.screen.container.childNodes[i - $scope.screen.base];
+          $scope.screen.container.insertBefore($scope.screen.nodes[i], n);
+          $scope.screen.container.removeChild(n);
+        }
       }
       for(var i = sentinel - 1; i >= dirty[0] + slice.length; i--) {
+        var n = $scope.screen.nodes[i];
         delete $scope.screen.nodes[i];
+        /* direct update */
+        $scope.screen.container.removeChild(n);
       }
       var df = null;
-      for(var i = sentinel;i < (dirty[1] + 1); i++) {
+      for(var i = sentinel; i < (dirty[1] + 1); i++) {
         if(slice[i - dirty[0]]) {
           $scope.screen.nodes[i] = 
             $scope.render_line(slice[i - dirty[0]], i, cursor);
+          /* direct update */
+          $scope.screen.container.appendChild($scope.screen.nodes[i]);
+          if($scope.screen.container.childNodes.length > _session.rows()) {
+            var n = $scope.screen.container.childNodes[0]
+            $scope.screen.container.removeChild(n);
+            $scope.screen.base++;
+          }
         }
       }
       $scope.screen.base = $scope.screen.nodes.length - _session.rows();
-      $scope.redraw();
     }
   });
 
   $scope.$on('alternate', function(evt, id, is_alt) {
     if($scope.id === id) {
       if(is_alt) {
-        $scope.alternate.className = 'container';
-        $scope.main.className = 'container hidden';
-        $scope.container = $scope.alternate;
+        $scope.alternate.container.className = 'container';
+        $scope.main.container.className = 'container hidden';
+        $scope.screen = $scope.alternate;
         $scope.init();
       }
       else {
-        $scope.alternate.className = 'container hidden';
-        $scope.main.className = 'container';
-        $scope.container = $scope.main;
+        $scope.alternate.container.className = 'container hidden';
+        $scope.main.container.className = 'container';
+        $scope.screen = $scope.main;
       }
     }
   });
@@ -231,6 +276,10 @@ angular.module('breach.directives').
   $scope.init = function(alternate) {
     var buffer = _session.terms($scope.id).buffer;
     var cursor = _session.terms($scope.id).cursor;
+    $scope.screen.nodes = [];
+    while ($scope.screen.container.firstChild) {
+      $scope.screen.container.removeChild($scope.screen.container.firstChild);
+    } 
     for(var i = 0; i < buffer.length; i ++) {
       $scope.screen.nodes[i] = $scope.render_line(buffer[i], i, cursor);
     }
@@ -257,7 +306,7 @@ angular.module('breach.directives').
     base: 0
   };
   $scope.alternate.container.className = 'container hidden';
-  $($element).append($scope.alternate);
+  $($element).append($scope.alternate.container);
 
   $scope.refresh_height();
 

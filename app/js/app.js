@@ -17,7 +17,7 @@ angular.module('breach.services', []);
 
 function TopCtrl($scope, $window, _session) {
 
-  require('nw.gui').Window.get().showDevTools();
+  //require('nw.gui').Window.get().showDevTools();
 
   //
   // #### _test_
