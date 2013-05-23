@@ -21,13 +21,6 @@ angular.module('breach.directives').
   controller('TermCtrl', function($scope, $element, $window, 
                                   _session, _colors) {
 
-  //
-  // ### glyph_style
-  // ```
-  // @attr {number} a glyph character attribute
-  // ```
-  // Computes the CSS style of a given glyph as an object
-  //
   var CHAR_ATTRS = {
     NULL: 0,
     REVERSE: 1,
@@ -38,6 +31,13 @@ angular.module('breach.directives').
     BLINK: 32
   };
 
+  //
+  // ### glyph_style
+  // ```
+  // @attr {number} a glyph character attribute
+  // ```
+  // Computes the CSS style of a given glyph as an object
+  //
   $scope.glyph_style = function(attr) {
     var style = null;
     if((attr >> 18) & CHAR_ATTRS.BOLD) {
@@ -99,9 +99,16 @@ angular.module('breach.directives').
   // Compress the line of glyph into an array of [string, style] words
   //
   $scope.compress_line = function(line) {
-    /* prune the postfixing spaces */
+    /* Prune the postfixing spaces. To avoid mutating the original buffer, we */
+    /* slice it before pruning it. We use the is_blank function to decide     */
+    /* wether the character can be pruned or not                              */
     var line = line.slice(0);
-    while(line.length > 0 && line[line.length - 1][1] <= ' ') 
+    var is_blank = function(glyph) {
+      return (line[line.length - 1][1] <= ' ' &&
+              line[line.length - 1][0] & 0x11f === 256 &&
+              (line[line.length - 1][0] >> 18) & CHAR_ATTRS.REVERSE);
+    };
+    while(line.length > 0 && is_blank(line[line.length - 1]))
       line.pop();
     if(line.length === 0)
       return [];
