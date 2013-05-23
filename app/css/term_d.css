@@ -26,13 +26,3 @@
   line-height: 13px;
 }
 
-.term > .cursor {
-  display: block;
-  height: 13px;
-  width: 6px;
-  background-color: hsla(200, 80%, 70%, 0.7);
-  position: absolute;
-  z-index: 2;
-  top: 0px;
-  left: 0px;
-}

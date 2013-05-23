@@ -18,7 +18,7 @@
 // `term` directive controller.
 //
 angular.module('breach.directives').
-  controller('TermCtrl', function($scope, $element, $window, 
+  controller('TermCtrl', function($scope, $element, $window, $timeout,
                                   _session, _colors) {
 
   var CHAR_ATTRS = {
@@ -156,7 +156,6 @@ angular.module('breach.directives').
     });
     el.innerHTML = html;
     return el;
-
   };
 
   //
@@ -165,20 +164,6 @@ angular.module('breach.directives').
   //
   $scope.refresh_height = function() {
     $($element).height($($window).height());
-  };
-
-  //
-  // ### draw_cursor
-  // ```
-  // @cursor {object} the cursor object
-  // ```
-  // Moves the cursor to the target position
-  //
-  $scope.draw_cursor = function(cursor) {
-    var css = '';
-    css += 'top: ' + (cursor.y * _session.row_height()) + 'px;';
-    css += 'left: ' + (cursor.x * _session.col_width()) + 'px;';
-    $scope.cursor.style.cssText = css;
   };
 
   //
@@ -191,13 +176,15 @@ angular.module('breach.directives').
   // @cursor {object} the cursor object
   // ```
   // Handles a refresh event and refreshes the terminal if needed
+  // TODO: too slow especially on full screen refreshes
   //
   $scope.$on('refresh', function(evt, id, dirty, slice, cursor) {
     if($scope.id === id) {
+      $scope.cursor = cursor;
       var sentinel = Math.min(dirty[1] + 1, $scope.screen.nodes.length);
       for(var i = dirty[0]; i < sentinel && i < dirty[0] + slice.length; i++) {
         $scope.screen.nodes[i] = 
-          $scope.render_line(slice[i - dirty[0]], i, cursor);
+          $scope.render_line(slice[i - dirty[0]]);
         /* direct update */
         if(i >= $scope.screen.base) {
           var n = $scope.screen.container.childNodes[i - $scope.screen.base];
@@ -215,7 +202,7 @@ angular.module('breach.directives').
       for(var i = sentinel; i < (dirty[1] + 1); i++) {
         if(slice[i - dirty[0]]) {
           $scope.screen.nodes[i] = 
-            $scope.render_line(slice[i - dirty[0]], i, cursor);
+            $scope.render_line(slice[i - dirty[0]]);
           /* direct update */
           $scope.screen.container.appendChild($scope.screen.nodes[i]);
           if($scope.screen.container.childNodes.length > _session.rows()) {
@@ -226,7 +213,6 @@ angular.module('breach.directives').
         }
       }
       $scope.screen.base = $scope.screen.nodes.length - _session.rows();
-      $scope.draw_cursor(cursor);
     }
   });
 
@@ -297,16 +283,15 @@ angular.module('breach.directives').
   //
   $scope.init = function(alternate) {
     var buffer = _session.terms($scope.id).buffer;
-    var cursor = _session.terms($scope.id).cursor;
+    $scope.cursor = _session.terms($scope.id).cursor;
     $scope.screen.nodes = [];
     while ($scope.screen.container.firstChild) {
       $scope.screen.container.removeChild($scope.screen.container.firstChild);
     } 
     for(var i = 0; i < buffer.length; i ++) {
-      $scope.screen.nodes[i] = $scope.render_line(buffer[i], i, cursor);
+      $scope.screen.nodes[i] = $scope.render_line(buffer[i]);
     }
     $scope.redraw();
-    $scope.draw_cursor(cursor);
   };
 
 
@@ -330,11 +315,6 @@ angular.module('breach.directives').
   };
   $scope.alternate.container.className = 'container hidden';
   $($element).append($scope.alternate.container);
-
-  /* cursor */
-  $scope.cursor = document.createElement('div');
-  $scope.cursor.className = 'cursor';
-  $($element).append($scope.cursor);
 
   $scope.refresh_height();
 
