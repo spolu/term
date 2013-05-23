@@ -76,8 +76,8 @@ angular.module('breach.services').
   //
   session.on('spawn', function(id, term) {
     terms[id] = term;
-    console.log('SPAWN: [' + id + ']');
     /*
+    console.log('SPAWN: [' + id + ']');
     console.log('STATE [' + id + '] ' + 
                 terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
     */

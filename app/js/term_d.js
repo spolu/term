@@ -168,6 +168,20 @@ angular.module('breach.directives').
   };
 
   //
+  // ### draw_cursor
+  // ```
+  // @cursor {object} the cursor object
+  // ```
+  // Moves the cursor to the target position
+  //
+  $scope.draw_cursor = function(cursor) {
+    var css = '';
+    css += 'top: ' + (cursor.y - * _session.row_height()) + 'px;';
+    css += 'left: ' + (cursor.x * _session.col_width()) + 'px;';
+    $scope.cursor.style.cssText = css;
+  };
+
+  //
   // ### $on#refresh
   // ```
   // @evt    {event} the event triggering this handler
@@ -212,6 +226,7 @@ angular.module('breach.directives').
         }
       }
       $scope.screen.base = $scope.screen.nodes.length - _session.rows();
+      $scope.draw_cursor(cursor);
     }
   });
 
@@ -283,8 +298,6 @@ angular.module('breach.directives').
   $scope.init = function(alternate) {
     var buffer = _session.terms($scope.id).buffer;
     var cursor = _session.terms($scope.id).cursor;
-    console.log($scope.id);
-    //console.log(buffer);
     $scope.screen.nodes = [];
     while ($scope.screen.container.firstChild) {
       $scope.screen.container.removeChild($scope.screen.container.firstChild);
@@ -293,6 +306,7 @@ angular.module('breach.directives').
       $scope.screen.nodes[i] = $scope.render_line(buffer[i], i, cursor);
     }
     $scope.redraw();
+    $scope.draw_cursor(cursor);
   };
 
 
@@ -316,6 +330,11 @@ angular.module('breach.directives').
   };
   $scope.alternate.container.className = 'container hidden';
   $($element).append($scope.alternate.container);
+
+  /* cursor */
+  $scope.cursor = document.createElement('div');
+  $scope.cursor.className = 'cursor';
+  $($element).append($scope.cursor);
 
   $scope.refresh_height();
 
