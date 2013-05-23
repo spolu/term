@@ -15,13 +15,13 @@ angular.module('breach.directives', []);
 angular.module('breach.filters', []);
 angular.module('breach.services', []);
 
-function TopCtrl($scope, $window, _session) {
+function TopCtrl($scope, $window, $timeout, _session) {
 
   //require('nw.gui').Window.get().showDevTools();
 
   //
   // #### _test_
   //
-  _session.spawn();
+  $timeout(_session.spawn, 10);
 };
 

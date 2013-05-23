@@ -23,14 +23,35 @@ angular.module('breach.directives').
     $scope.stack.push(id);
   }
 
-  $scope.$on('spawn', function(id, term) {
+  //
+  // $on#spawn
+  // ```
+  // @evt  {event} the event triggering this handler
+  // @id   {string} the newly spanwed term id
+  // @term {object} the term object representation
+  // ```
+  // Handles new terminal spawns
+  //   
+  $scope.$on('spawn', function(evt, id, term) {
     $scope.stack.unshift(id);
   });
 
+  //
+  // ### switch_nav
+  // Switches the navigation mode
+  //
   $scope.switch_nav = function() {
     $scope.nav = !$scope.nav;
   };
 
+  // 
+  // ### $#keypress
+  // ```
+  // @evt {event} the event triggering this handler
+  // ```
+  // Forwards the `keypress` events to the session for the currently active term
+  // or intercepts and handles them if in navigation mode
+  //
   $('body').keypress(function(evt) {
     /* CTRL-G to activate/deactivate nav */
     if(evt.keyCode == 7 && evt.ctrlKey) {
@@ -38,13 +59,29 @@ angular.module('breach.directives').
         $scope.switch_nav();
       });
     }
-    else if(!$scope.nav && $scope.stack.length > 0) { 
-      _session.keypress($scope.stack[0], evt);
+    else if(!$scope.nav) {
+      if($scope.stack.length > 0) { 
+        _session.keypress($scope.stack[0], evt);
+      }
+    }
+    else {
+      /* TODO: handle keys */
     }
   });
+
+
+  // 
+  // ### $on#keydown
+  // ```
+  // @evt {event} the event triggering this handler
+  // ```
+  // Forwards the `keydown` events to the session for the currently active term
+  //
   $('body').keydown(function(evt) {
-    if(!$scope.nav && $scope.stack.length > 0) { 
-      _session.keydown($scope.stack[0], evt);
+    if(!$scope.nav) {
+      if($scope.stack.length > 0) { 
+        _session.keydown($scope.stack[0], evt);
+      }
     }
   });
 

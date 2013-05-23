@@ -283,6 +283,8 @@ angular.module('breach.directives').
   $scope.init = function(alternate) {
     var buffer = _session.terms($scope.id).buffer;
     var cursor = _session.terms($scope.id).cursor;
+    console.log($scope.id);
+    //console.log(buffer);
     $scope.screen.nodes = [];
     while ($scope.screen.container.firstChild) {
       $scope.screen.container.removeChild($scope.screen.container.firstChild);
