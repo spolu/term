@@ -181,6 +181,17 @@ angular.module('breach.services').
       evt.preventDefault();
       evt.stopPropagation();
     },
+    //
+    // ### write
+    // ```
+    // @str {string} string to write to terminal
+    // ```
+    // Writes the string to the terminal designated by id
+    //
+    write: function(id, str) {
+      session.write(id, str);
+    },
+
     cols: function() {
       return compute_cols($($window).width());
     },

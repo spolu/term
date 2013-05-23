@@ -14,13 +14,15 @@
 // `stack` directive controller.
 //
 angular.module('breach.directives').
-  controller('StackCtrl', function($scope, $element, _session, _colors) {
+  controller('StackCtrl', function($scope, $element, $timeout, _session) {
 
   $scope.stack = [];
   $scope.nav = false;
+  $scope.active = -1;
 
   for(var id in _session.terms()) {
     $scope.stack.push(id);
+    $scope.active = $scope.stack.length - 1;
   }
 
   //
@@ -34,6 +36,7 @@ angular.module('breach.directives').
   //   
   $scope.$on('spawn', function(evt, id, term) {
     $scope.stack.unshift(id);
+    $scope.active = 0;
   });
 
   //
@@ -76,8 +79,17 @@ angular.module('breach.directives').
   });
 
   $(document).bind('paste', function(evt) {
-    console.log('BOOM');
-    console.log(evt);
+    if(!$scope.nav) {
+      var textarea = document.createElement('textarea');
+      textarea.className = 'paste';
+      $($element).append(textarea);
+      $(textarea).focus();
+      $timeout(function() {
+        var paste = $(textarea).val();
+        $(textarea).remove();
+        _session.write($scope.stack[$scope.active], paste);
+      }, 1);
+    }
   });
 
 
