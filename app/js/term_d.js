@@ -176,7 +176,7 @@ angular.module('breach.directives').
   //
   $scope.draw_cursor = function(cursor) {
     var css = '';
-    css += 'top: ' + (cursor.y - * _session.row_height()) + 'px;';
+    css += 'top: ' + (cursor.y * _session.row_height()) + 'px;';
     css += 'left: ' + (cursor.x * _session.col_width()) + 'px;';
     $scope.cursor.style.cssText = css;
   };
