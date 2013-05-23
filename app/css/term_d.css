@@ -23,7 +23,7 @@
 .term > .container .line {
   display: block;
   height: 13px;
-  line-height: 12px;
+  line-height: 13px;
 }
 
 .term > .cursor {

@@ -75,7 +75,7 @@ angular.module('breach.directives').
   // Transforms a character into a html string
   //
   $scope.ctohtml = function(char) {
-    switch(char[1]) {
+    switch(char) {
       case '&': {
         return '&amp;';
       }

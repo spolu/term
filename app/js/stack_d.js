@@ -66,7 +66,18 @@ angular.module('breach.directives').
     }
     else {
       /* TODO: handle keys */
+      switch(evt.keyCode) {
+        case 73: {
+          require('nw.gui').Window.get().showDevTools();
+          break;
+        }
+      };
     }
+  });
+
+  $(document).bind('paste', function(evt) {
+    console.log('BOOM');
+    console.log(evt);
   });
 
 
