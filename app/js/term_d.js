@@ -111,7 +111,7 @@ angular.module('breach.directives').
     var cur_style = line[0][0];
     var cur_string = $scope.ctohtml(line[0][1]);
     for(var i = 1; i < line.length; i ++) {
-      if(cur_style === line[i][0] || line[i][1] <= ' ') {
+      if(cur_style === line[i][0]) {
         cur_string += $scope.ctohtml(line[i][1]);
       }
       else {
