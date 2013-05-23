@@ -1,13 +1,15 @@
 @font-face {
-  font-family: Courier;
-  src: url(Courier.ttf);
+  font-family: Inconsolata;
+  src: url(Inconsolata.otf);
 }
+
 
 body {
   margin: 0px;
   padding: 0px;
   height: 100%;
-  font-family: Courier;
-  font-size: 11px;
+  font-family: Inconsolata;
+  font-size: 13px;
+  letter-spacing: -1px;
   overflow: hidden;
 }
