@@ -80,7 +80,7 @@ angular.module('breach.directives').
         return '&amp;';
       }
       case '<': {
-        return '&lt;;';
+        return '&lt;';
       }
       case '>': {
         return '&gt;';
