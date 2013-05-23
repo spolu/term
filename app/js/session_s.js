@@ -22,11 +22,11 @@ angular.module('breach.services').
   //
   // ### col_width
   //
-  var col_width = 7;
+  var col_width = 6;
   //
   // ### row_height
   //
-  var row_height = 12;
+  var row_height = 13;
 
   //
   // ### compute_cols
