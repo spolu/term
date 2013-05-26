@@ -177,6 +177,8 @@ angular.module('breach.directives').
   // ```
   // Handles a refresh event and refreshes the terminal if needed
   // TODO: too slow especially on full screen refreshes
+  //       probably due to the fact that we render all nodes each time
+  //       we scroll (but won't help with vim multi screen ??)
   //
   $scope.$on('refresh', function(evt, id, dirty, slice, cursor) {
     if($scope.id === id) {
