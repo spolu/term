@@ -18,32 +18,40 @@ in charge of rendering the terminal to the user, the `screen`, based on
 node-webkit. 
 
 ```
-            emulator              IPC     screen
-<------------------------------><------><-------->
+                      emulator                    IPC     screen
+<---------------------------------------------><-------><-------->
 
-+-----+
-| pty |---+                   
-+-----+   |                      
-          |
-+-----+   |  +---------+  +----+        +--------+
-| pty |---+--| session |--| fd | <====> | client |
-+-----+   |  +---------+  +----+        +--------+
-          |
-+-----+   |
-| pty |---+
-+-----+
++-----+   +----------+
+| pty |---| terminal |---+
++-----+   +----------+   |                      
+                         |
++-----+   +----------+   |  +---------+  +----+         +--------+
+| pty |---| terminal |---+--| session |--| UD | <=====> | client |
++-----+   +----------+   |  +---------+  +----+         +--------+
+                         |
++-----+   +----------+   |
+| pty |---| terminal |---+
++-----+   +----------+
 ```
 
-Calling breach alone or on a file that does not exists creates an `emulator`
-that will create that file and use it for IPC communication with its attached
-`screens`.
+Calling breach without a path argument spawns an `emulator` and a `screen`. The 
+emulator will open a unix domain socket and wait for screens to connect. The 
+`screen` will be spawned with the newly created unix domain socket path as
+argument.
 
-If the file already exists, then only a `screen` is created which is then
-attached to the existing `emulator`.
+Calling breach with a unix domain socket path argument will only spawn a new
+`screen` with this path as argument. The newly spawned screen will simply attach
+to the existing emulator.
 
 ```
-$ breach (creates ~/.breach-0)
-$ breach (creates ~/.breach-1)
-$ breach ~/.breach-0
+$ breach (creates ~/.breach-0) [spawns `breach-emulator` and `breach` (screen)]
+$ breach (creates ~/.breach-1) [spawns `breach-emulator` and `breach` (screen)]
+$ breach ~/.breach-0           [spawns only `breach` (screen)]
 ```
+
+The terminals are emulated in the `emulator` and not the screens. Emulating in
+the screens could have been more efficient (only pty data transiting) but would
+prevent retrieving history (unless emulating on both sides).
+
+
 
