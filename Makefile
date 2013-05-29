@@ -1,7 +1,7 @@
 clean:
-	rm -rf node_modules docs
+	rm -rf node_modules docs build
 docs:
-	docco lib/**/*.js 
+	docco session/**/*.js screen/js/*.js
 
 install: clean docs
 	npm install

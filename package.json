@@ -1,7 +1,7 @@
 {
   "name": "breach",
   "version": "0.1.1",
-  "description": "Cross-Platform Modal Navigation Terminal Emulator",
+  "description": "A new Terminal Emulator",
   "author": "Stanislas Polu <polu.stanislas@gmail.com>",
   "repository": {
     "type": "git",
@@ -9,13 +9,18 @@
   },
   "dependencies": {
     "pty.js": "0.2.x",
-    "node-uuid": "1.4.x"
+    "node-uuid": "1.4.x",
+    "portfinder": "0.2.x",
+    "colors": "0.6.0-1"
   },
   "window": {
     "width": 800,
     "height": 700,
     "title": "breach",
-    "toolbar": false
+    "toolbar": false,
+    "show": false
   },
-  "main": "app/index.html"
+  "node-remove": "<local>",
+  "chromium-args": "--enable-delegated-renderer --enable-accelerated-painting",
+  "main": "index.html"
 }

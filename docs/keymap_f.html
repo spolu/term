@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>keymap_f.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="app.html">
+                app.js
+              </a>
+            
+              
+              <a class="source" href="colors_s.html">
+                colors_s.js
+              </a>
+            
+              
+              <a class="source" href="keymap_f.html">
+                keymap_f.js
+              </a>
+            
+              
+              <a class="source" href="session_s.html">
+                session_s.js
+              </a>
+            
+              
+              <a class="source" href="stack_d.html">
+                stack_d.js
+              </a>
+            
+              
+              <a class="source" href="term_d.html">
+                term_d.js
+              </a>
+            
+              
+              <a class="source" href="char_map.html">
+                char_map.js
+              </a>
+            
+              
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="session.html">
+                session.js
+              </a>
+            
+              
+              <a class="source" href="term.html">
+                term.js
+              </a>
+            
+              
+              <a class="source" href="vt.html">
+                vt.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>keymap_f.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/**
+ * breach: keymap_f.js
+ *
+ * Copyright (c) 2013, Stanislas Polu. All rights reserved.
+ * (see LICENSE file)
+ *
+ * @log
+ * - 20130515 @spolu    Fixed `mode` not accessible from utility functions
+ * - 20130515 @spolu    Refactor to construct keympa once + bugfixes BKSP #2
+ * - 20130512 @spolu    Map utility functions &amp; implementation
+ * - 20130510 @spolu    Creation
+ */</span>
+<span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h3>&#39;keymap&#39;</h3>
+<pre><code>@e    {event} the keydown event
+@mode {number} the terminal mode</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>angular.module(<span class="string">'breach.filters'</span>).
+  filter(<span class="string">'keymap'</span>, <span class="keyword">function</span>($window) {
+
+    <span class="keyword">var</span> TERM_MODE = {
+      WRAP: <span class="number">1</span>,
+      INSERT: <span class="number">2</span>,
+      APPKEYPAD: <span class="number">4</span>,
+      ALTSCREEN: <span class="number">8</span>,
+      CRLF: <span class="number">16</span>,
+      MOUSEBTN: <span class="number">32</span>,
+      MOUSEMOTION: <span class="number">64</span>,
+      MOUSE: <span class="number">32</span>|<span class="number">64</span>,
+      REVERSE: <span class="number">128</span>,
+      KBDLOCK: <span class="number">256</span>,
+      HIDE: <span class="number">512</span>,
+      ECHO: <span class="number">1024</span>,
+      APPCURSOR: <span class="number">2048</span>,
+      MOUSESGR: <span class="number">4096</span>,
+    };
+
+    <span class="keyword">var</span> ESC = <span class="string">'\x1b'</span>;
+    <span class="keyword">var</span> CSI = <span class="string">'\x1b['</span>;
+    <span class="keyword">var</span> SS3 = <span class="string">'\x1bO'</span>;
+
+    <span class="keyword">var</span> DEFAULT = <span class="string">'DEFAULT'</span>;
+    <span class="keyword">var</span> PASS = <span class="string">'PASS'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h3>resolve</h3>
+<pre><code>@action {string|function} an action to resolve
+@e      {event} the keydown event</code></pre>
+<p>Resolves an action given a keydown event. If the action is a funciton
+then it is called with the proper arguments. Otherwise it&#39;s a string
+and we have finished the resolution</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> resolve = <span class="keyword">function</span>(action, e, mode) {
+      <span class="keyword">if</span>(<span class="keyword">typeof</span> action === <span class="string">'function'</span>)
+        <span class="keyword">return</span> action(e, mode);
+      <span class="keyword">return</span> action;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h3>mod</h3>
+<pre><code>@a {action} 
+@b {action}</code></pre>
+<p>If no modifier resolve <code>a</code>, otherwise resolve <code>b</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> mod = <span class="keyword">function</span>(a, b) {
+      <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+        <span class="keyword">var</span> action = !(e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) ?
+          a : b;
+        <span class="keyword">return</span> resolve(action, e, mode);
+      };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h3>sh</h3>
+<pre><code>@a {action}
+@b {action}</code></pre>
+<p>If not e.shiftKey a, else b.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> sh = <span class="keyword">function</span>(a, b) {
+      <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+        <span class="keyword">var</span> action = !e.shiftKey ? a : b
+        <span class="keyword">return</span> resolve(action, e, mode);
+      };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h3>ak</h3>
+<pre><code>@a {action}
+@b {action}</code></pre>
+<p>If term mode <code>APPKEYPAD</code> is not set then a, else b. If the key is
+modified then the application keypad mode is ignored</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ak = <span class="keyword">function</span>(a, b) {
+      <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+        <span class="keyword">var</span> action = (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
+                      !(mode &amp; TERM_MODE.APPKEYPAD)) ? a : b;
+        <span class="keyword">return</span> resolve(action, e, mode);
+      };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h3>ac</h3>
+<pre><code>@a {action}
+@b {action}</code></pre>
+<p>If term mode <code>APPCURSOR</code> is not set then a, else b. If the key is
+modified then the application cursor mode is ignored</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ac = <span class="keyword">function</span>(a, b) {
+      <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+        <span class="keyword">var</span> action = (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
+                      !(mode &amp; TERM_MODE.APPCURSOR)) ? a : b;
+        <span class="keyword">return</span> resolve(action, e, mode);
+      };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h3>sel</h3>
+<pre><code>@a {action}
+@b {action}</code></pre>
+<p>If there is no selection (browser) then <code>a</code> otherwise <code>b</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> sel = <span class="keyword">function</span>(a, b) {
+      <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+        <span class="keyword">var</span> action = $window.document.getSelection().isCollapsed ? a : b;
+        <span class="keyword">return</span> resolve(action, e, mode);
+      };
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h3>ctl</h3>
+<pre><code>@ch {string} input character to translate</code></pre>
+<p>Compute a control character for a given character.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ctl = <span class="keyword">function</span>(ch) { 
+      <span class="keyword">return</span> String.fromCharCode(ch.charCodeAt(<span class="number">0</span>) - <span class="number">64</span>) 
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h3>map</h3>
+<p>The actual keynmap</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> map = {
+      <span class="number">0</span>:   [<span class="string">'[UNKNOWN]'</span>, <span class="string">''</span> , <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>],
+
+      <span class="comment">/* First row */</span>
+      <span class="number">27</span>:  [<span class="string">'[ESC]'</span>, ESC,                       <span class="string">''</span>, <span class="string">''</span>,          <span class="string">''</span>],
+      <span class="number">112</span>: [<span class="string">'[F1]'</span>,  mod(SS3 + <span class="string">'P'</span>, CSI + <span class="string">'P'</span>), <span class="string">''</span>, CSI + <span class="string">'23~'</span>, <span class="string">''</span>],
+      <span class="number">113</span>: [<span class="string">'[F2]'</span>,  mod(SS3 + <span class="string">'Q'</span>, CSI + <span class="string">'Q'</span>), <span class="string">''</span>, CSI + <span class="string">'24~'</span>, <span class="string">''</span>],
+      <span class="number">114</span>: [<span class="string">'[F3]'</span>,  mod(SS3 + <span class="string">'R'</span>, CSI + <span class="string">'R'</span>), <span class="string">''</span>, CSI + <span class="string">'25~'</span>, <span class="string">''</span>],
+      <span class="number">115</span>: [<span class="string">'[F4]'</span>,  mod(SS3 + <span class="string">'S'</span>, CSI + <span class="string">'S'</span>), <span class="string">''</span>, CSI + <span class="string">'26~'</span>, <span class="string">''</span>],
+      <span class="number">116</span>: [<span class="string">'[F5]'</span>,  CSI + <span class="string">'15~'</span>,               <span class="string">''</span>, CSI + <span class="string">'28~'</span>, <span class="string">''</span>],
+      <span class="number">117</span>: [<span class="string">'[F6]'</span>,  CSI + <span class="string">'17~'</span>,               <span class="string">''</span>, CSI + <span class="string">'29~'</span>, <span class="string">''</span>],
+      <span class="number">118</span>: [<span class="string">'[F7]'</span>,  CSI + <span class="string">'18~'</span>,               <span class="string">''</span>, CSI + <span class="string">'31~'</span>, <span class="string">''</span>],
+      <span class="number">119</span>: [<span class="string">'[F8]'</span>,  CSI + <span class="string">'19~'</span>,               <span class="string">''</span>, CSI + <span class="string">'32~'</span>, <span class="string">''</span>],
+      <span class="number">120</span>: [<span class="string">'[F9]'</span>,  CSI + <span class="string">'20~'</span>,               <span class="string">''</span>, CSI + <span class="string">'33~'</span>, <span class="string">''</span>],
+      <span class="number">121</span>: [<span class="string">'[F10]'</span>, CSI + <span class="string">'21~'</span>,               <span class="string">''</span>, CSI + <span class="string">'34~'</span>, <span class="string">''</span>],
+      <span class="number">122</span>: [<span class="string">'[F11]'</span>, CSI + <span class="string">'23~'</span>,               <span class="string">''</span>, CSI + <span class="string">'42~'</span>, <span class="string">''</span>],
+      <span class="number">123</span>: [<span class="string">'[F12]'</span>, CSI + <span class="string">'24~'</span>,               <span class="string">''</span>, CSI + <span class="string">'43~'</span>, <span class="string">''</span>],
+
+      <span class="comment">/* Second row */</span>
+      <span class="number">192</span>: [<span class="string">'`~'</span>,     DEFAULT, sh(ctl(<span class="string">'@'</span>),         ctl(<span class="string">'^'</span>)), DEFAULT],
+      <span class="number">49</span>:  [<span class="string">'1!'</span>,     DEFAULT, sh(PASS, <span class="string">'1'</span>),       DEFAULT,   DEFAULT],
+      <span class="number">50</span>:  [<span class="string">'2@'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">'@'</span>)),  DEFAULT,   DEFAULT],
+      <span class="number">51</span>:  [<span class="string">'3#'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">'['</span>)),  DEFAULT,   DEFAULT],
+      <span class="number">52</span>:  [<span class="string">'4$'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">'\\'</span>)), DEFAULT,   DEFAULT],
+      <span class="number">53</span>:  [<span class="string">'5%'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">']'</span>)),  DEFAULT,   DEFAULT],
+      <span class="number">54</span>:  [<span class="string">'6^'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">'^'</span>)),  DEFAULT,   DEFAULT],
+      <span class="number">55</span>:  [<span class="string">'7&amp;'</span>,     DEFAULT, sh(PASS, ctl(<span class="string">'_'</span>)),  DEFAULT,   DEFAULT],
+      <span class="number">56</span>:  [<span class="string">'8*'</span>,     DEFAULT, sh(PASS, <span class="string">'\x7f'</span>),    DEFAULT,   DEFAULT],
+      <span class="number">57</span>:  [<span class="string">'9('</span>,     DEFAULT, sh(PASS, <span class="number">9</span>),         DEFAULT,   DEFAULT],
+      <span class="number">48</span>:  [<span class="string">'0)'</span>,     DEFAULT, PASS,                DEFAULT,   DEFAULT],
+      <span class="number">189</span>: [<span class="string">'-_'</span>,     DEFAULT, PASS,                DEFAULT,   DEFAULT],
+      <span class="number">187</span>: [<span class="string">'=+'</span>,     DEFAULT, PASS,                DEFAULT,   DEFAULT],
+
+      <span class="comment">/* Backspace */</span>
+      <span class="number">8</span>:   [<span class="string">'[BKSP]'</span>, sh(<span class="string">'\x7f'</span>, <span class="string">'\x08'</span>), DEFAULT, DEFAULT, DEFAULT],
+
+      <span class="comment">/* Third row */</span>
+      <span class="number">9</span>:   [<span class="string">'[TAB]'</span>, <span class="string">'\t'</span>,    PASS,      PASS,    DEFAULT],
+      <span class="number">81</span>:  [<span class="string">'qQ'</span>,    DEFAULT, ctl(<span class="string">'Q'</span>),  DEFAULT, DEFAULT],
+      <span class="number">87</span>:  [<span class="string">'wW'</span>,    DEFAULT, ctl(<span class="string">'W'</span>),  DEFAULT, DEFAULT],
+      <span class="number">69</span>:  [<span class="string">'eE'</span>,    DEFAULT, ctl(<span class="string">'E'</span>),  DEFAULT, DEFAULT],
+      <span class="number">82</span>:  [<span class="string">'rR'</span>,    DEFAULT, ctl(<span class="string">'R'</span>),  DEFAULT, DEFAULT],
+      <span class="number">84</span>:  [<span class="string">'tT'</span>,    DEFAULT, ctl(<span class="string">'T'</span>),  DEFAULT, DEFAULT],
+      <span class="number">89</span>:  [<span class="string">'yY'</span>,    DEFAULT, ctl(<span class="string">'Y'</span>),  DEFAULT, DEFAULT],
+      <span class="number">85</span>:  [<span class="string">'uU'</span>,    DEFAULT, ctl(<span class="string">'U'</span>),  DEFAULT, DEFAULT],
+      <span class="number">73</span>:  [<span class="string">'iI'</span>,    DEFAULT, ctl(<span class="string">'I'</span>),  DEFAULT, DEFAULT],
+      <span class="number">79</span>:  [<span class="string">'oO'</span>,    DEFAULT, ctl(<span class="string">'O'</span>),  DEFAULT, DEFAULT],
+      <span class="number">80</span>:  [<span class="string">'pP'</span>,    DEFAULT, ctl(<span class="string">'P'</span>),  DEFAULT, DEFAULT],
+      <span class="number">219</span>: [<span class="string">'[{'</span>,    DEFAULT, ctl(<span class="string">'['</span>),  DEFAULT, DEFAULT],
+      <span class="number">221</span>: [<span class="string">']}'</span>,    DEFAULT, ctl(<span class="string">']'</span>),  DEFAULT, DEFAULT],
+      <span class="number">220</span>: [<span class="string">'\\|'</span>,   DEFAULT, ctl(<span class="string">'\\'</span>), DEFAULT, DEFAULT],
+
+      <span class="comment">/* Fourth row */</span>
+      <span class="number">20</span>:  [<span class="string">'[CAPS]'</span>,  PASS,    PASS,     PASS,    DEFAULT],
+      <span class="number">65</span>:  [<span class="string">'aA'</span>,      DEFAULT, ctl(<span class="string">'A'</span>), DEFAULT, DEFAULT],
+      <span class="number">83</span>:  [<span class="string">'sS'</span>,      DEFAULT, ctl(<span class="string">'S'</span>), DEFAULT, DEFAULT],
+      <span class="number">68</span>:  [<span class="string">'dD'</span>,      DEFAULT, ctl(<span class="string">'D'</span>), DEFAULT, DEFAULT],
+      <span class="number">70</span>:  [<span class="string">'fF'</span>,      DEFAULT, ctl(<span class="string">'F'</span>), DEFAULT, DEFAULT],
+      <span class="number">71</span>:  [<span class="string">'gG'</span>,      DEFAULT, PASS,     DEFAULT, DEFAULT], <span class="comment">/* Modal Nav. */</span>
+      <span class="number">72</span>:  [<span class="string">'hH'</span>,      DEFAULT, ctl(<span class="string">'H'</span>), DEFAULT, DEFAULT],
+      <span class="number">74</span>:  [<span class="string">'jJ'</span>,      DEFAULT, ctl(<span class="string">'J'</span>), DEFAULT, DEFAULT],
+      <span class="number">75</span>:  [<span class="string">'kK'</span>,      DEFAULT, ctl(<span class="string">'K'</span>), DEFAULT, DEFAULT],
+      <span class="number">76</span>:  [<span class="string">'lL'</span>,      DEFAULT, ctl(<span class="string">'L'</span>), DEFAULT, DEFAULT],
+      <span class="number">186</span>: [<span class="string">';:'</span>,      DEFAULT, PASS,     DEFAULT, DEFAULT],
+      <span class="number">222</span>: [<span class="string">'\'"'</span>,     DEFAULT, PASS,     DEFAULT, DEFAULT],
+      <span class="number">13</span>:  [<span class="string">'[ENTER]'</span>, <span class="string">'\r'</span>,    PASS,     PASS,    DEFAULT],
+
+      <span class="comment">/* Fifth row */</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Fifth row.  This includes the copy/paste shortcuts.  On some
+platforms it&#39;s Ctrl-C/V, on others it&#39;s Meta-C/V.  We assume either
+Ctrl-C/Meta-C should pass to the browser when there is a selection,
+and Ctrl-Shift-V/Meta-*-V should always pass to the browser (since
+these seem to be recognized as paste too).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">16</span>:  [<span class="string">'[SHIFT]'</span>, PASS,    PASS,                   PASS,    DEFAULT],
+      <span class="number">90</span>:  [<span class="string">'zZ'</span>,      DEFAULT, ctl(<span class="string">'Z'</span>),               DEFAULT, DEFAULT],
+      <span class="number">88</span>:  [<span class="string">'xX'</span>,      DEFAULT, sel(ctl(<span class="string">'X'</span>), PASS),    DEFAULT, DEFAULT],
+      <span class="number">67</span>:  [<span class="string">'cC'</span>,      DEFAULT, <span class="string">'\x03'</span>,                 DEFAULT, DEFAULT],
+      <span class="number">86</span>:  [<span class="string">'vV'</span>,      DEFAULT, sh(ctl(<span class="string">'V'</span>), PASS),     DEFAULT, DEFAULT],
+      <span class="number">66</span>:  [<span class="string">'bB'</span>,      DEFAULT, sh(ctl(<span class="string">'B'</span>), PASS),     DEFAULT, DEFAULT],
+      <span class="number">78</span>:  [<span class="string">'nN'</span>,      DEFAULT, <span class="string">'\x0e'</span>,                 DEFAULT, DEFAULT],
+      <span class="number">77</span>:  [<span class="string">'mM'</span>,      DEFAULT, ctl(<span class="string">'M'</span>),               DEFAULT, DEFAULT],
+      <span class="number">188</span>: [<span class="string">',&lt;'</span>,      DEFAULT, PASS,                   DEFAULT, DEFAULT],
+      <span class="number">190</span>: [<span class="string">'.&gt;'</span>,      DEFAULT, PASS,                   DEFAULT, DEFAULT],
+      <span class="number">191</span>: [<span class="string">'/?'</span>,      DEFAULT, sh(ctl(<span class="string">'_'</span>), ctl(<span class="string">'?'</span>)), DEFAULT, DEFAULT],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Sixth and final row.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">17</span>: [<span class="string">'[CTRL]'</span>, PASS,    PASS,     PASS,    PASS],
+      <span class="number">18</span>: [<span class="string">'[ALT]'</span>,  PASS,    PASS,     PASS,    PASS],
+      <span class="number">91</span>: [<span class="string">'[LAPL]'</span>, PASS,    PASS,     PASS,    PASS],
+      <span class="number">32</span>: [<span class="string">' '</span>,      DEFAULT, ctl(<span class="string">'@'</span>), DEFAULT, DEFAULT],
+      <span class="number">92</span>: [<span class="string">'[RAPL]'</span>, PASS,    PASS,     PASS,    PASS],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>These things.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">42</span>:  [<span class="string">'[PRTSCR]'</span>, PASS, PASS, PASS, PASS],
+      <span class="number">145</span>: [<span class="string">'[SCRLK]'</span>,  PASS, PASS, PASS, PASS],
+      <span class="number">19</span>:  [<span class="string">'[BREAK]'</span>,  PASS, PASS, PASS, PASS],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>The block of six keys above the arrows.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">35</span>: [<span class="string">'[END]'</span>,    ak(CSI + <span class="string">'F'</span>, SS3 + <span class="string">'F'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">36</span>: [<span class="string">'[HOME]'</span>,   ak(CSI + <span class="string">'H'</span>, SS3 + <span class="string">'H'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">45</span>: [<span class="string">'[INSERT]'</span>, CSI + <span class="string">'2~'</span>,               DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">46</span>: [<span class="string">'[DEL]'</span>,    CSI + <span class="string">'3~'</span>,               DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">33</span>: [<span class="string">'[PGUP]'</span>,   CSI + <span class="string">'5~'</span>,               DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">34</span>: [<span class="string">'[PGDOWN]'</span>, CSI + <span class="string">'6~'</span>,               DEFAULT, DEFAULT, DEFAULT],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Arrow keys.  When unmodified they respect the application cursor state,
+otherwise they always send the CSI codes.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">38</span>: [<span class="string">'[UP]'</span>,    ac(CSI + <span class="string">'A'</span>, SS3 + <span class="string">'A'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">40</span>: [<span class="string">'[DOWN]'</span>,  ac(CSI + <span class="string">'B'</span>, SS3 + <span class="string">'B'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">39</span>: [<span class="string">'[RIGHT]'</span>, ac(CSI + <span class="string">'C'</span>, SS3 + <span class="string">'C'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">37</span>: [<span class="string">'[LEFT]'</span>,  ac(CSI + <span class="string">'D'</span>, SS3 + <span class="string">'D'</span>), DEFAULT, DEFAULT, DEFAULT],
+
+      <span class="number">144</span>: [<span class="string">'[NUMLOCK]'</span>, PASS, PASS, PASS, PASS],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>With numlock off, the keypad generates the same key codes as the arrows
+and &#39;block of six&#39; for some keys, and null key codes for the rest.</p>
+<p>Keypad with numlock on generates unique key codes...</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="number">96</span>:  [<span class="string">'[KP0]'</span>, ak(DEFAULT, CSI + <span class="string">'2~'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">97</span>:  [<span class="string">'[KP1]'</span>, ak(DEFAULT, SS3 + <span class="string">'F'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">98</span>:  [<span class="string">'[KP2]'</span>, ak(DEFAULT, CSI + <span class="string">'B'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">99</span>:  [<span class="string">'[KP3]'</span>, ak(DEFAULT, CSI + <span class="string">'6~'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">100</span>: [<span class="string">'[KP4]'</span>, ak(DEFAULT, CSI + <span class="string">'D'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">101</span>: [<span class="string">'[KP5]'</span>, ak(DEFAULT, CSI + <span class="string">'E'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">102</span>: [<span class="string">'[KP6]'</span>, ak(DEFAULT, CSI + <span class="string">'C'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">103</span>: [<span class="string">'[KP7]'</span>, ak(DEFAULT, SS3 + <span class="string">'H'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">104</span>: [<span class="string">'[KP8]'</span>, ak(DEFAULT, CSI + <span class="string">'A'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">105</span>: [<span class="string">'[KP9]'</span>, ak(DEFAULT, CSI + <span class="string">'5~'</span>), DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">107</span>: [<span class="string">'[KP+]'</span>, ak(DEFAULT, SS3 + <span class="string">'k'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">109</span>: [<span class="string">'[KP-]'</span>, ak(DEFAULT, SS3 + <span class="string">'m'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">106</span>: [<span class="string">'[KP*]'</span>, ak(DEFAULT, SS3 + <span class="string">'j'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">111</span>: [<span class="string">'[KP/]'</span>, ak(DEFAULT, SS3 + <span class="string">'o'</span>),  DEFAULT, DEFAULT, DEFAULT],
+      <span class="number">110</span>: [<span class="string">'[KP.]'</span>, ak(DEFAULT, CSI + <span class="string">'3~'</span>), DEFAULT, DEFAULT, DEFAULT]
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <h3>filter</h3>
+<pre><code>@e {event} the HTML event
+@mode {number} the current terminal mode</code></pre>
+<p>The actual filter</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">return</span> <span class="keyword">function</span>(e, mode) {
+
+      <span class="keyword">var</span> def = map[e.keyCode];
+      <span class="keyword">if</span>(!def) {
+        console.warn(<span class="string">'No definition for keyCode: '</span> + e.keyCode);
+      }
+
+      <span class="keyword">var</span> get = <span class="keyword">function</span>(idx) {
+        <span class="keyword">var</span> action = def[idx];
+        action = resolve(action, e, mode);
+        <span class="keyword">if</span>(action === DEFAULT &amp;&amp; idx !== <span class="number">1</span>)
+          action = get(<span class="number">1</span>);
+        <span class="keyword">return</span> action;
+      };
+
+      <span class="keyword">var</span> mod = {
+        shift: e.shitKey,
+        control: e.ctrlKey,
+        alt: e.altKey,
+        meta: e.metaKey
+      };
+      <span class="keyword">var</span> action = <span class="literal">null</span>;
+
+      <span class="keyword">if</span>(mod.control) {
+        action = get(<span class="number">2</span>);
+        mod.control = <span class="literal">false</span>;
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(mod.alt) {
+        action = get(<span class="number">3</span>);
+        mod.alt = <span class="literal">false</span>;
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(mod.meta) {
+        action = get(<span class="number">4</span>);
+        mod.meta = <span class="literal">false</span>;
+      }
+      <span class="keyword">else</span> {
+        action = get(<span class="number">1</span>);
+      }
+
+      <span class="keyword">if</span>(action === PASS || 
+         (action === DEFAULT &amp;&amp; !(mod.control || mod.alt || mod.meta))) {
+        <span class="comment">/* If this is supposed to be handled by the browser or this is an    */</span>
+        <span class="comment">/* unmodified default action (that will be handled by the `keypress` */</span>
+        <span class="comment">/* event), then we return this handler.                              */</span>
+        <span class="keyword">return</span>;
+      }
+
+      <span class="comment">/* We disable the propagation of this event as this has to be entirely */</span>
+      <span class="comment">/* handled by this keymap.                                             */</span>
+      e.preventDefault();
+      e.stopPropagation();
+
+      <span class="keyword">if</span>(action === DEFAULT)
+        action = <span class="literal">null</span>;
+
+      <span class="keyword">return</span> action;
+    };
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

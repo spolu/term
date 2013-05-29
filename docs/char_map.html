@@ -19,13 +19,33 @@
           <div id="jump_page">
             
               
-              <a class="source" href="session.html">
-                session.js
+              <a class="source" href="app.html">
+                app.js
               </a>
             
               
-              <a class="source" href="term.html">
-                term.js
+              <a class="source" href="colors_s.html">
+                colors_s.js
+              </a>
+            
+              
+              <a class="source" href="keymap_f.html">
+                keymap_f.js
+              </a>
+            
+              
+              <a class="source" href="session_s.html">
+                session_s.js
+              </a>
+            
+              
+              <a class="source" href="stack_d.html">
+                stack_d.js
+              </a>
+            
+              
+              <a class="source" href="term_d.html">
+                term_d.js
               </a>
             
               
@@ -34,8 +54,18 @@
               </a>
             
               
-              <a class="source" href="colors.html">
-                colors.js
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="session.html">
+                session.js
+              </a>
+            
+              
+              <a class="source" href="term.html">
+                term.js
               </a>
             
               
@@ -75,7 +105,7 @@
  * @log
  * - 20130410 spolu    fork from hterm
  */</span>
-<span class="keyword">var</span> common = require(<span class="string">'common'</span>);
+<span class="keyword">var</span> common = require(<span class="string">'./common.js'</span>);
 <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
 
 <span class="string">'use strict'</span>;</pre></div></div>
@@ -158,7 +188,7 @@ mapping will be automatically created </p>
 
     <span class="comment">/* Compute the GR mapping.                                    */</span>
     <span class="comment">/* This is the same as GL except all keys have their MSB set. */</span>
-    ny.grmap = {};
+    my.grmap = {};
 
     glkeys.forEach(<span class="keyword">function</span>(glkey) {
       <span class="keyword">var</span> grkey = String.fromCharCode(glkey.charCodeAt(<span class="number">0</span>) &amp; <span class="number">0x80</span>);
@@ -198,7 +228,7 @@ mapping will be automatically created </p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">if</span>(spec.glmap)
-    reset(glmap);
+    reset(spec.glmap);
 
   common.method(that, <span class="string">'reset'</span>, reset, _super);
 

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>term_d.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="app.html">
+                app.js
+              </a>
+            
+              
+              <a class="source" href="colors_s.html">
+                colors_s.js
+              </a>
+            
+              
+              <a class="source" href="keymap_f.html">
+                keymap_f.js
+              </a>
+            
+              
+              <a class="source" href="session_s.html">
+                session_s.js
+              </a>
+            
+              
+              <a class="source" href="stack_d.html">
+                stack_d.js
+              </a>
+            
+              
+              <a class="source" href="term_d.html">
+                term_d.js
+              </a>
+            
+              
+              <a class="source" href="char_map.html">
+                char_map.js
+              </a>
+            
+              
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="session.html">
+                session.js
+              </a>
+            
+              
+              <a class="source" href="term.html">
+                term.js
+              </a>
+            
+              
+              <a class="source" href="vt.html">
+                vt.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>term_d.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/**
+ * breach: term_d.js
+ *
+ * Copyright (c) 2013, Stanislas Polu. All rights reserved.
+ * (see LICENSE file)
+ *
+ * @log
+ * - 20130520 @spolu    Fix height resize causes the cursor to disappear #14
+ * - 20130517 @spolu    Cursor display
+ *                      Added basic scrolling and snapping
+ * - 20130508 @spolu    Faster rendering using pure HTML
+ * - 20130502 @spolu    Creation
+ */</span>
+<span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2>TermCtrl</h2>
+<p><code>term</code> directive controller.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>angular.module(<span class="string">'breach.directives'</span>).
+  controller(<span class="string">'TermCtrl'</span>, <span class="keyword">function</span>($scope, $element, $window, $timeout,
+                                  _session, _colors) {
+
+  <span class="keyword">var</span> CHAR_ATTRS = {
+    NULL: <span class="number">0</span>,
+    REVERSE: <span class="number">1</span>,
+    UNDERLINE: <span class="number">2</span>,
+    BOLD: <span class="number">4</span>,
+    GFX: <span class="number">8</span>,
+    ITALIC: <span class="number">16</span>,
+    BLINK: <span class="number">32</span>
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h3>glyph_style</h3>
+<pre><code>@attr {number} a glyph character attribute</code></pre>
+<p>Computes the CSS style of a given glyph as an object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.glyph_style = <span class="keyword">function</span>(attr) {
+    <span class="keyword">var</span> style = <span class="literal">null</span>;
+    <span class="keyword">if</span>((attr &gt;&gt; <span class="number">18</span>) &amp; CHAR_ATTRS.BOLD) {
+      style = style || <span class="string">''</span>;
+      style += <span class="string">'font-weight: bold;'</span>;
+    }
+    <span class="keyword">if</span>((attr &gt;&gt; <span class="number">18</span>) &amp; CHAR_ATTRS.UNDERLINE) {
+      style = style || <span class="string">''</span>;
+      style += <span class="string">'text-decoration: underline;'</span>;
+    }
+    <span class="keyword">if</span>((attr &gt;&gt; <span class="number">18</span>) &amp; CHAR_ATTRS.ITALIC) {
+      style = style || <span class="string">''</span>;
+      style += <span class="string">'font-style: italic;'</span>;
+    }
+    <span class="keyword">var</span> bg = attr &amp; <span class="number">0x11f</span>;
+    <span class="keyword">var</span> fg = (attr &gt;&gt; <span class="number">9</span>) &amp; <span class="number">0x11f</span>;
+    <span class="keyword">if</span>(fg !== <span class="number">257</span> || bg !== <span class="number">256</span>) {
+      style = style || <span class="string">''</span>;
+      style += <span class="string">'background-color: '</span> + _colors.palette[bg] + <span class="string">';'</span>;
+      style += <span class="string">'color: '</span> + _colors.palette[fg] + <span class="string">';'</span>;
+    }
+    <span class="keyword">if</span>((attr &gt;&gt; <span class="number">18</span>) &amp; CHAR_ATTRS.REVERSE) {
+      style = style || <span class="string">''</span>;
+      style += <span class="string">'background-color: '</span> + _colors.palette[fg] + <span class="string">';'</span>;
+      style += <span class="string">'color: '</span> + _colors.palette[bg] + <span class="string">';'</span>;
+    }
+    <span class="keyword">return</span> style;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h3>ctohtml</h3>
+<pre><code>@char {string} a character</code></pre>
+<p>Transforms a character into a html string</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.ctohtml = <span class="keyword">function</span>(char) {
+    <span class="keyword">switch</span>(char) {
+      <span class="keyword">case</span> <span class="string">'&amp;'</span>: {
+        <span class="keyword">return</span> <span class="string">'&amp;amp;'</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'&lt;'</span>: {
+        <span class="keyword">return</span> <span class="string">'&amp;lt;'</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'&gt;'</span>: {
+        <span class="keyword">return</span> <span class="string">'&amp;gt;'</span>;
+      }
+      <span class="keyword">default</span>: {
+        <span class="keyword">return</span> char &lt;= <span class="string">' '</span> ? <span class="string">'&amp;nbsp;'</span> : char;
+      }
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h3>compress_line</h3>
+<pre><code>@line {array} line of glyphs</code></pre>
+<p>Compress the line of glyph into an array of [string, style] words</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.compress_line = <span class="keyword">function</span>(line) {
+    <span class="comment">/* Prune the postfixing spaces. To avoid mutating the original buffer, we */</span>
+    <span class="comment">/* slice it before pruning it. We use the is_blank function to decide     */</span>
+    <span class="comment">/* wether the character can be pruned or not                              */</span>
+    <span class="keyword">var</span> line = line.slice(<span class="number">0</span>);
+    <span class="keyword">var</span> is_blank = <span class="keyword">function</span>(glyph) {
+      <span class="keyword">return</span> (line[line.length - <span class="number">1</span>][<span class="number">1</span>] &lt;= <span class="string">' '</span> &amp;&amp;
+              line[line.length - <span class="number">1</span>][<span class="number">0</span>] &amp; <span class="number">0x11f</span> === <span class="number">256</span> &amp;&amp;
+              (line[line.length - <span class="number">1</span>][<span class="number">0</span>] &gt;&gt; <span class="number">18</span>) &amp; CHAR_ATTRS.REVERSE);
+    };
+    <span class="keyword">while</span>(line.length &gt; <span class="number">0</span> &amp;&amp; is_blank(line[line.length - <span class="number">1</span>]))
+      line.pop();
+    <span class="keyword">if</span>(line.length === <span class="number">0</span>)
+      <span class="keyword">return</span> [];
+
+    <span class="keyword">var</span> words = [];
+
+    <span class="keyword">var</span> cur_style = line[<span class="number">0</span>][<span class="number">0</span>];
+    <span class="keyword">var</span> cur_string = $scope.ctohtml(line[<span class="number">0</span>][<span class="number">1</span>]);
+    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">1</span>; i &lt; line.length; i ++) {
+      <span class="keyword">if</span>(cur_style === line[i][<span class="number">0</span>]) {
+        cur_string += $scope.ctohtml(line[i][<span class="number">1</span>]);
+      }
+      <span class="keyword">else</span> {
+        words.push([cur_string, $scope.glyph_style(cur_style)]);
+        cur_style = line[i][<span class="number">0</span>];
+        cur_string = $scope.ctohtml(line[i][<span class="number">1</span>]);
+      }
+    }
+    words.push([cur_string, $scope.glyph_style(cur_style)]);
+
+    <span class="keyword">return</span> words;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h3>render_line</h3>
+<pre><code>@line   {array} line of glyphs</code></pre>
+<p>Renders a line of glyphs as div element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.render_line = <span class="keyword">function</span>(line) {
+    <span class="keyword">var</span> words = $scope.compress_line(line);
+    <span class="keyword">var</span> el = document.createElement(<span class="string">'div'</span>);
+    el.className = <span class="string">'line'</span>;
+
+    <span class="keyword">var</span> html = <span class="string">''</span>;
+    words.forEach(<span class="keyword">function</span>(word) {
+      <span class="keyword">if</span>(word[<span class="number">1</span>]) {
+        html += <span class="string">'&lt;span style="'</span> + word[<span class="number">1</span>] + <span class="string">'"&gt;'</span>;
+      }
+      html += word[<span class="number">0</span>];
+      <span class="keyword">if</span>(word[<span class="number">1</span>]) {
+        html += <span class="string">'&lt;/span&gt;'</span>;
+      }
+    });
+    el.innerHTML = html;
+    <span class="keyword">return</span> el;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h3>refresh_height</h3>
+<p>Sets the height of the term div according to the window height</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.refresh_height = <span class="keyword">function</span>() {
+    $($element).height($($window).height());
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h3>$on#refresh</h3>
+<pre><code>@evt    {event} the event triggering this handler
+@id     {string} the term id associated with this event
+@dirty  {array} the dirty region [first_line, last_line]
+@slice  {array} the slice of buffer to replace
+@cursor {object} the cursor object</code></pre>
+<p>Handles a refresh event and refreshes the terminal if needed
+TODO: too slow especially on full screen refreshes
+      probably due to the fact that we render all nodes each time
+      we scroll (but won&#39;t help with vim multi screen ??)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.$on(<span class="string">'refresh'</span>, <span class="keyword">function</span>(evt, id, dirty, slice, cursor) {
+    <span class="keyword">if</span>($scope.id === id) {
+      $scope.cursor = cursor;
+      <span class="keyword">var</span> sentinel = Math.min(dirty[<span class="number">1</span>] + <span class="number">1</span>, $scope.screen.nodes.length);
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = dirty[<span class="number">0</span>]; i &lt; sentinel &amp;&amp; i &lt; dirty[<span class="number">0</span>] + slice.length; i++) {
+        $scope.screen.nodes[i] = 
+          $scope.render_line(slice[i - dirty[<span class="number">0</span>]]);
+        <span class="comment">/* direct update */</span>
+        <span class="keyword">if</span>(i &gt;= $scope.screen.base) {
+          <span class="keyword">var</span> n = $scope.screen.container.childNodes[i - $scope.screen.base];
+          $scope.screen.container.insertBefore($scope.screen.nodes[i], n);
+          $scope.screen.container.removeChild(n);
+        }
+      }
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = sentinel - <span class="number">1</span>; i &gt;= dirty[<span class="number">0</span>] + slice.length; i--) {
+        <span class="keyword">var</span> n = $scope.screen.nodes[i];
+        <span class="keyword">delete</span> $scope.screen.nodes[i];
+        <span class="comment">/* direct update */</span>
+        $scope.screen.container.removeChild(n);
+      }
+      <span class="keyword">var</span> df = <span class="literal">null</span>;
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = sentinel; i &lt; (dirty[<span class="number">1</span>] + <span class="number">1</span>); i++) {
+        <span class="keyword">if</span>(slice[i - dirty[<span class="number">0</span>]]) {
+          $scope.screen.nodes[i] = 
+            $scope.render_line(slice[i - dirty[<span class="number">0</span>]]);
+          <span class="comment">/* direct update */</span>
+          $scope.screen.container.appendChild($scope.screen.nodes[i]);
+          <span class="keyword">if</span>($scope.screen.container.childNodes.length &gt; _session.rows()) {
+            <span class="keyword">var</span> n = $scope.screen.container.childNodes[<span class="number">0</span>]
+            $scope.screen.container.removeChild(n);
+            $scope.screen.base++;
+          }
+        }
+      }
+      $scope.screen.base = $scope.screen.nodes.length - _session.rows();
+    }
+  });
+
+  $scope.$on(<span class="string">'alternate'</span>, <span class="keyword">function</span>(evt, id, is_alt) {
+    <span class="keyword">if</span>($scope.id === id) {
+      <span class="keyword">if</span>(is_alt) {
+        $scope.alternate.container.className = <span class="string">'container'</span>;
+        $scope.main.container.className = <span class="string">'container hidden'</span>;
+        $scope.screen = $scope.alternate;
+        $scope.init();
+      }
+      <span class="keyword">else</span> {
+        $scope.alternate.container.className = <span class="string">'container hidden'</span>;
+        $scope.main.container.className = <span class="string">'container'</span>;
+        $scope.screen = $scope.main;
+      }
+    }
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h3>$window#resize</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $($window).resize(<span class="keyword">function</span>() {
+    $scope.refresh_height();
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h3>$element#mousewheel</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="comment">/*
+  $(document).ready(function(){
+    $($element).bind('mousewheel', function(e){
+      var c = $($scope.container);
+      var h = c.height() - _session.row_height() * _session.rows();
+      var top = c.position().top;
+      top += e.originalEvent.wheelDeltaY / 2;
+      top = top &gt; 0 ? 0 : top;
+      top = top &lt; -h ? -h : top;
+      c.css({
+        top: top + 'px'
+      });
+    });
+  });
+  */</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h3>redraw</h3>
+<p>Redraws the current container with the appropriate nodes given current
+base and nodes list</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.redraw = <span class="keyword">function</span>() {
+    <span class="keyword">while</span>($scope.screen.container.hasChildNodes()) {
+      $scope.screen.container.removeChild($scope.screen.container.lastChild);
+    }
+    <span class="keyword">var</span> df = document.createDocumentFragment();
+    <span class="keyword">for</span>(<span class="keyword">var</span> i = $scope.screen.base; 
+        i &lt; $scope.screen.nodes.length &amp;&amp; 
+        i &lt; $scope.screen.base + _session.rows();
+        i++) {
+      df.appendChild($scope.screen.nodes[i]);
+    }
+    $scope.screen.container.appendChild(df);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h3>init</h3>
+<p>Initialise the current container (alternate or main)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $scope.init = <span class="keyword">function</span>(alternate) {
+    <span class="keyword">var</span> buffer = _session.terms($scope.id).buffer;
+    $scope.cursor = _session.terms($scope.id).cursor;
+    $scope.screen.nodes = [];
+    <span class="keyword">while</span> ($scope.screen.container.firstChild) {
+      $scope.screen.container.removeChild($scope.screen.container.firstChild);
+    } 
+    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; buffer.length; i ++) {
+      $scope.screen.nodes[i] = $scope.render_line(buffer[i]);
+    }
+    $scope.redraw();
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h4">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h4><em>initialization</em></h4>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="comment">/* main */</span>
+  $scope.main = {
+    container: document.createElement(<span class="string">'div'</span>),
+    nodes: [],
+    base: <span class="number">0</span>
+  };
+  $scope.main.container.className = <span class="string">'container'</span>;
+  $($element).append($scope.main.container);
+
+  <span class="comment">/* alternate */</span>
+  $scope.alternate = {
+    container: document.createElement(<span class="string">'div'</span>),
+    nodes: [],
+    base: <span class="number">0</span>
+  };
+  $scope.alternate.container.className = <span class="string">'container hidden'</span>;
+  $($element).append($scope.alternate.container);
+
+  $scope.refresh_height();
+
+  $scope.screen = $scope.main;
+  $scope.init();
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2>term</h2>
+<pre><code>@=id     {string} the term id to render (see session_s.js)</code></pre>
+<p>The <code>term</code> directive renders a terminal buffer using <code>_session</code> data and row
+&amp; cols sizes specification.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>angular.module(<span class="string">'breach.directives'</span>).
+  directive(<span class="string">'term'</span>, <span class="keyword">function</span>() {
+  <span class="keyword">return</span> {
+    restrict: <span class="string">'E'</span>,
+    replace: <span class="literal">true</span>,
+    scope: {
+      id: <span class="string">'=id'</span>
+    },
+    template: <span class="string">'&lt;div class="term"&gt;&lt;/div&gt;'</span>,
+    controller: <span class="string">'TermCtrl'</span>
+  };
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

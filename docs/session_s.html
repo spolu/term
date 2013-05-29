@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>session_s.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="app.html">
+                app.js
+              </a>
+            
+              
+              <a class="source" href="colors_s.html">
+                colors_s.js
+              </a>
+            
+              
+              <a class="source" href="keymap_f.html">
+                keymap_f.js
+              </a>
+            
+              
+              <a class="source" href="session_s.html">
+                session_s.js
+              </a>
+            
+              
+              <a class="source" href="stack_d.html">
+                stack_d.js
+              </a>
+            
+              
+              <a class="source" href="term_d.html">
+                term_d.js
+              </a>
+            
+              
+              <a class="source" href="char_map.html">
+                char_map.js
+              </a>
+            
+              
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="session.html">
+                session.js
+              </a>
+            
+              
+              <a class="source" href="term.html">
+                term.js
+              </a>
+            
+              
+              <a class="source" href="vt.html">
+                vt.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>session_s.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/**
+ * breach: session_s.js
+ *
+ * Copyright (c) 2013, Stanislas Polu. All rights reserved.
+ * (see LICENSE file)
+ *
+ * @log
+ * - 20130517 @spolu    Cursor handling and event forwarding
+ * - 20130510 @spolu    Key handling support
+ * - 20130502 @spolu    Refresh and resize handling
+ * - 20130501 @spolu    Changed API (id based, dict)
+ * - 20130430 @spolu    Creation
+ */</span>
+<span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2>_session</h2>
+<p>Service in charge of exposing the underlying session object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>angular.module(<span class="string">'breach.services'</span>).
+  factory(<span class="string">'_session'</span>, <span class="keyword">function</span>($rootScope, $window, $filter) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h3>col_width</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> col_width = <span class="number">6</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h3>row_height</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> row_height = <span class="number">13</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h3>compute_cols</h3>
+<pre><code>@w {number} a width in pixel</code></pre>
+<p>Computes the number of cols to fit in a given window width in pixel</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> compute_cols = <span class="keyword">function</span>(w) {
+    <span class="keyword">return</span> Math.floor(w / col_width);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h3>compute_rows</h3>
+<pre><code>@h {number} a height in pixel</code></pre>
+<p>Computes the number of rows to fit in a given window height in pixel</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> compute_rows = <span class="keyword">function</span>(h) {
+    <span class="keyword">return</span> Math.floor(h / row_height);
+  };
+
+  <span class="keyword">var</span> session = require(<span class="string">'../lib/session.js'</span>).session({});
+  <span class="keyword">var</span> terms = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h3>handle of resize</h3>
+<p>Resize is handled only on row/col boundary triggering a call to the
+underlying session resize method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> cols = compute_cols($($window).width());
+  <span class="keyword">var</span> rows = compute_rows($($window).height());
+
+  $($window).resize(<span class="keyword">function</span>() {
+    <span class="keyword">if</span>(cols !== compute_cols($($window).width()) ||
+       rows !== compute_rows($($window).height())) {
+      cols = compute_cols($($window).width());
+      rows = compute_rows($($window).height());
+      session.resize(<span class="literal">null</span>, cols, rows);
+    }
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h3>spawn</h3>
+<p>Event triggered when a new terminal is spawned within the current session</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  session.on(<span class="string">'spawn'</span>, <span class="keyword">function</span>(id, term) {
+    terms[id] = term;
+    <span class="comment">/*
+    console.log('SPAWN: [' + id + ']');
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
+    */</span>
+    $rootScope.$broadcast(<span class="string">'spawn'</span>, id, term);
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h3>refresh</h3>
+<p>Event triggered when a terminal need to refresh part of his buffer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  session.on(<span class="string">'refresh'</span>, <span class="keyword">function</span>(id, dirty, slice, cursor) {
+    <span class="keyword">if</span>((dirty[<span class="number">1</span>] - dirty[<span class="number">0</span>] + <span class="number">1</span>) &lt; slice.length)
+      <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'dirty &lt; slice'</span>);
+    terms[id].cursor = cursor;
+    <span class="keyword">var</span> args = [dirty[<span class="number">0</span>], dirty[<span class="number">1</span>] - dirty[<span class="number">0</span>] + <span class="number">1</span>].concat(slice);
+    Array.prototype.splice.apply(terms[id].buffer, args);
+    console.log(<span class="string">'REFRESH ['</span> + id + <span class="string">'] ['</span> + dirty[<span class="number">0</span>] + <span class="string">', '</span> + dirty[<span class="number">1</span>] + <span class="string">'] '</span> + 
+                                     <span class="string">'('</span> + slice.length + <span class="string">') '</span> + 
+                                     <span class="string">'{'</span> + cursor.x + <span class="string">', '</span> + cursor.y + <span class="string">'}'</span>);
+    <span class="comment">/*
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer[0].length + 'x' + terms[id].buffer.length);
+    */</span>
+    $rootScope.$apply(<span class="keyword">function</span>() {
+      $rootScope.$broadcast(<span class="string">'refresh'</span>, id, dirty, slice, cursor);
+    });
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h3>alternate</h3>
+<p>Event triggered when a terminal sets itself in alternate screen mode</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  session.on(<span class="string">'alternate'</span>, <span class="keyword">function</span>(id, is_alt, buffer) {
+    terms[id].buffer = buffer;
+    <span class="comment">/*
+    console.log('ALTERNATE [' + id + '] ' + is_alt);
+    */</span>
+    $rootScope.$apply(<span class="keyword">function</span>() {
+      $rootScope.$broadcast(<span class="string">'alternate'</span>, id, is_alt);
+    });
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h3>title</h3>
+<p>Event triggered when the title of a terminal is set</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  session.on(<span class="string">'title'</span>, <span class="keyword">function</span>(id, title) {
+    <span class="comment">/*
+    console.log('TITLE [' + id + '] ' + title);
+    console.log('STATE [' + id + '] ' + 
+                terms[id].buffer.length + ' ' + terms[id].buffer[0].length);
+    */</span>
+    terms[id].title = title;
+    $rootScope.$apply(<span class="keyword">function</span>() {
+      $rootScope.$broadcast(<span class="string">'title'</span>, id, title);
+    });
+  });
+
+
+  <span class="keyword">var</span> _session = {
+    terms: <span class="keyword">function</span>(id) {
+      <span class="keyword">if</span>(id) {
+        <span class="keyword">if</span>(terms[id]) <span class="keyword">return</span> terms[id];
+        <span class="keyword">else</span> <span class="keyword">return</span> <span class="literal">null</span>;
+      }
+      <span class="keyword">return</span> terms;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h3>spawn</h3>
+<p>Spawns a new term in the current session</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    spawn: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> session.spawn(cols, rows);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h3>keydown</h3>
+<pre><code>@id  {string} the id of the targeted terminal
+@evt {event} the keypress event</code></pre>
+<p><code>keydown</code> events are used for escape sequences</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    keydown: <span class="keyword">function</span>(id, evt) {
+      <span class="keyword">var</span> str = $filter(<span class="string">'keymap'</span>)(evt, session.term_mode(id));
+      <span class="keyword">if</span>(<span class="keyword">typeof</span> str === <span class="string">'string'</span> &amp;&amp; str.length &gt; <span class="number">0</span>)
+        session.write(id, str);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h3>keypress</h3>
+<pre><code>@id  {string} the id of the targeted terminal
+@evt {event} the keypress event</code></pre>
+<p><code>keypress</code> events are used for normal unescaped characters</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    keypress: <span class="keyword">function</span>(id, evt) {
+      session.write(id, String.fromCharCode(evt.charCode));
+      evt.preventDefault();
+      evt.stopPropagation();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h3>write</h3>
+<pre><code>@str {string} string to write to terminal</code></pre>
+<p>Writes the string to the terminal designated by id</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    write: <span class="keyword">function</span>(id, str) {
+      session.write(id, str);
+    },
+
+    cols: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> compute_cols($($window).width());
+    },
+    rows: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> compute_rows($($window).height());
+    },
+    col_width: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> col_width;
+    },
+    row_height: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> row_height;
+    }
+  };
+
+  <span class="keyword">return</span> _session;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

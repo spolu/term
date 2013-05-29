@@ -19,13 +19,33 @@
           <div id="jump_page">
             
               
-              <a class="source" href="session.html">
-                session.js
+              <a class="source" href="app.html">
+                app.js
               </a>
             
               
-              <a class="source" href="term.html">
-                term.js
+              <a class="source" href="colors_s.html">
+                colors_s.js
+              </a>
+            
+              
+              <a class="source" href="keymap_f.html">
+                keymap_f.js
+              </a>
+            
+              
+              <a class="source" href="session_s.html">
+                session_s.js
+              </a>
+            
+              
+              <a class="source" href="stack_d.html">
+                stack_d.js
+              </a>
+            
+              
+              <a class="source" href="term_d.html">
+                term_d.js
               </a>
             
               
@@ -34,8 +54,18 @@
               </a>
             
               
-              <a class="source" href="colors.html">
-                colors.js
+              <a class="source" href="common.html">
+                common.js
+              </a>
+            
+              
+              <a class="source" href="session.html">
+                session.js
+              </a>
+            
+              
+              <a class="source" href="term.html">
+                term.js
               </a>
             
               
@@ -67,19 +97,23 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="comment">/*
- * mt: vt.js
+ * breach: vt.js
  *
  * Copyright (c) 2013, Stanislas Polu. All rights reserved.
  * (see LICENSE file)
  *
  * @log
- * - 20130410 spolu    fork from hterm
+ * - 20130514 @spolu    Fixes to properly run vim
+ * - 20130510 @spolu    Fixes first time running vim
+ * - 20130429 @spolu    First stabilized API
+ * - 20130410 @spolu    Fork from hterm
  */</span>
-<span class="keyword">var</span> common = require(<span class="string">'../common.js'</span>);
+<span class="string">'use strict'</span>;
+
+<span class="keyword">var</span> common = require(<span class="string">'./common.js'</span>);
 <span class="keyword">var</span> events = require(<span class="string">'events'</span>);
 <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
-
-<span class="string">'use strict'</span>;</pre></div></div>
+<span class="keyword">var</span> factory = common.factory({ debug: <span class="literal">false</span> });</pre></div></div>
             
         </li>
         
@@ -90,13 +124,14 @@
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2>parse_state</h2>
+              <h2>state</h2>
 <p>Helper class to represent the parser state</p>
-<pre><code>@spec {object} { def_fun }</code></pre>
+<pre><code>@inherits {}
+@spec {object} { def_fun }</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="keyword">var</span> parse_state = <span class="keyword">function</span>(spec, my) {
+            <div class="content"><div class='highlight'><pre><span class="keyword">var</span> state = <span class="keyword">function</span>(spec, my) {
   <span class="keyword">var</span> _super = {};
   my = my || {};</pre></div></div>
             
@@ -295,8 +330,7 @@
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <h3>peek_buf</h3>
-<p>Return the remaining portion of the buffer without affecting
-the parse_state.</p>
+<p>Return the remaining portion of the buffer without affecting the state.</p>
 
             </div>
             
@@ -314,8 +348,7 @@ the parse_state.</p>
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <h3>peek</h3>
-<p>Return the next character of the buffer without affecting the 
-parse_state.</p>
+<p>Return the next character of the buffer without affecting the state.</p>
 
             </div>
             
@@ -377,6 +410,7 @@ the end.</p>
   common.getter(that, <span class="string">'pos'</span>, my, <span class="string">'pos'</span>);
   common.getter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
   common.setter(that, <span class="string">'fun'</span>, my, <span class="string">'fun'</span>);
+  common.getter(that, <span class="string">'args'</span>, my, <span class="string">'args'</span>);
 
   <span class="keyword">return</span> that;
 };</pre></div></div>
@@ -390,171 +424,15 @@ the end.</p>
               <div class="pilwrap for-h2">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <h2>cursor_state</h2>
-<p>Helper class to store and revert a cursor state used in DECSC</p>
-<pre><code>@spec {object} { vt }</code></pre>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="keyword">var</span> cursor_state = <span class="keyword">function</span>(spec, my) {
-  <span class="keyword">var</span> _super = {};
-  my = my || {};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <h4><em>private members</em></h4>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  my.vt = spec.vt</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-18">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-18">&#182;</a>
-              </div>
-              <h4><em>public methods</em></h4>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> save;    <span class="comment">/* save(); */</span>
-  <span class="keyword">var</span> restore; <span class="comment">/* save(); */</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-19">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-19">&#182;</a>
-              </div>
-              <h4><em>that</em></h4>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> that = {};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-20">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-20">&#182;</a>
-              </div>
-              <h3>save</h3>
-<p>Save the cursor state from the VT associaged</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  save = <span class="keyword">function</span>() {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-21">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
-              </div>
-              <p>TODO
-this.cursor = this.vt<em>.terminal.saveCursor();
-this.textAttributes = this.vt</em>.terminal.getTextAttributes().clone();</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    my.GL = my.vt.GL();
-    my.GR = my.vt.GR();
-
-    my.G0 = my.vt.G0();
-    my.G1 = my.vt.G1();
-    my.G2 = my.vt.G2();
-    my.G3 = my.vt.G3();
-  };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-22">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-22">&#182;</a>
-              </div>
-              <h3>restore</h3>
-<p>Restores the previously saved cursor state to the VT associated</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  restore = <span class="keyword">function</span>() {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-23">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
-              </div>
-              <p>TODO
-this.vt<em>.terminal.restoreCursor(this.cursor);
-this.vt</em>.terminal.setTextAttributes(this.textAttributes.clone());</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-24">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-24">&#182;</a>
-              </div>
-              <h3>initialization</h3>
-<p>We first start by saving the current VT sate</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  save();
-
-  common.method(that, <span class="string">'save'</span>, save, _super);
-  common.method(that, <span class="string">'restore'</span>, restore, _super);
-
-  <span class="keyword">return</span> that;
-};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-25">
-            <div class="annotation">
-              
-              <div class="pilwrap for-h2">
-                <a class="pilcrow" href="#section-25">&#182;</a>
-              </div>
               <h2>vt</h2>
 <p>Escape sequence interpreter </p>
 <p>The <code>vt</code> object is in charge of parsing and interpreting the
 sequence sent to the terminal and pass them to the terminal
 to execute cursor operations.</p>
+<p>Originally forked from:
+Chromium&#39;s hterm [<a href="http://goo.gl/3i5AJ">http://goo.gl/3i5AJ</a>]
+Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+<a href="http://src.chromium.org/viewvc/chrome/trunk/src/LICENSE?view=markup">http://src.chromium.org/viewvc/chrome/trunk/src/LICENSE?view=markup</a></p>
 <h4>Guides:</h4>
 <ul>
 <li>[VT100] VT100 User Guide
@@ -569,10 +447,10 @@ to execute cursor operations.</p>
 <a href="http://en.wikipedia.org/wiki/Control_Sequence_Introducer">http://en.wikipedia.org/wiki/Control_Sequence_Introducer</a></li>
 </ul>
 <pre><code>@spec {object} { 
-    allow_width_change, 
-    osc_time_limit,
-    max_string_sequence,
-    warn
+    allow_width_change,  [optional]
+    osc_time_limit,      [optional]
+    max_string_sequence, [optional]
+    warn                 [optional]
  }</code></pre>
 
             </div>
@@ -584,11 +462,11 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <h4><em>protected methods</em></h4>
 
@@ -599,51 +477,56 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <h4><em>private methods</em></h4>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> parse_unknown;                 <span class="comment">/* parse_unknown(); */</span>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> save_cursor;                   <span class="comment">/* cursor_save(); */</span>
+  <span class="keyword">var</span> restore_cursor;                <span class="comment">/* cursor_reset(); */</span>
+  <span class="keyword">var</span> parse_unknown;                 <span class="comment">/* parse_unknown(); */</span>
   <span class="keyword">var</span> parse_csi;                     <span class="comment">/* parse_csi(); */</span>
   <span class="keyword">var</span> parse_until_string_terminator; <span class="comment">/* parse_until_string_terminator */</span>
   <span class="keyword">var</span> dispatch;                      <span class="comment">/* dispatch(); */</span>
-  <span class="keyword">var</span> ignore;                        <span class="comment">/* ignore(); */</span></pre></div></div>
+  <span class="keyword">var</span> ignore;                        <span class="comment">/* ignore(); */</span>
+  <span class="keyword">var</span> set_ansi_mode;                 <span class="comment">/* set_ansi_mode(code, state); */</span>
+  <span class="keyword">var</span> set_dec_mode;                  <span class="comment">/* set_dec_mode(code, state); */</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-28">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <h4><em>private members</em></h4>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  my.parse_state = parse_state(parse_unknown);
+            <div class="content"><div class='highlight'><pre>  my.state = <span class="literal">null</span>;
   my.leading_modifier = <span class="string">''</span>;
   my.trailing_modifier = <span class="string">''</span>;
-  my.allow_width_change = spec.allow_width_change || <span class="literal">false</span>;
-  my.osc_time_limit = spec.osc_time_limit || <span class="number">20000</span>;
+  my.allow_width_change = spec.allow_width_change || <span class="literal">true</span>;
+  my.osc_time_limit = spec.osc_time_limit || <span class="number">2000</span>;
   my.max_string_sequence = spec.max_string_sequence || <span class="number">1024</span>;
-  my.warn = spec.warn || <span class="literal">true</span>;</pre></div></div>
+  my.warn = spec.warn || <span class="literal">true</span>;
+  my.saved_state = {};</pre></div></div>
             
         </li>
         
         
-        <li id="section-29">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <h4><em>public methods</em></h4>
 
@@ -657,11 +540,69 @@ to execute cursor operations.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h3>cursor_save</h3>
+<p>Saves the cursor state and emits a <code>save_cursor</code> event for the terminal
+to save its actual cursor state.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  save_cursor = <span class="keyword">function</span>() {
+    my.saved_state = {
+      GL: my.GL,
+      GR: my.GR,
+
+      G0: my.G0,
+      G1: my.G1,
+      G2: my.G2,
+      G4: my.G3
+    };
+
+    <span class="comment">/* Saves cursor and text attributes */</span>
+    that.emit(<span class="string">'save_cursor'</span>);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <h3>cursor_restore</h3>
+<p>Restores the cursor state and emits a <code>restor_cursor</code> event for the
+terminal to restor its cursor state.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  restore_cursor = <span class="keyword">function</span>() {
+    my.GL = my.saved_state.GL;
+    my.GR = my.saved_state.GR;
+
+    my.G0 = my.saved_state.G0;
+    my.G1 = my.saved_state.G1;
+    my.G2 = my.saved_state.G2;
+    my.G3 = my.saved_state.G3;
+
+    <span class="comment">/* Restores cursor and text attributes */</span>
+    that.emit(<span class="string">'restore_cursor'</span>);
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <h3>reset</h3>
 <p>Resets the VT to its initial default state</p>
@@ -669,6 +610,11 @@ to execute cursor operations.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  reset = <span class="keyword">function</span>() {
+    <span class="comment">/* We initialize the state here if not already done since we need to */</span>
+    <span class="comment">/* wait for parse_unknown to be defined to construct it              */</span>
+    <span class="keyword">if</span>(!my.state)
+      my.state = state({ def_fun: parse_unknown })
+
     my.G0 = require(<span class="string">'./char_map.js'</span>).maps[<span class="string">'B'</span>];
     my.G1 = require(<span class="string">'./char_map.js'</span>).maps[<span class="string">'0'</span>];
     my.G2 = require(<span class="string">'./char_map.js'</span>).maps[<span class="string">'B'</span>];
@@ -677,17 +623,24 @@ to execute cursor operations.</p>
     my.GL = <span class="string">'G0'</span>;
     my.GR = <span class="string">'G0'</span>;
 
-    my.saved_state = cursor_state({ vt: that });
+    my.saved_state = {
+      GL: my.GL,
+      GR: my.GR,
+      G0: my.G0,
+      G1: my.G1,
+      G2: my.G2,
+      G4: my.G3
+    };
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-31">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <h3>read</h3>
 <pre><code>@buf The string bufffer to read</code></pre>
@@ -697,17 +650,37 @@ underlying terminal</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  read = <span class="keyword">function</span>(buf) {
-    my.parse_state.reset_buf(buf.toString(<span class="string">'utf8'</span>));
+    <span class="keyword">var</span> str = buf;
+    str = str.replace(<span class="regexp">/\x00/g</span>, <span class="string">'\\x00'</span>);
+    str = str.replace(<span class="regexp">/\x05/g</span>, <span class="string">'\\x05'</span>);
+    str = str.replace(<span class="regexp">/\x07/g</span>, <span class="string">'\\x07'</span>);
+    str = str.replace(<span class="regexp">/\x08/g</span>, <span class="string">'\\x08'</span>);
+    str = str.replace(<span class="regexp">/\x09/g</span>, <span class="string">'\\x09'</span>);
+    str = str.replace(<span class="regexp">/\x0a/g</span>, <span class="string">'\\x0a'</span>);
+    str = str.replace(<span class="regexp">/\x0b/g</span>, <span class="string">'\\x0b'</span>);
+    str = str.replace(<span class="regexp">/\x0c/g</span>, <span class="string">'\\x0c'</span>);
+    str = str.replace(<span class="regexp">/\x0d/g</span>, <span class="string">'\\x0d'</span>);
+    str = str.replace(<span class="regexp">/\x0e/g</span>, <span class="string">'\\x0e'</span>);
+    str = str.replace(<span class="regexp">/\x0f/g</span>, <span class="string">'\\x0f'</span>);
+    str = str.replace(<span class="regexp">/\x11/g</span>, <span class="string">'\\x11'</span>);
+    str = str.replace(<span class="regexp">/\x13/g</span>, <span class="string">'\\x13'</span>);
+    str = str.replace(<span class="regexp">/\x18/g</span>, <span class="string">'\\x18'</span>);
+    str = str.replace(<span class="regexp">/\x1a/g</span>, <span class="string">'\\x1a'</span>);
+    str = str.replace(<span class="regexp">/\x1b/g</span>, <span class="string">'\\x1b'</span>);
+    str = str.replace(<span class="regexp">/\x7f/g</span>, <span class="string">'\\x7f'</span>);
+    factory.log().debug(<span class="string">'PTY: '</span> + str);
 
-    <span class="keyword">while</span>(!my.parse_state.is_complete()) {
-      <span class="keyword">var</span> fun = my.parse_state.fun();
-      <span class="keyword">var</span> buf = my.parse_state.buf();
-      <span class="keyword">var</span> pos = my.parse_state.pos();
+    my.state.reset_buf(buf.toString(<span class="string">'utf8'</span>));
 
-      my.parse_state.fun();
-      <span class="keyword">if</span>(my.parse_state.fun() === fun &amp;&amp;
-         my.parse_state.buf() === buf &amp;&amp;
-         my.parse_state.pos() === pos) {
+    <span class="keyword">while</span>(!my.state.is_complete()) {
+      <span class="keyword">var</span> fun = my.state.fun();
+      <span class="keyword">var</span> buf = my.state.buf();
+      <span class="keyword">var</span> pos = my.state.pos();
+
+      my.state.fun()();
+      <span class="keyword">if</span>(my.state.fun() === fun &amp;&amp;
+         my.state.buf() === buf &amp;&amp;
+         my.state.pos() === pos) {
         <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Parser `fun` failed to alter state'</span>);
       }
     }
@@ -720,11 +693,11 @@ underlying terminal</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <h3>parse_unknown</h3>
 <p>Default parse function. Scans the string for 1-byte control character
@@ -737,40 +710,40 @@ normally to the terminal, the the control character will be dispatched.</p>
     <span class="function"><span class="keyword">function</span> <span class="title">print</span><span class="params">(str)</span> {</span>
       <span class="keyword">var</span> str;
       <span class="keyword">if</span>(my[my.GL].GL)
-         str = my[my.GL].GL(str);
+        str = my[my.GL].GL(str);
       <span class="keyword">if</span>(my[my.GR].RL)
-         str = my[my.GR].GR(str);
-     that.emit(<span class="string">'term_print'</span>, str);
-    }
+        str = my[my.GR].GR(str);
+      that.emit(<span class="string">'print'</span>, str);
+    };
 
-    <span class="keyword">var</span> buf = my.parse_state.peek_buf();
+    <span class="keyword">var</span> buf = my.state.peek_buf();
     <span class="keyword">var</span> next_control = buf.search(my.cc1_r);
 
     <span class="keyword">if</span>(next_control === <span class="number">0</span>) {
       <span class="comment">/* We just stumbled into a control character */</span>
       dispatch(<span class="string">'CC1'</span>, buf.substr(<span class="number">0</span>, <span class="number">1</span>));
-      my.parse_state.advance(<span class="number">1</span>);
+      my.state.advance(<span class="number">1</span>);
     }
     <span class="keyword">else</span> <span class="keyword">if</span>(next_control === -<span class="number">1</span>) {
       <span class="comment">/* No control character, we print */</span>
       print(buf);
-      my.parse_state.reset();
+      my.state.reset();
     }
     <span class="keyword">else</span> {
       print(buf.substr(<span class="number">0</span>, next_control));
-      <span class="keyword">this</span>.dipatch(<span class="string">'CC1'</span>, buf.substr(next_control, <span class="number">1</span>));
-      my.parse_state.advance(next_control + <span class="number">1</span>);
+      dispatch(<span class="string">'CC1'</span>, buf.substr(next_control, <span class="number">1</span>));
+      my.state.advance(next_control + <span class="number">1</span>);
     }
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-33">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <h3>parse_csi</h3>
 <p>Parse a Control Sequence Introducer code and dispatch it</p>
@@ -778,19 +751,19 @@ normally to the terminal, the the control character will be dispatched.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  parse_csi = <span class="keyword">function</span>() {
-    <span class="keyword">var</span> ch = my.parse_state.peek();
-    <span class="keyword">var</span> args = my.parse_state.args();
+    <span class="keyword">var</span> ch = my.state.peek();
+    <span class="keyword">var</span> args = my.state.args();
 
     <span class="keyword">if</span>(ch &gt;= <span class="string">'@'</span> &amp;&amp; ch &lt;= <span class="string">'~'</span>) {
       <span class="comment">/* This is the final character */</span>
       dispatch(<span class="string">'CSI'</span>, my.leading_modifier + my.trailing_modifier + ch);
-      my.parse_state.reset_fun();
+      my.state.reset_fun();
     }
     <span class="keyword">else</span> <span class="keyword">if</span>(ch === <span class="string">';'</span>) {
       <span class="comment">/* Parameter delimiter */</span>
       <span class="keyword">if</span>(my.trailing_modifier) {
         <span class="comment">/* Parameter delimiter after the trailing modifier. paddlin' */</span>
-        parse_state.reset_fun();
+        my.state.reset_fun();
       }
       <span class="keyword">else</span> {
         <span class="keyword">if</span>(!args.length) {
@@ -802,7 +775,7 @@ normally to the terminal, the the control character will be dispatched.</p>
     }
     <span class="keyword">else</span> <span class="keyword">if</span> (ch &gt;= <span class="string">'0'</span> &amp;&amp; ch &lt;= <span class="string">'9'</span>) {
       <span class="keyword">if</span>(my.trailing_modifier) {
-        parse_state.reset_fun();
+        my.state.reset_fun();
       }
       <span class="keyword">else</span> <span class="keyword">if</span>(!args.length) {
         args[<span class="number">0</span>] = ch;
@@ -823,19 +796,19 @@ normally to the terminal, the the control character will be dispatched.</p>
       dispatch(<span class="string">'CC1'</span>, ch);
     }
     <span class="keyword">else</span> {
-      parse_state.reset_fun();
+      my.state.reset_fun();
     }
-    my.parse_state.advance(<span class="number">1</span>);
+    my.state.advance(<span class="number">1</span>);
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-34">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <h3>parse_until_string_terminator</h3>
 <pre><code>@return {boolean} if true, parsing is complete else it exceeded</code></pre>
@@ -845,9 +818,9 @@ Bell (BEL, &#39;\x07&#39;)</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  parse_until_string_terminator = <span class="keyword">function</span>() {
-    <span class="keyword">var</span> buf = my.parse_state.peek_buf();
+    <span class="keyword">var</span> buf = my.state.peek_buf();
     <span class="keyword">var</span> next_terminator = buf.search(<span class="regexp">/(\x1b\\|\x07)/</span>);
-    <span class="keyword">var</span> args = my.parse_state.args();
+    <span class="keyword">var</span> args = my.state.args();
 
     <span class="keyword">if</span>(!args.length) {
       args[<span class="number">0</span>] = <span class="string">''</span>;
@@ -867,25 +840,25 @@ Bell (BEL, &#39;\x07&#39;)</p>
         abort = <span class="string">'Timeout expired: '</span> + (<span class="keyword">new</span> Date() - args[<span class="number">1</span>]);
 
       <span class="keyword">if</span>(abort) {
-        console.log(<span class="string">'`parse_until_string_terminator` aborting: '</span> + 
-                    abort + <span class="string">' ['</span> + args[<span class="number">0</span>] + <span class="string">']'</span>);
-        my.parse_state.reset(args[<span class="number">0</span>]);
+        factory.log().out(<span class="string">'`parse_until_string_terminator` aborting: '</span> + 
+                          abort + <span class="string">' ['</span> + args[<span class="number">0</span>] + <span class="string">']'</span>);
+        my.state.reset(args[<span class="number">0</span>]);
         <span class="keyword">return</span> <span class="literal">false</span>;
       }
       
-      my.parse_state.advance(buf.length);
+      my.state.advance(buf.length);
       <span class="keyword">return</span> <span class="literal">true</span>;
     }
     <span class="keyword">else</span> <span class="keyword">if</span>((args[<span class="number">0</span>].length + next_terminator) &gt; my.max_string_sequence) {
       <span class="comment">/* Found the end of sequence but it's too long */</span>
-      my.parse_state.reset(args[<span class="number">0</span>] + buf);
+      my.state.reset(args[<span class="number">0</span>] + buf);
       <span class="keyword">return</span> <span class="literal">false</span>;
     }
     <span class="keyword">else</span> {
       <span class="comment">/* Found the terminator. String is accumulated in args[0] */</span>
       args[<span class="number">0</span>] += buf.substr(<span class="number">0</span>, next_terminator);
-      my.parse_state.reset_fun();
-      my.parse_state.advance(next_terminator +
+      my.state.reset_fun();
+      my.state.advance(next_terminator +
                              (buf.substr(next_terminator, <span class="number">1</span>) === <span class="string">'\x1b'</span> ? 
                               <span class="number">2</span> : <span class="number">1</span>));
       <span class="keyword">return</span> <span class="literal">true</span>;
@@ -899,11 +872,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <h3>dispatch</h3>
 <pre><code>@type {string} the escape sequence type
@@ -916,49 +889,255 @@ Bell (BEL, &#39;\x07&#39;)</p>
     <span class="keyword">var</span> handler = my[type][code];
     <span class="keyword">if</span>(!handler || handler === ignore) {
       <span class="keyword">if</span>(my.warn) {
-        console.log(<span class="string">'Unknown/Ignore '</span> + type + <span class="string">' code: '</span> + code);
+        factory.log().out(<span class="string">'Unknown/Ignore '</span> + type + <span class="string">' code: '</span> + code);
+        <span class="comment">/* factory.log().out(new Error().stack); */</span>
       }
       <span class="keyword">return</span>;
     }
     <span class="keyword">if</span>(type === <span class="string">'CC1'</span> &amp;&amp; code &gt; <span class="string">'\x7f'</span>) {
       <span class="comment">/* We don't handle 8-bit controls. So let's just ignore */</span>
       <span class="keyword">if</span>(my.warn) {
-        console.log(<span class="string">'Ignored 8-bit control code: 0x'</span> + 
-                    code.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>));
+        factory.log().out(<span class="string">'Ignored 8-bit control code: 0x'</span> + 
+                          code.charCodeAt(<span class="number">0</span>).toString(<span class="number">16</span>));
       }
       <span class="keyword">return</span>;
     }
     <span class="keyword">return</span> handler(code);
+  };
+
+  <span class="comment">/****************************************************************************/</span>
+  <span class="comment">/*                                  MODES                                   */</span>
+  <span class="comment">/****************************************************************************/</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <h3>set_ansi_mode</h3>
+<pre><code>@code {string} the code of the ANSI mode to switch to
+@state {boolean} mode state</code></pre>
+<p>Set one o the ANSI defined terminal mode bits</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  set_ansi_mode = <span class="keyword">function</span>(code, state) {
+    <span class="keyword">if</span>(code === <span class="string">'4'</span>)
+      that.emit(<span class="string">'set_insert_mode'</span>, state)
+    <span class="keyword">else</span> <span class="keyword">if</span>(code === <span class="string">'20'</span>)
+      that.emit(<span class="string">'set_auto_carriage_return'</span>, state)
+    <span class="keyword">else</span> <span class="keyword">if</span>(my.warn)
+      factory.log().out(<span class="string">'Unimplemented ANSI Mode: '</span> + code);
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-36">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <h3>set_dec_mode</h3>
+<pre><code>@code {string} the code of the DEC mode to switch to
+@state {boolean} mode state</code></pre>
+<p>Invoked in response to DECSET/DECRST.
+Expected values for code:
+    1 - Application Cursor Keys (DECCKM).
+    2 - [!] Designate USASCII for character sets G0-G3 (DECANM), and set
+        VT100 mode.
+    3 - 132 Column Mode (DECCOLM).
+    4 - [x] Smooth (Slow) Scroll (DECSCLM).
+    5 - Reverse Video (DECSCNM).
+    6 - Origin Mode (DECOM).
+    7 - Wraparound Mode (DECAWM).
+    8 - [x] Auto-repeat Keys (DECARM).
+    9 - [!] Send Mouse X &amp; Y on button press.
+   10 - [x] Show toolbar (rxvt).
+   12 - Start Blinking Cursor (att610).
+   18 - [!] Print form feed (DECPFF).
+   19 - [x] Set print extent to full screen (DECPEX).
+   25 - Show Cursor (DECTCEM).
+   30 - [!] Show scrollbar (rxvt).
+   35 - [x] Enable font-shifting functions (rxvt).
+   38 - [x] Enter Tektronix Mode (DECTEK).
+   40 - Allow 80 - 132 Mode.
+   41 - [!] more(1) fix (see curses resource).
+   42 - [!] Enable Nation Replacement Character sets (DECNRCM).
+   44 - [!] Turn On Margin Bell.
+   45 - Reverse-wraparound Mode.
+   46 - [x] Start Logging.
+   47 - [!] Use Alternate Screen Buffer.
+   66 - [!] Application keypad (DECNKM).
+   67 - Backarrow key sends backspace (DECBKM).
+ 1000 - Send Mouse X &amp; Y on button press and release.  (MOUSE_REPORT_CLICK)
+ 1001 - [!] Use Hilite Mouse Tracking.
+ 1002 - Use Cell Motion Mouse Tracking.  (MOUSE_REPORT_DRAG)
+ 1003 - [!] Use All Motion Mouse Tracking.
+ 1004 - [!] Send FocusIn/FocusOut events.
+ 1005 - [!] Enable Extended Mouse Mode.
+ 1010 - Scroll to bottom on tty output (rxvt).
+ 1011 - Scroll to bottom on key press (rxvt).
+ 1034 - [x] Interpret &quot;meta&quot; key, sets eighth bit.
+ 1035 - [x] Enable special modifiers for Alt and NumLock keys.
+ 1036 - Send ESC when Meta modifies a key.
+ 1037 - [!] Send DEL from the editing-keypad Delete key.
+ 1039 - Send ESC when Alt modifies a key.
+ 1040 - [x] Keep selection even if not highlighted.
+ 1041 - [x] Use the CLIPBOARD selection.
+ 1042 - [!] Enable Urgency window manager hint when Control-G is received.
+ 1043 - [!] Enable raising of the window when Control-G is received.
+ 1047 - [!] Use Alternate Screen Buffer.
+ 1048 - Save cursor as in DECSC.
+ 1049 - Save cursor as in DECSC and use Alternate Screen Buffer, clearing
+        it first. (This may be disabled by the titeInhibit resource). This
+        combines the effects of the 1047 and 1048 modes. Use this with
+        terminfo-based applications rather than the 47 mode.
+ 1050 - [!] Set terminfo/termcap function-key mode.
+ 1051 - [x] Set Sun function-key mode.
+ 1052 - [x] Set HP function-key mode.
+ 1053 - [x] Set SCO function-key mode.
+ 1060 - [x] Set legacy keyboard emulation (X11R6).
+ 1061 - [!] Set VT220 keyboard emulation.
+ 2004 - [!] Set bracketed paste mode.</p>
+<p>[!] - Not currently implemented, may be in the future.
+[x] - Will not implement.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  set_dec_mode = <span class="keyword">function</span>(code, state) {
+    <span class="keyword">switch</span>(code) {
+      <span class="keyword">case</span> <span class="string">'1'</span>: {
+        that.emit(<span class="string">'set_application_cursor'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'3'</span>: {
+        <span class="keyword">if</span>(my.allow_width_change) {
+          that.emit(<span class="string">'resize'</span>, state ? <span class="number">132</span> : <span class="number">80</span>);
+          that.emit(<span class="string">'clear_home'</span>);
+        }
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'5'</span>: {
+        that.emit(<span class="string">'set_reverse_video'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'6'</span>: {
+        that.emit(<span class="string">'set_origin_mode'</span>, state);
+        that.emit(<span class="string">'set_cursor_position'</span>, <span class="number">0</span>, <span class="number">0</span>);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'7'</span>: {
+        that.emit(<span class="string">'set_wrap_around'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'12'</span>: {
+        that.emit(<span class="string">'set_cursor_blink'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'25'</span>: {
+        that.emit(<span class="string">'set_cursor_visible'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'40'</span>: {
+        my.allow_width_change = state ? <span class="literal">true</span> : <span class="literal">false</span>;
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'45'</span>: {
+        that.emit(<span class="string">'set_reverse_wrap_around'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'67'</span>: {
+        that.emit(<span class="string">'set_keyboard_backspace_sends_backspace'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1000'</span>: {
+        <span class="comment">/* TODO: mouse */</span>
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1002'</span>: {
+        <span class="comment">/* TODO: mouse */</span>
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1010'</span>: {
+        that.emit(<span class="string">'set_scroll_on_output'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1011'</span>: {
+        that.emit(<span class="string">'set_scroll_on_keystroke'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1036'</span>: {
+        that.emit(<span class="string">'set_keyboard_meta_sends_escape'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1039'</span>: {
+        that.emit(<span class="string">'set_keyboard_alt_sends_escape'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'47'</span>:
+      <span class="keyword">case</span> <span class="string">'1047'</span>: {
+        that.emit(<span class="string">'set_alternate_mode'</span>, state);
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1048'</span>: {
+        save_cursor();
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">case</span> <span class="string">'1049'</span>: {
+        <span class="keyword">if</span>(state) {
+          save_cursor();
+          that.emit(<span class="string">'set_alternate_mode'</span>, state);
+          that.emit(<span class="string">'clear'</span>);
+        }
+        <span class="keyword">else</span> {
+          that.emit(<span class="string">'set_alternate_mode'</span>, state);
+          restore_cursor();
+        }
+        <span class="keyword">break</span>;
+      }
+      <span class="keyword">default</span>: {
+        <span class="keyword">if</span>(my.warn)
+          factory.log().out(<span class="string">'Unimplemented DEC Private Mode: '</span> + code);
+      }
+    }
+  };
+
+
+
+  <span class="comment">/****************************************************************************/</span>
+  <span class="comment">/*                             CONTROL SEQUENCES                            */</span>
+  <span class="comment">/****************************************************************************/</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <h3>ignore</h3>
 <p>Ignore handler use to ignore an action and test equality</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  ignore = <span class="keyword">function</span>() {};
-
-  <span class="comment">/****************************************************************************/</span>
-  <span class="comment">/*                            CONSTROL SEQUENCES                            */</span>
-  <span class="comment">/****************************************************************************/</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  ignore = <span class="keyword">function</span>() {};</pre></div></div>
             
         </li>
         
         
-        <li id="section-37">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <h3>CC1</h3>
 <p>Collection of control chracters expressed in a single byte.</p>
@@ -970,11 +1149,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>Null (NUL)</p>
 
@@ -985,11 +1164,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>Enquiry (ENQ)</p>
 
@@ -1000,18 +1179,103 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>Ring Bell (BEL)</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'\x07'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_ring_bell'</span>);
+      that.emit(<span class="string">'ring_bell'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>Backspace (BS)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x08'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_left'</span>, <span class="number">1</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Horizontal Tab (HT)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x09'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'forward_tab_stop'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Line Feed (LF)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0a'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'line_feed'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Vertical Tab (VT)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0b'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'form_feed'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Form Feed (FF)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0c'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'form_feed'</span>);
     },</pre></div></div>
             
         </li>
@@ -1023,12 +1287,12 @@ Bell (BEL, &#39;\x07&#39;)</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
-              <p>Backspace (BS)</p>
+              <p>Carriage Return (CR)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x08'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_left'</span>, <span class="number">1</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0d'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_column'</span>, <span class="number">0</span>);
     },</pre></div></div>
             
         </li>
@@ -1039,89 +1303,6 @@ Bell (BEL, &#39;\x07&#39;)</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-42">&#182;</a>
-              </div>
-              <p>Horizontal Tab (HT)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x09'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_forward_tab_stop'</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-43">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
-              </div>
-              <p>Line Feed (LF)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0a'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_form_feed'</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-44">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
-              </div>
-              <p>Vertical Tab (VT)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0b'</span>: my.CC1[<span class="string">'\x0a'</span>],</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-45">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
-              </div>
-              <p>Form Feed (FF)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0c'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_form_feed'</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-46">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
-              </div>
-              <p>Carriage Return (CR)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x0d'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-47">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>Shift Out (SO), aka Lock Shift 1 (LS1)</p>
 
@@ -1134,11 +1315,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>Shift In (SI), aka Lock Shift 0 (LS0)</p>
 
@@ -1151,11 +1332,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>Transmit On (XON)</p>
 
@@ -1166,11 +1347,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-45">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Transmit Off (XOFF)</p>
 
@@ -1181,44 +1362,47 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-46">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-46">&#182;</a>
               </div>
               <p>Cancel (CAN)</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'\x18'</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_fun();
-      that.emit(<span class="string">'term_print'</span>, <span class="string">'?'</span>);
+      my.state.reset_fun();
+      that.emit(<span class="string">'print'</span>, <span class="string">'?'</span>);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-52">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>Substitute (SUB)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x1a'</span>: my.CC1[<span class="string">'\x18'</span>],</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x1a'</span>: <span class="keyword">function</span>() {
+      my.state.reset_fun();
+      that.emit(<span class="string">'print'</span>, <span class="string">'?'</span>);
+    },</pre></div></div>
             
         </li>
         
         
-        <li id="section-53">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>Escape (ESC)</p>
 
@@ -1226,24 +1410,24 @@ Bell (BEL, &#39;\x07&#39;)</p>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'\x1b'</span>: <span class="keyword">function</span>() {
       <span class="function"><span class="keyword">function</span> <span class="title">parse_esc</span><span class="params">()</span> {</span>
-        <span class="keyword">var</span> ch = my.parse_state.consume();
+        <span class="keyword">var</span> ch = my.state.consume();
         <span class="keyword">if</span>(ch === <span class="string">'\x1b'</span>)
           <span class="keyword">return</span>;
         dispatch(<span class="string">'ESC'</span>, ch);
-        <span class="keyword">if</span>(my.parse_sate.fun() === parse_esc)
-          my.parse_state.reset_fun();
+        <span class="keyword">if</span>(my.state.fun() === parse_esc)
+          my.state.reset_fun();
       };
-      my.parse_state.set_fun(parse_esc);
+      my.state.set_fun(parse_esc);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-54">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>Delete (DEL)</p>
 
@@ -1255,11 +1439,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <h3>CC1 Regexp</h3>
 <p>Constructed to quickly scan the known 1-byte control chars</p>
@@ -1274,11 +1458,11 @@ Bell (BEL, &#39;\x07&#39;)</p>
         </li>
         
         
-        <li id="section-56">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <h3>ESC</h3>
 <p>Collection of control two-byte and three-byte sequences 
@@ -1291,19 +1475,101 @@ starting with ESC.</p>
         </li>
         
         
-        <li id="section-57">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-57">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <p>Index (IND)</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'D'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_line_feed'</span>);
+      that.emit(<span class="string">'line_feed'</span>);
     },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>Next Line (NEL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_column'</span>, <span class="number">0</span>);
+      that.emit(<span class="string">'cursor_down'</span>, <span class="number">1</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>Horizontal Tabulation Set (HTS)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'H'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_tab_stop_current'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>Reverse Index (RI)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'M'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'reverse_line_feed'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>Single Shift 2 (SS2)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'N'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>Single Shift 3 (SS3)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'O'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1314,13 +1580,13 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
-              <p>Next Line (NEL)</p>
+              <p>Device Control String (DCS)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
-      that.emit(<span class="string">'term_cursor_down'</span>, <span class="number">1</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'P'</span>: <span class="keyword">function</span>() {
+      my.state.reset_args();
+      my.state.set_fun(parse_until_string_terminator);
     },</pre></div></div>
             
         </li>
@@ -1332,13 +1598,11 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
-              <p>Horizontal Tabulation Set (HTS)</p>
+              <p>Start of Pretected Area (SPA)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'H'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_set_tab_stop_current'</span>);
-    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'V'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1349,13 +1613,11 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
-              <p>Reverse Index (RI)</p>
+              <p>End of Protected Area (EPA)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'M'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_reverse_line_feed'</span>);
-    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'W'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1366,11 +1628,11 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
-              <p>Single Shift 2 (SS2)</p>
+              <p>Start of String (SOS)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'N'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'X'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1381,11 +1643,13 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
-              <p>Single Shift 3 (SS3)</p>
+              <p>Single Character Introducer (SCI, also DECID)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'O'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'Z'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?1;2c'</span>);
+    },</pre></div></div>
             
         </li>
         
@@ -1396,14 +1660,16 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
-              <p>Device Control String (DCS)</p>
+              <p>Control Sequence Introducer (CSI)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'P'</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_args();
-      my.parse_state.set_fun(parse_until_string_terminator);
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'['</span>: <span class="keyword">function</span>() {
+      my.state.reset_args();
+      my.leading_modifier = <span class="string">''</span>;
+      my.trailing_modifier = <span class="string">''</span>;
+      my.state.set_fun(parse_csi);
+    },</pre></div></div>
             
         </li>
         
@@ -1414,11 +1680,11 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
-              <p>Start of Pretected Area (SPA)</p>
+              <p>String Terminator (ST)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'V'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\\'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1429,11 +1695,36 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
-              <p>End of Protected Area (EPA)</p>
+              <p>Operating System Command (OSC)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'W'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">']'</span>: <span class="keyword">function</span>() {
+      my.state.reset_args();
+      <span class="function"><span class="keyword">function</span> <span class="title">parse_osc</span><span class="params">()</span> {</span>
+        <span class="keyword">if</span>(!parse_until_string_terminator()) {
+          <span class="comment">/* The string was too long or invalid */</span>
+          <span class="keyword">return</span>;
+        }
+        <span class="keyword">else</span> <span class="keyword">if</span>(my.state.fun() === parse_osc) {
+          <span class="comment">/* We're not done parsing the string yet */</span>
+          <span class="keyword">return</span>;
+        }
+        <span class="keyword">else</span> {
+          <span class="comment">/* We're done */</span>
+          <span class="keyword">var</span> ary_r = <span class="regexp">/^(\d+);(.*)$/</span>;
+          <span class="keyword">var</span> ary_m = my.state.args()[<span class="number">0</span>].match(ary_r);
+          <span class="keyword">if</span>(ary_m) {
+            my.state.args()[<span class="number">0</span>] = ary_m[<span class="number">2</span>];
+            dispatch(<span class="string">'OSC'</span>, ary_m[<span class="number">1</span>]);
+          }
+          <span class="keyword">else</span> {
+            factory.log().out(<span class="string">'Invalid OSC: '</span> + my.state.args()[<span class="number">0</span>]);
+          }
+        }
+      };
+      my.state.set_fun(parse_osc);
+    },</pre></div></div>
             
         </li>
         
@@ -1444,11 +1735,14 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
-              <p>Start of String (SOS)</p>
+              <p>Privacy Message (PM)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'X'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'^'</span>: <span class="keyword">function</span>() {
+      my.state.reset_args();
+      my.state.set_fun(parse_until_string_terminator);
+    },</pre></div></div>
             
         </li>
         
@@ -1459,11 +1753,14 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
-              <p>Single Character Introducer (SCI, also DECID)</p>
+              <p>Application Program Control (APC)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'Z'</span>: <span class="keyword">function</span>() {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'_'</span>: <span class="keyword">function</span>() {
+      my.state.reset_args();
+      my.state.set_fun(parse_until_string_terminator);
+    },</pre></div></div>
             
         </li>
         
@@ -1474,12 +1771,20 @@ starting with ESC.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
-              <p>TODO: implement this one
-this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
+              <p>xterm &#39;ESC 0x20&#39; Sequence</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\x20'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> ch = my.state.consume();
+        <span class="keyword">if</span>(my.warn) {
+          factory.log().out(<span class="string">'Unimplemented Sequence: ESC 0x20 '</span> + ch);
+        }
+        my.state.reset_fun();
+      };
+      my.state.set_fun(parse);
+    },</pre></div></div>
             
         </li>
         
@@ -1490,15 +1795,23 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
-              <p>Control Sequence Introducer (CSI)</p>
+              <p>DEC &#39;ESC #&#39; Sequences</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'['</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_args();
-      my.leading_modifer = <span class="string">''</span>;
-      my.Trailing_modifier = <span class="string">''</span>;
-      my.parse_state.set_fun(parse_csi);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'#'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> ch = my.state.consume();
+        <span class="keyword">if</span>(ch === <span class="string">'8'</span>) {
+          that.emit(<span class="string">'fill'</span>, <span class="string">'E'</span>);
+        }
+        <span class="keyword">else</span> <span class="keyword">if</span>(<span class="string">'3456'</span>.indexOf(ch) === -<span class="number">1</span>) {
+          <span class="comment">/* Echo to terminal all non reserved sequences */</span>
+          that.emit(<span class="string">'print'</span>, <span class="string">'\x1b#'</span> + ch);
+        }
+        my.state.reset_fun();
+      };
+      my.state.set_fun(parse);
     },</pre></div></div>
             
         </li>
@@ -1510,11 +1823,20 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
-              <p>String Terminator (ST)</p>
+              <p>&#39;ESC %&#39; Sequences</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\\'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'%'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> ch = my.state.consume();
+        <span class="keyword">if</span> (my.warn) {
+          factory.log().out(<span class="string">'Unknown/Unimplemented Seuqnce : ESC % '</span> + ch);
+        }
+        my.state.reset_fun();
+      };
+      my.state.set_fun(parse);
+    },</pre></div></div>
             
         </li>
         
@@ -1525,36 +1847,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
-              <p>Operating System Command (OSC)</p>
+              <p>Back Index (DECBI)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">']'</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_args();
-      <span class="function"><span class="keyword">function</span> <span class="title">parse_osc</span><span class="params">()</span> {</span>
-        <span class="keyword">if</span>(!parse_until_string_terminator()) {
-          <span class="comment">/* The string was too long or invalid */</span>
-          <span class="keyword">return</span>;
-        }
-        <span class="keyword">else</span> <span class="keyword">if</span>(my.parse_state.fun() === parse_osc) {
-          <span class="comment">/* We're not done parsing the string yet */</span>
-          <span class="keyword">return</span>;
-        }
-        <span class="keyword">else</span> {
-          <span class="comment">/* We're done */</span>
-          <span class="keyword">var</span> ary_r = <span class="regexp">/^(\d+);(.*)$/</span>;
-          <span class="keyword">var</span> ary_m = my.parse_state.args()[<span class="number">0</span>].match(ary_r);
-          <span class="keyword">if</span>(ary_m) {
-            my.parse_state.args()[<span class="number">0</span>] = ary_m[<span class="number">2</span>];
-            dispatch(<span class="string">'OSC'</span>, ary[<span class="number">1</span>]);
-          }
-          <span class="keyword">else</span> {
-            console.log(<span class="string">'Invalid OSC: '</span> + my.parse_state.args()[<span class="number">0</span>]);
-          }
-        }
-      };
-      my.parse_state.set_fun(parse_osc);
-    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'6'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1565,13 +1862,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-72">&#182;</a>
               </div>
-              <p>Privacy Message (PM)</p>
+              <p>Save Cursor (DECSC)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'^'</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_args();
-      my.parse_state.set_fun(parse_until_string_terminator);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'7'</span>: <span class="keyword">function</span>() {
+      save_cursor();
     },</pre></div></div>
             
         </li>
@@ -1583,13 +1879,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
-              <p>Application Program Control (APC)</p>
+              <p>Restore Cursor (DECRC)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'_'</span>: <span class="keyword">function</span>() {
-      my.parse_state.reset_args();
-      my.parse_state.set_fun(parse_until_string_terminator);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'8'</span>: <span class="keyword">function</span>() {
+      restore_cursor();
     },</pre></div></div>
             
         </li>
@@ -1601,20 +1896,13 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
-              <p>xterm &#39;ESC 0x20&#39; Sequence</p>
+              <p>Application Keypad (DECPAM)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'\x20'</span>: <span class="keyword">function</span>() {
-      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
-        <span class="keyword">var</span> ch = my.parse_state.consume();
-        <span class="keyword">if</span>(my.warn) {
-          console.log(<span class="string">'Unimplemented Sequence: ESC 0x20 '</span> + ch);
-        }
-        my.parse_state.reset_fun();
-      };
-      my.parse_state.set_fun(parse);
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'='</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_application_keypad'</span>, <span class="literal">true</span>);
+    },</pre></div></div>
             
         </li>
         
@@ -1625,23 +1913,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
-              <p>DEC &#39;ESC #&#39; Sequences</p>
+              <p>Normal Keypad (DECPNM)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'#'</span>: <span class="keyword">function</span>() {
-      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
-        <span class="keyword">var</span> ch = my.parse_state.consume();
-        <span class="keyword">if</span>(ch === <span class="string">'8'</span>) {
-          that.emit(<span class="string">'term_fill'</span>, <span class="string">'E'</span>);
-        }
-        <span class="keyword">else</span> <span class="keyword">if</span>(<span class="string">'3456'</span>.indexOf(ch) === -<span class="number">1</span>) {
-          <span class="comment">/* Echo to terminal all non reserved sequences */</span>
-          that.emit(<span class="string">'term_print'</span>, <span class="string">'\x1b#'</span> + ch);
-        }
-        my.parse_state.reset_fun();
-      };
-      my.parse_state.set_fun(parse);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_application_keypad'</span>, <span class="literal">false</span>);
     },</pre></div></div>
             
         </li>
@@ -1653,20 +1930,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
-              <p>&#39;ESC %&#39; Sequences</p>
+              <p>Cursor to Lower Left (xterm only)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'%'</span>: <span class="keyword">function</span>() {
-      <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
-        <span class="keyword">var</span> ch = my.parse_state.consume();
-        <span class="keyword">if</span> (my.warn) {
-          console.log(<span class="string">'Unknown/Unimplemented Seuqnce : ESC % '</span> + ch);
-        }
-        my.parse_state.reset_fun();
-      };
-      my.parse_state.set_fun(parse);
-    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'F'</span>: ignore,</pre></div></div>
             
         </li>
         
@@ -1677,11 +1945,14 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
-              <p>Back Index (DECBI)</p>
+              <p>Full Reset (RIS)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'6'</span>: ignore,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'c'</span>: <span class="keyword">function</span>() {
+      reset()
+      that.emit(<span class="string">'reset'</span>);
+    },</pre></div></div>
             
         </li>
         
@@ -1691,107 +1962,6 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-78">&#182;</a>
-              </div>
-              <p>Sace Cursor (DECSC)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'7'</span>: <span class="keyword">function</span>() {
-      my.saved_state.save();
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-79">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-79">&#182;</a>
-              </div>
-              <p>Restore Cursor (DECRC)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'8'</span>: <span class="keyword">function</span>() {
-      my.saved_state.restore();
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-80">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-80">&#182;</a>
-              </div>
-              <p>Application Keypad (DECPAM)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'='</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_application_keypad'</span>, <span class="literal">true</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-81">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
-              </div>
-              <p>Normal Keypad (DECPNM)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_application_keypad'</span>, <span class="literal">false</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-82">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-82">&#182;</a>
-              </div>
-              <p>Cursor to Lower Left (xterm only)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'F'</span>: ignore,</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-83">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-83">&#182;</a>
-              </div>
-              <p>Full Reset (RIS)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="string">'c'</span>: <span class="keyword">function</span>() {
-      reset()
-      that.emit(<span class="string">'term_reset'</span>);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-84">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-84">&#182;</a>
               </div>
               <p>Memory Lock / Unlock</p>
 
@@ -1803,11 +1973,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-85">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-79">&#182;</a>
               </div>
               <p>Lock Shift 2 (LS2)</p>
 
@@ -1820,11 +1990,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-86">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-80">&#182;</a>
               </div>
               <p>Lock Shift 3 (LS3)</p>
 
@@ -1837,28 +2007,28 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-87">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-81">&#182;</a>
               </div>
               <p>Lock Shift 3, Right (LS3R)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'l'</span>: <span class="keyword">function</span>() {
+            <div class="content"><div class='highlight'><pre>    <span class="string">'|'</span>: <span class="keyword">function</span>() {
       my.GR = <span class="string">'G3'</span>;
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-88">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-82">&#182;</a>
               </div>
               <p>Lock Shift 2, Right (LS2R)</p>
 
@@ -1871,11 +2041,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-89">
+        <li id="section-83">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-83">&#182;</a>
               </div>
               <p>Lock Shift 1, Right (LS1R)</p>
 
@@ -1889,11 +2059,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-90">
+        <li id="section-84">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-90">&#182;</a>
+                <a class="pilcrow" href="#section-84">&#182;</a>
               </div>
               <p>Character Set Selection (SCS) </p>
 
@@ -1907,10 +2077,10 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
   my.ESC[<span class="string">'.'</span>] =
   my.ESC[<span class="string">'/'</span>] = <span class="keyword">function</span>(code) {
     <span class="keyword">var</span> parse = <span class="keyword">function</span>() {
-      <span class="keyword">var</span> ch = my.parse_state.consume();
+      <span class="keyword">var</span> ch = my.state.consume();
       <span class="keyword">if</span>(ch === <span class="string">'\x1b'</span>) {
-        my.parse_state.reset_fun();
-        my.parse_state.fun()();
+        my.state.reset_fun();
+        my.state.fun()();
         <span class="keyword">return</span>;
       }
       <span class="keyword">if</span>(ch <span class="keyword">in</span> require(<span class="string">'./char_map.js'</span>).maps) {
@@ -1928,24 +2098,25 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         }
       }
       <span class="keyword">else</span> <span class="keyword">if</span>(my.warn) {
-        console.log(<span class="string">'Invalid Character Set: '</span> + ch + <span class="string">' for code: '</span> + code);
+        factory.log().out(<span class="string">'Invalid Character Set: '</span> + ch + 
+                          <span class="string">' for code: '</span> + code);
       }
-      my.parse_state.reset_fun();
+      my.state.reset_fun();
     };
-    my.parse_state.set_fun(parse);
+    my.state.set_fun(parse);
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-91">
+        <li id="section-85">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-91">&#182;</a>
+                <a class="pilcrow" href="#section-85">&#182;</a>
               </div>
               <h3>OSC</h3>
-<p>Colleciton of OSC (Operating System Control) sequences.</p>
+<p>Collection of OSC (Operating System Control) sequences.</p>
 
             </div>
             
@@ -1954,79 +2125,60 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-92">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-92">&#182;</a>
+                <a class="pilcrow" href="#section-86">&#182;</a>
               </div>
               <p>Change Icon Name and Window Title</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'0'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_window_title'</span>, my.parse_state.args()[<span class="number">0</span>]);
+      that.emit(<span class="string">'set_window_title'</span>, my.state.args()[<span class="number">0</span>]);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-93">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-93">&#182;</a>
+                <a class="pilcrow" href="#section-87">&#182;</a>
               </div>
               <p>Change Window Title</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'2'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_window_title'</span>, my.parse_state.args()[<span class="number">0</span>]);
+      that.emit(<span class="string">'set_window_title'</span>, my.state.args()[<span class="number">0</span>]);
     },</pre></div></div>
             
         </li>
         
         
-        <li id="section-94">
+        <li id="section-88">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-94">&#182;</a>
+                <a class="pilcrow" href="#section-88">&#182;</a>
               </div>
               <p>Set/Read Color Palette</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'4'</span>: <span class="keyword">function</span>() {
-      <span class="comment">/* Args Format: 'index1;rgb1 ... ;indexN;rgbN' */</span>
-      <span class="keyword">var</span> args = my.parse_state.args[<span class="number">0</span>].split(<span class="string">';'</span>);
-      
-      <span class="keyword">var</span> n = Math.floor(args.length / <span class="number">2</span>);
-      <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; n; i++) {
-        <span class="keyword">var</span> idx = parseInt(args[i*<span class="number">2</span>], <span class="number">10</span>);
-        <span class="keyword">var</span> val = args[i*<span class="number">2</span>+<span class="number">1</span>];
-        <span class="keyword">if</span>(val === <span class="string">'?'</span>) {
-          <span class="keyword">if</span>(my.warn) {
-            console.log(<span class="string">'Unimplemented OSC Color Palette Read'</span>);
-          }
-          conitnue;
-        }
-        val = require(<span class="string">'./colors.js'</span>).x11_to_css(val);
-        <span class="keyword">if</span>(val) {
-          that.emit(<span class="string">'term_color_palette'</span>, idx, val);
-        }
-      }
-    },</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'4'</span>: ignore,</pre></div></div>
             
         </li>
         
         
-        <li id="section-95">
+        <li id="section-89">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-95">&#182;</a>
+                <a class="pilcrow" href="#section-89">&#182;</a>
               </div>
               <p>Set/Read System Clipboard</p>
 
@@ -2034,23 +2186,23 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'52'</span>: <span class="keyword">function</span>() {
       <span class="keyword">var</span> args_r = <span class="regexp">/^[cps01234567]+;(.*)$/</span>;
-      <span class="keyword">var</span> args_m = my.parse_state.args()[<span class="number">0</span>].match(args_r);
+      <span class="keyword">var</span> args_m = my.state.args()[<span class="number">0</span>].match(args_r);
       <span class="keyword">if</span>(!args_m)
         <span class="keyword">return</span>;
       <span class="keyword">var</span> data = <span class="keyword">new</span> Buffer(args_m[<span class="number">1</span>], <span class="string">'base64'</span>).toString(<span class="string">'utf8'</span>) 
       <span class="keyword">if</span>(data &amp;&amp; data.length &gt; <span class="number">0</span>)
-        that.emit(<span class="string">'term_copy_to_clipboard'</span>, data);
+        that.emit(<span class="string">'copy_to_clipboard'</span>, data);
     }
   };</pre></div></div>
             
         </li>
         
         
-        <li id="section-96">
+        <li id="section-90">
             <div class="annotation">
               
               <div class="pilwrap for-h3">
-                <a class="pilcrow" href="#section-96">&#182;</a>
+                <a class="pilcrow" href="#section-90">&#182;</a>
               </div>
               <h3>CSI</h3>
 <p>Collection of CSI (Control Sequence Introducer) sequences.</p>
@@ -2062,18 +2214,122 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-97">
+        <li id="section-91">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-97">&#182;</a>
+                <a class="pilcrow" href="#section-91">&#182;</a>
               </div>
               <p>Insert (blank) characters (ICH)</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="string">'@'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_insert_space'</span>, my.parse_state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+      that.emit(<span class="string">'insert_chars'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <p>Cursor Up (CUU)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'A'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_up'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <p>Cursor Down (CUD)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'B'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_down'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <p>Cursor Forward (CUF)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'C'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_right'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <p>Cursor Backward (CUB)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'D'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_left'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <p>Cursor Next Line (CNL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_down'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+      that.emit(<span class="string">'set_cursor_column'</span>, <span class="number">0</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <p>Cursor Preceding Line (CPL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'F'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'cursor_up'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+      that.emit(<span class="string">'set_cursor_column'</span>, <span class="number">0</span>);
     },</pre></div></div>
             
         </li>
@@ -2085,12 +2341,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-98">&#182;</a>
               </div>
-              <p>Cursor Up (CUU)</p>
+              <p>Cursor Character Absolute (CHA)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'A'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_up'</span>, my.parse_state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+            <div class="content"><div class='highlight'><pre>    <span class="string">'G'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_column'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>);
     },</pre></div></div>
             
         </li>
@@ -2102,12 +2358,14 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-99">&#182;</a>
               </div>
-              <p>Cursor Down (CUD)</p>
+              <p>Cursor Position (CUP)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'B'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_down'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+            <div class="content"><div class='highlight'><pre>    <span class="string">'H'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_position'</span>, 
+                my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>,
+                my.state.int_arg(<span class="number">1</span>, <span class="number">1</span>) - <span class="number">1</span>);
     },</pre></div></div>
             
         </li>
@@ -2119,12 +2377,14 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-100">&#182;</a>
               </div>
-              <p>Cursor Forward (CUF)</p>
+              <p>Cursor Forward Tabulation (CHT)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'C'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_right'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+            <div class="content"><div class='highlight'><pre>    <span class="string">'I'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> count = my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>);
+      <span class="comment">/* Overflow is checked by `term` (see clamp in `next_stop`) */</span>
+      that.emit(<span class="string">'forward_tab_stop'</span>, count);
     },</pre></div></div>
             
         </li>
@@ -2136,12 +2396,29 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-101">&#182;</a>
               </div>
-              <p>Cursor Backward (CUB)</p>
+              <p>Erase in Display (ED, DECSED)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'C'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_left'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
+            <div class="content"><div class='highlight'><pre>    <span class="string">'J'</span>: <span class="keyword">function</span>(code) {
+      <span class="keyword">var</span> arg = my.state.args()[<span class="number">0</span>];
+
+      <span class="keyword">if</span>(!arg || arg === <span class="string">'0'</span>) {
+        that.emit(<span class="string">'erase_below'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="string">'1'</span>) {
+        that.emit(<span class="string">'erase_above'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="string">'2'</span>) {
+        that.emit(<span class="string">'clear'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="string">'3'</span>) {
+        <span class="comment">/* xterm "Erase saved lines" -&gt; clear */</span>
+        that.emit(<span class="string">'clear'</span>);
+      }
+      <span class="keyword">else</span> {
+        that.emit(<span class="string">'print'</span>, <span class="string">'\x1b['</span> + code + args[<span class="number">0</span>]);
+      }
     },</pre></div></div>
             
         </li>
@@ -2153,13 +2430,25 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-102">&#182;</a>
               </div>
-              <p>Cursor Next Line (CNL)</p>
+              <p>Erase in Line (EL, DECSEL)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'E'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_down'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
-      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'K'</span>: <span class="keyword">function</span>(code) {
+      <span class="keyword">var</span> arg = my.state.args()[<span class="number">0</span>];
+
+      <span class="keyword">if</span>(!arg || arg === <span class="string">'0'</span>) {
+        that.emit(<span class="string">'erase_right'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="string">'1'</span>) {
+        that.emit(<span class="string">'erase_left'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="string">'2'</span>) {
+        that.emit(<span class="string">'erase_line'</span>);
+      }
+      <span class="keyword">else</span> {
+        that.emit(<span class="string">'print'</span>, <span class="string">'\x1b['</span> + code + args[<span class="number">0</span>]);
+      }
     },</pre></div></div>
             
         </li>
@@ -2171,13 +2460,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-103">&#182;</a>
               </div>
-              <p>Cursor Preceding Line (CPL)</p>
+              <p>Insert Lines (IL)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'F'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_cursor_up'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>));
-      that.emit(<span class="string">'term_set_cursor_column'</span>, <span class="number">0</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'L'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'insert_lines'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
     },</pre></div></div>
             
         </li>
@@ -2189,12 +2477,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-104">&#182;</a>
               </div>
-              <p>Cursor Character Absolute (CHA)</p>
+              <p>Delete Lines (DL)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'G'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_set_cursor_column'</span>, my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>);
+            <div class="content"><div class='highlight'><pre>    <span class="string">'M'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'delete_lines'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
     },</pre></div></div>
             
         </li>
@@ -2206,14 +2494,12 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-105">&#182;</a>
               </div>
-              <p>Cursor Position (CUP)</p>
+              <p>Delete Characters (DCH)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'H'</span>: <span class="keyword">function</span>() {
-      that.emit(<span class="string">'term_set_cursor_position'</span>, 
-                my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>),
-                my.parse_state.int_args(<span class="number">1</span>, <span class="number">1</span>));
+            <div class="content"><div class='highlight'><pre>    <span class="string">'P'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'delete_chars'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
     },</pre></div></div>
             
         </li>
@@ -2225,19 +2511,13 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-106">&#182;</a>
               </div>
-              <p>Cursor Forward Tabulation (CHT)</p>
+              <p>Scroll Up (SU)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="string">'I'</span>: <span class="keyword">function</span>() {
-      <span class="keyword">var</span> count = my.parse_state.int_args(<span class="number">0</span>, <span class="number">1</span>);
-      <span class="comment">/*
-      count = lib.f.clamp(count, 1, this.terminal.screenSize.width);
-      for (var i = 0; i &lt; count; i++) {
-        this.terminal.forwardTabStop();
-      }
-     */</span>
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'S'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'scroll_up'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
             
         </li>
         
@@ -2248,11 +2528,14 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-107">&#182;</a>
               </div>
-              <p>...</p>
+              <p>Scroll Down (SD)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  };</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="string">'T'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">if</span>(my.state.args().length &lt;= <span class="number">1</span>)
+        that.emit(<span class="string">'scroll_down'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>));
+    },</pre></div></div>
             
         </li>
         
@@ -2260,8 +2543,968 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         <li id="section-108">
             <div class="annotation">
               
-              <div class="pilwrap for-h3">
+              <div class="pilwrap ">
                 <a class="pilcrow" href="#section-108">&#182;</a>
+              </div>
+              <p>Reset Title Mode Features</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;T'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-109">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-109">&#182;</a>
+              </div>
+              <p>Erase Characters (ECH)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'X'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'erase_right'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>))
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-110">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-110">&#182;</a>
+              </div>
+              <p>Cursor Bakcward Tabulation (CBT)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'Z'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> count = my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>);
+      <span class="comment">/* Overflow is checked by `term` (see clamp in `prev_stop`) */</span>
+      that.emit(<span class="string">'backward_tab_stop'</span>, count);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-111">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-111">&#182;</a>
+              </div>
+              <p>Character Position Absolute (HPA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'`'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_column'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-112">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-112">&#182;</a>
+              </div>
+              <p>Repeat Graphic Character</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'b'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-113">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-113">&#182;</a>
+              </div>
+              <p>Send Device Attribute (Primary DA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'c'</span>: <span class="keyword">function</span>() {
+      <span class="comment">/* Hard coded to VT100. Upgradable to VT200 w/ implementation */</span>
+      <span class="keyword">if</span>(!my.state.args()[<span class="number">0</span>] || my.state.args()[<span class="number">0</span>] === <span class="string">'0'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?1;2c'</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-114">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-114">&#182;</a>
+              </div>
+              <p>Send Device Attribute (Secondary DA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;c'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[&gt;0;256;0c'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-115">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-115">&#182;</a>
+              </div>
+              <p>Line Position Absolute (VPA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'d'</span>: <span class="keyword">function</span>() {
+      that.emit(<span class="string">'set_cursor_row'</span>, my.state.int_arg(<span class="number">0</span>, <span class="number">1</span>) - <span class="number">1</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-116">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-116">&#182;</a>
+              </div>
+              <p>Tab Clear (TBC)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'g'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">if</span>(!my.state.args()[<span class="number">0</span>] || my.state.args()[<span class="number">0</span>] === <span class="string">'0'</span>) {
+        that.emit(<span class="string">'clear_tab_stop'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'3'</span>) {
+        that.emit(<span class="string">'clear_all_tab_stops'</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-117">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-117">&#182;</a>
+              </div>
+              <p>Set Mode (SM)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'h'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; my.state.args().length; i ++) {
+        set_ansi_mode(my.state.args()[i], <span class="literal">true</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-118">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-118">&#182;</a>
+              </div>
+              <p>DEC Private Mode Set (DECSET)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?h'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; my.state.args().length; i ++) {
+        set_dec_mode(my.state.args()[i], <span class="literal">true</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-119">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-119">&#182;</a>
+              </div>
+              <p>Media Copy (MC)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'i'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-120">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-120">&#182;</a>
+              </div>
+              <p>Media Copy (MC, DEC Specific)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?i'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-121">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-121">&#182;</a>
+              </div>
+              <p>Reset Mode (RM)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'l'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; my.state.args().length; i ++) {
+        set_ansi_mode(my.state.args()[i], <span class="literal">false</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-122">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-122">&#182;</a>
+              </div>
+              <p>DEC Private Mode Reset (DECRST)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?l'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; my.state.args().length; i ++) {
+        set_dec_mode(my.state.args()[i], <span class="literal">false</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-123">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-123">&#182;</a>
+              </div>
+              <p>Character Attributes (SGR)
+Iterate through the list of arguments, applying the following attribute
+changes based on the argument value...</p>
+<p>  0 Normal (default).
+  1 Bold.
+  4 Underlined.
+  5 Blink (appears as Bold).
+  7 Reverse.
+  8 Invisible, i.e., hidden (VT300).
+ 22 Normal (neither bold nor faint).
+ 24 Not underlined.
+ 25 Steady (not blinking).
+ 27 Positive (not reverse).
+ 28 Visible, i.e., not hidden (VT300).
+ 30 Set foreground color to Black.
+ 31 Set foreground color to Red.
+ 32 Set foreground color to Green.
+ 33 Set foreground color to Yellow.
+ 34 Set foreground color to Blue.
+ 35 Set foreground color to Magenta.
+ 36 Set foreground color to Cyan.
+ 37 Set foreground color to White.
+ 39 Set foreground color to default (original).
+ 40 Set background color to Black.
+ 41 Set background color to Red.
+ 42 Set background color to Green.
+ 43 Set background color to Yellow.
+ 44 Set background color to Blue.
+ 45 Set background color to Magenta.
+ 46 Set background color to Cyan.
+ 47 Set background color to White.
+ 49 Set background color to default (original)</p>
+<p>For 16-color support, the following apply.</p>
+<p> 90 Set foreground color to Bright Black.
+ 91 Set foreground color to Bright Red.
+ 92 Set foreground color to Bright Green.
+ 93 Set foreground color to Bright Yellow.
+ 94 Set foreground color to Bright Blue.
+ 95 Set foreground color to Bright Magenta.
+ 96 Set foreground color to Bright Cyan.
+ 97 Set foreground color to Bright White.
+100 Set background color to Bright Black.
+101 Set background color to Bright Red.
+102 Set background color to Bright Green.
+103 Set background color to Bright Yellow.
+104 Set background color to Bright Blue.
+105 Set background color to Bright Magenta.
+106 Set background color to Bright Cyan.
+107 Set background color to Bright White.</p>
+<p>For 88- or 256-color support, the following apply.
+ 38 ; 5 ; P Set foreground color to P.
+ 48 ; 5 ; P Set background color to P.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'m'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> get256 = <span class="keyword">function</span>(i) {
+        <span class="keyword">if</span>(my.state.args().length &lt; i + <span class="number">2</span> || my.state.args()[i + <span class="number">1</span>] !== <span class="string">'5'</span>)
+          <span class="keyword">return</span> <span class="literal">null</span>;
+        <span class="keyword">return</span> my.state.int_arg(i + <span class="number">2</span>, <span class="number">0</span>);
+      };
+
+      <span class="keyword">if</span>(!my.state.args().length) {
+        that.emit(<span class="string">'char_attr_reset'</span>);
+        <span class="keyword">return</span>;
+      }
+      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; my.state.args().length; i++) {
+        <span class="keyword">var</span> arg = my.state.int_arg(i, <span class="number">0</span>);
+
+        <span class="keyword">if</span>(arg &lt; <span class="number">30</span>) {
+          <span class="keyword">if</span>(arg === <span class="number">0</span>)
+            that.emit(<span class="string">'char_attr_reset'</span>);
+          <span class="keyword">if</span>(arg === <span class="number">1</span>)
+            that.emit(<span class="string">'char_attr_set_bold'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">3</span>)
+            that.emit(<span class="string">'char_attr_set_italic'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">4</span>)
+            that.emit(<span class="string">'char_attr_set_underline'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">5</span>)
+            that.emit(<span class="string">'char_attr_set_blink'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">7</span>)
+            that.emit(<span class="string">'char_attr_set_reverse'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">8</span>)
+            that.emit(<span class="string">'char_attr_set_invisible'</span>, <span class="literal">true</span>);
+          <span class="keyword">if</span>(arg === <span class="number">21</span> || arg === <span class="number">22</span>)
+            that.emit(<span class="string">'char_attr_set_bold'</span>, <span class="literal">false</span>);
+          <span class="keyword">if</span>(arg === <span class="number">23</span>)
+            that.emit(<span class="string">'char_attr_set_italic'</span>, <span class="literal">false</span>);
+          <span class="keyword">if</span>(arg === <span class="number">24</span>)
+            that.emit(<span class="string">'char_attr_set_underline'</span>, <span class="literal">false</span>);
+          <span class="keyword">if</span>(arg === <span class="number">25</span>)
+            that.emit(<span class="string">'char_attr_set_blink'</span>, <span class="literal">false</span>);
+          <span class="keyword">if</span>(arg === <span class="number">27</span>)
+            that.emit(<span class="string">'char_attr_set_reverse'</span>, <span class="literal">false</span>);
+          <span class="keyword">if</span>(arg === <span class="number">28</span>)
+            that.emit(<span class="string">'char_attr_set_invisible'</span>, <span class="literal">false</span>);
+        }
+        <span class="keyword">else</span> <span class="keyword">if</span>(arg &lt; <span class="number">50</span>) {
+          <span class="comment">/* foreground */</span>
+          <span class="keyword">if</span>(arg &lt; <span class="number">38</span>) {
+            that.emit(<span class="string">'char_attr_set_foreground_index'</span>, arg - <span class="number">30</span>);
+          }
+          <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="number">38</span>) {
+            <span class="keyword">var</span> c = get256(i);
+            <span class="keyword">if</span>(c === <span class="literal">null</span>) <span class="keyword">break</span>;
+            i+= <span class="number">2</span>;
+            that.emit(<span class="string">'char_attr_set_foreground_index'</span>, c);
+          }
+          <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="number">39</span>) {
+            that.emit(<span class="string">'char_attr_set_foreground_index'</span>, <span class="literal">null</span>);
+          }
+          <span class="comment">/* background */</span>
+          <span class="keyword">else</span> <span class="keyword">if</span>(arg &lt; <span class="number">48</span>) {
+            that.emit(<span class="string">'char_attr_set_background_index'</span>, arg - <span class="number">40</span>);
+          }
+          <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="number">48</span>) {
+            <span class="keyword">var</span> c = get256(i);
+            <span class="keyword">if</span>(c === <span class="literal">null</span>) <span class="keyword">break</span>;
+            i+= <span class="number">2</span>;
+            that.emit(<span class="string">'char_attr_set_background_index'</span>, c);
+          }
+          <span class="keyword">else</span> <span class="keyword">if</span>(arg === <span class="number">49</span>) {
+            that.emit(<span class="string">'char_attr_set_background_index'</span>, <span class="literal">null</span>);
+          }
+        }
+        <span class="keyword">else</span> <span class="keyword">if</span>(arg &gt;= <span class="number">90</span> &amp;&amp; arg &lt;= <span class="number">97</span>) {
+          that.emit(<span class="string">'char_attr_set_foreground_index'</span>, arg - <span class="number">90</span> + <span class="number">8</span>);
+        }
+        <span class="keyword">else</span> <span class="keyword">if</span>(arg &gt;= <span class="number">100</span> &amp;&amp; arg &lt;= <span class="number">107</span>) {
+          that.emit(<span class="string">'char_attr_set_background_index'</span>, arg - <span class="number">100</span> + <span class="number">8</span>);
+        }
+      }
+      <span class="comment">/* TODO: set default value for term char attrs  */</span>
+      <span class="comment">/* attrs.setDefaults(term.getForegroundColor(), */</span>
+      <span class="comment">/*                   term.getBackgroundColor()) */</span>
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-124">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-124">&#182;</a>
+              </div>
+              <p>Set xterm-specific Keyboard Modes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;m'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-125">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-125">&#182;</a>
+              </div>
+              <p>Device Status Report (DSR, DEC Specific)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'n'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'5'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b0n'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.parse_state.args()[<span class="number">0</span>] === <span class="string">'6'</span>) {
+        that.emit(<span class="string">'report_cursor_position'</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-126">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-126">&#182;</a>
+              </div>
+              <p>Disable xterm-specific Keyboard Modes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;n'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-127">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-127">&#182;</a>
+              </div>
+              <p>Device Status Report (DSR, DEC Specific)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?n'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'6'</span>) {
+        that.emit(<span class="string">'report_cursor_position'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'15'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?11n'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'25'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?21n'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'26'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?12;1;0;0n'</span>);
+      }
+      <span class="keyword">else</span> <span class="keyword">if</span>(my.state.args()[<span class="number">0</span>] === <span class="string">'53'</span>) {
+        that.emit(<span class="string">'write'</span>, <span class="string">'\x1b[?50n'</span>);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-128">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-128">&#182;</a>
+              </div>
+              <p>Hide Pointer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;p'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-129">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-129">&#182;</a>
+              </div>
+              <p>Soft Terminal Reset (DECSTR)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'!p'</span>: <span class="keyword">function</span>() {
+      reset();
+      that.emit(<span class="string">'soft_reset'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-130">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-130">&#182;</a>
+              </div>
+              <p>Request ANSI Mode (DECRQM)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$p'</span>: ignore,
+    <span class="string">'?$p'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-131">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-131">&#182;</a>
+              </div>
+              <p>Set Performance Level (DECSCL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'"p'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-132">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-132">&#182;</a>
+              </div>
+              <p>Load LEDs (DECLL)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'q'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-133">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-133">&#182;</a>
+              </div>
+              <p>Set Cursor Style (DECSCUSR, VT520)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">' q'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-134">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-134">&#182;</a>
+              </div>
+              <p>Select Character Protection Attribute (DECSCA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'"q'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-135">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-135">&#182;</a>
+              </div>
+              <p>Set Scrolling Region (DECSTBM)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'r'</span>: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> args = my.state.args();
+      <span class="keyword">var</span> scroll_top = args[<span class="number">0</span>] ? parseInt(args[<span class="number">0</span>], <span class="number">10</span>) - <span class="number">1</span> : <span class="literal">null</span>;
+      <span class="keyword">var</span> scroll_bottom = args[<span class="number">1</span>] ? parseInt(args[<span class="number">1</span>], <span class="number">10</span>) - <span class="number">1</span> : <span class="literal">null</span>;
+      that.emit(<span class="string">'set_scroll_region'</span>, scroll_top, scroll_bottom);
+      that.emit(<span class="string">'set_cursor_position'</span>, <span class="number">0</span>, <span class="number">0</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-136">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-136">&#182;</a>
+              </div>
+              <p>Restore DEC Private Mode Values</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?r'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-137">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-137">&#182;</a>
+              </div>
+              <p>Change Attributes in Rectangular Area (DECCARA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$r'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-138">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-138">&#182;</a>
+              </div>
+              <p>Save Cursor (ANSI.SYS)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'s'</span>: <span class="keyword">function</span>() {
+      save_cursor();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-139">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-139">&#182;</a>
+              </div>
+              <p>Save DEC Private Mode Values</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'?s'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-140">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-140">&#182;</a>
+              </div>
+              <p>Window Manipulation (from dtterm)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'t'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-141">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-141">&#182;</a>
+              </div>
+              <p>Reverse Attributes in Rectangular Area (DECRARA)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$t'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-142">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-142">&#182;</a>
+              </div>
+              <p>Set one or more Features of the Title Modes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'&gt;t'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-143">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-143">&#182;</a>
+              </div>
+              <p>Set Warning-Bell Volume (DECSWBV, VT520)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">' t'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-144">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-144">&#182;</a>
+              </div>
+              <p>Restore Cursor (ANSI.SYS)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'u'</span>: <span class="keyword">function</span>() {
+      restore_cursor();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-145">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-145">&#182;</a>
+              </div>
+              <p>Copy Rectangular Area (DECCRA, VT400)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$v'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-146">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-146">&#182;</a>
+              </div>
+              <p>Enable Filter Rectangle (DECEFR)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\'w'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-147">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-147">&#182;</a>
+              </div>
+              <p>Request Terminal Parameters (DECREQTPARM)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'x'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-148">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-148">&#182;</a>
+              </div>
+              <p>Select Attribute Change Extent (DECSACE)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'*x'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-149">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-149">&#182;</a>
+              </div>
+              <p>Fill Rectangular Area (DECFRA, VT420)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$x'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-150">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-150">&#182;</a>
+              </div>
+              <p>Enable Locator Reporting (DECELR)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\'z'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-151">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-151">&#182;</a>
+              </div>
+              <p>Erase Rectangular Area (DECERA, VT400)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'$z'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-152">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-152">&#182;</a>
+              </div>
+              <p>Select Locator Events (DECSLE)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\'{'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-153">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-153">&#182;</a>
+              </div>
+              <p>Request Locator Position (DECRQLP)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">'\'|'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-154">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-154">&#182;</a>
+              </div>
+              <p>Insert Columns (DECIC, VT420)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">' }'</span>: ignore,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-155">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-155">&#182;</a>
+              </div>
+              <p>Delete P s Columns (DECDC, VT420)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="string">' ~'</span>: ignore
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-156">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-156">&#182;</a>
+              </div>
+              <p>Aliases</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  my.CSI[<span class="string">'?J'</span>] = my.CSI[<span class="string">'J'</span>];
+  my.CSI[<span class="string">'?K'</span>] = my.CSI[<span class="string">'K'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-157">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-157">&#182;</a>
+              </div>
+              <p>Horizontal and Vertical Position (HVP)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  my.CSI[<span class="string">'f'</span>] = my.CSI[<span class="string">'H'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-158">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h3">
+                <a class="pilcrow" href="#section-158">&#182;</a>
               </div>
               <h3>VT52 sequences</h3>
 <p>Collection of VT52 sequences.</p>
@@ -2273,11 +3516,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-109">
+        <li id="section-159">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-109">&#182;</a>
+                <a class="pilcrow" href="#section-159">&#182;</a>
               </div>
               <p>...</p>
 
@@ -2288,11 +3531,11 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
         </li>
         
         
-        <li id="section-110">
+        <li id="section-160">
             <div class="annotation">
               
               <div class="pilwrap for-h4">
-                <a class="pilcrow" href="#section-110">&#182;</a>
+                <a class="pilcrow" href="#section-160">&#182;</a>
               </div>
               <h4><em>initialization</em></h4>
 
@@ -2313,6 +3556,9 @@ this.terminal.io.sendString(&#39;\x1b[?1;2c&#39;);</p>
   common.setter(that, <span class="string">'GR'</span>, my, <span class="string">'GR'</span>);
   common.getter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
   common.setter(that, <span class="string">'GL'</span>, my, <span class="string">'GL'</span>);
+
+  common.method(that, <span class="string">'read'</span>, read, _super);
+  common.method(that, <span class="string">'reset'</span>, reset, _super);
 
   <span class="keyword">return</span> that;
 };
