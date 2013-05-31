@@ -1,7 +1,7 @@
 {
   "name": "breach",
-  "version": "0.1.1",
-  "description": "Cross-Platform Modal Navigation Terminal Emulator",
+  "version": "0.2.0",
+  "description": "A new Terminal Multiplexer",
   "author": "Stanislas Polu <polu.stanislas@gmail.com>",
   "repository": {
     "type": "git",
@@ -9,13 +9,7 @@
   },
   "dependencies": {
     "pty.js": "0.2.x",
-    "node-uuid": "1.4.x"
-  },
-  "window": {
-    "width": 800,
-    "height": 700,
-    "title": "breach",
-    "toolbar": false
-  },
-  "main": "app/index.html"
+    "node-uuid": "1.4.x",
+    "vt.js": "0.1.x"
+  }
 }
