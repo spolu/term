@@ -1,26 +1,33 @@
 ## Breach
 
-A new Terminal Emulator
+A new Terminal Multiplexer
 
-### Build
+### Features
 
-```
-npm install
-cd node_modules/pty.js
-nw-gyp build 
-```
+- Simplified modal navigation
+- Cross buffer search
+- Easy session sharing (pair programming) and broadcasting
 
 ### Architecture
 
-Breach is based on node-webkit. 
+```
++-----+   +-------+
+| pty |---| vt.js |---+                         +--------+
++-----+   +-------+   |                     +---| screen |
++-----+   +-------+   |   +---------+       |   +--------+
+| pty |---| vt.js |---+---| session | <===> +
++-----+   +-------+   |   +---------+       |   +--------+
++-----+   +-------+   |        |            +---| screen |
+| pty |---| vt.js |---+     +-----+             +--------+
++-----+   +-------+         | srv |---+
+                            +-----+   |         +--------+
+                                      +---------| screen |
+                                                +--------+
+```
+Running breach generally spawns two programs: a screen simply in charge of
+connecting to a session and forwarding the data it receives to its own output; 
+and a session which acts as the actual multiplexer as well as a server.
 
-- Node-webkit frontend and IPC communication with emulator.
-- Emulator, spawned locally with IPC to parallelize emulation and rendering
-- Socket based synchronization?
-
-One instance / multi screens > desired behaviour: 
-$ breach (creates ~/.breach-0)
-$ breach (creates ~/.breach-1)
-$ breach ~/.breach-0
-
-
+The session sends VT100 character sequences directly to the screen. Running
+locally, a screen would therefore just forward these sequences directly to the
+terminal it runs in. 
