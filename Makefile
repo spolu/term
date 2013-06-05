@@ -1,5 +1,5 @@
 clean:
-	rm -rf node_modules docs
+	rm -rf node_modules
 docs:
 	docco lib/**/*.js 
 
