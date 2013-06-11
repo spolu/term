@@ -1,33 +1,21 @@
-## Breach
+## Breach - Experimental Web Browser
 
-A new Terminal Multiplexer
+The goal of this project is to experiment with new concepts in web browsing. The
+initial two main experiments are:
 
-### Features
-
-- Simplified modal navigation
-- Cross buffer search
-- Easy session sharing (pair programming) and broadcasting
+- Globally synchronized (server) cookie store and tabs for seamless 
+  session retrieval
+- Merge of tabs and history into a seachable stack navigation
 
 ### Architecture
 
-```
-+-----+   +-------+
-| pty |---| vt.js |---+                         +--------+
-+-----+   +-------+   |                     +---| screen |
-+-----+   +-------+   |   +---------+       |   +--------+
-| pty |---| vt.js |---+---| session | <===> +
-+-----+   +-------+   |   +---------+       |   +--------+
-+-----+   +-------+   |        |            +---| screen |
-| pty |---| vt.js |---+     +-----+             +--------+
-+-----+   +-------+         | srv |---+
-                            +-----+   |         +--------+
-                                      +---------| screen |
-                                                +--------+
-```
-Running breach generally spawns two programs: a screen simply in charge of
-connecting to a session and forwarding the data it receives to its own output; 
-and a session which acts as the actual multiplexer as well as a server.
+Breach is based on the Chromium Embed Framework (CEF) and attemps to minimize
+the amount of C++ code. The whole UI and a maximum amount of UI are deported
+to javascript.
 
-The session sends VT100 character sequences directly to the screen. Running
-locally, a screen would therefore just forward these sequences directly to the
-terminal it runs in. 
+```
+Shell - Shell API - Navigation View
+                  - Glass
+                  - [Browsing Windows]
+```
+
