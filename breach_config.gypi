@@ -1,6 +1,6 @@
 {
   'variables': {
-    'appname': "Breach"
+    'appname': "breach"
   }
 }
 
