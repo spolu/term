@@ -1,5 +1,3 @@
-## breach
-
 Cross-platform Modal Navigation Terminal Emulator
 
 ### Build
